@@ -3,6 +3,7 @@ import {Tag} from '../../../common/cards/Tag';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {CardName} from '../../../common/cards/CardName';
+import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
 import {all, played} from '../Options';
 
@@ -18,14 +19,15 @@ export class TollStation extends Card implements IProjectCard {
         production: {megacredits: {tag: Tag.SPACE, others: true}},
       },
 
-      metadata: {
+      requirements: CardRequirements.builder((b) => b.tag(Tag.SPACE, 3)),
+	  metadata: {
         cardNumber: '099',
         renderData: CardRenderer.builder((b) => {
           b.production((pb) => {
             pb.megacredits(1).slash().space({played, all}).asterix();
           });
         }),
-        description: 'Increase your M€ production 1 step for each space tag your OPPONENTS have.',
+        description: 'Increase your M€ production 1 step for each space tag your OPPONENTS have. (nerf: req. 3 Space tags)',
       },
     });
   }

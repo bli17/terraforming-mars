@@ -15,7 +15,7 @@ export class OrbitalCleanup extends Card implements IProjectCard {
       name: CardName.ORBITAL_CLEANUP,
       tags: [Tag.EARTH, Tag.SPACE],
       cost: 14,
-      victoryPoints: 2,
+      victoryPoints: 1,
 
       behavior: {
         production: {megacredits: -2},
@@ -25,7 +25,7 @@ export class OrbitalCleanup extends Card implements IProjectCard {
         cardNumber: 'X08',
 
         renderData: CardRenderer.builder((b) => {
-          b.action('Gain 1 M€ per science tag you have.', (eb) => {
+          b.action('Gain 1 M€ per science tag you have. (nerf: -1 VP)', (eb) => {
             eb.empty().startAction.megacredits(1).slash().science(1, {played});
           }).br;
           b.production((pb) => {

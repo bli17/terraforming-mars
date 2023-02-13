@@ -19,8 +19,8 @@ export class Meltworks extends Card implements IActionCard, IProjectCard {
       metadata: {
         cardNumber: 'X26',
         renderData: CardRenderer.builder((b) => {
-          b.action('Spend 5 heat to gain 3 steel.', (eb) => {
-            eb.heat(5, {digit}).startAction.steel(3);
+          b.action('Spend 5 heat to gain 4 (buff: +1) steel.', (eb) => {
+            eb.heat(5, {digit}).startAction.steel(4);
           });
         }),
       },
@@ -32,7 +32,7 @@ export class Meltworks extends Card implements IActionCard, IProjectCard {
   }
   public action(player: Player) {
     return player.spendHeat(5, () => {
-      player.steel += 3;
+      player.steel += 4;
       return undefined;
     });
   }

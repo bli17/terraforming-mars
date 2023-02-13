@@ -11,14 +11,14 @@ export class EarthCatapult extends Card implements IProjectCard {
       cardType: CardType.ACTIVE,
       name: CardName.EARTH_CATAPULT,
       tags: [Tag.EARTH],
-      cost: 23,
+      cost: 28,
       victoryPoints: 2,
 
       cardDiscount: {amount: 2},
       metadata: {
         cardNumber: '070',
         renderData: CardRenderer.builder((b) => {
-          b.effect('When you play a card, you pay 2 M€ less for it.', (eb) => {
+          b.effect('When you play a card, you pay 2 M€ less for it. (nerfed: +5 M€)', (eb) => {
             eb.empty().startEffect.megacredits(-2);
           });
         }),
