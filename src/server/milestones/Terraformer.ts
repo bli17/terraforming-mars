@@ -4,12 +4,12 @@ import {Turmoil} from '../turmoil/Turmoil';
 
 export class Terraformer implements IMilestone {
   public readonly name = 'Terraformer';
-  private terraformRating: number = 35;
+  private terraformRating: number = 32;
   private terraformRatingTurmoil: number = 26;
   public readonly description;
   constructor() {
     this.description = 'Having a terraform rating of at least ' +
-                            this.terraformRating + ' or ' +
+                            this.terraformRating + ' (buffed: -3) or ' +
                             this.terraformRatingTurmoil + ' with Turmoil.';
   }
   public getScore(player: Player): number {
