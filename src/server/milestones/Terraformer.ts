@@ -4,7 +4,7 @@ import {Turmoil} from '../turmoil/Turmoil';
 
 export class Terraformer implements IMilestone {
   public readonly name = 'Terraformer';
-  private terraformRating: number = 35;
+  private terraformRating: number = 32;
   private terraformRatingTurmoil: number = 26;
   public readonly description;
   constructor() {

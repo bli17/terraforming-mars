@@ -10,6 +10,6 @@ export class Tycoon implements IMilestone {
       .filter((card) => card.cardType === CardType.ACTIVE || card.cardType === CardType.AUTOMATED).length;
   }
   public canClaim(player: Player): boolean {
-    return this.getScore(player) > 14;
+    return this.getScore(player) > 11;
   }
 }
