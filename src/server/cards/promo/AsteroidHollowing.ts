@@ -9,11 +9,7 @@ import {Tag} from '../../../common/cards/Tag';
 import {Player} from '../../Player';
 import {Resources} from '../../../common/Resources';
 import {LogHelper} from '../../LogHelper';
-import {PlayerInput} from '../../PlayerInput';
 import {SelectCard} from '../../inputs/SelectCard';
-import {OrOptions} from '../../inputs/OrOptions';
-import {SelectOption} from '../../inputs/SelectOption';
-import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {CardRenderer} from '../render/CardRenderer';
 
 export class AsteroidHollowing extends Card implements IActionCard, IProjectCard {
