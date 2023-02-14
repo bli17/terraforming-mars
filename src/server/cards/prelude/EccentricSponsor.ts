@@ -10,23 +10,21 @@ export class EccentricSponsor extends PreludeCard {
     super({
       name: CardName.ECCENTRIC_SPONSOR,
 
-      metadata: {
+      startingMegacredits: 21,
+	  
+	  metadata: {
         cardNumber: 'P11',
         renderData: CardRenderer.builder((b) => {
-          b.text('Play a card from hand, reducing its cost by 25 M€', Size.SMALL, true);
+		  b.megacredits(21).br;
+          b.text('(rework:) Gain 21 M€. Play a card from hand.', Size.SMALL, true);
         }),
       },
     });
   }
-  public override getCardDiscount(player: Player) {
-    if (player.lastCardPlayed === this.name) {
-      return 25;
-    }
-    return 0;
-  }
 
   public override bespokePlay(player: Player) {
-    player.game.defer(new PlayProjectCard(player));
+    player.megaCredits += 21;
+	player.game.defer(new PlayProjectCard(player));
     return undefined;
   }
 }

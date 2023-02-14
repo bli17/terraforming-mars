@@ -1,39 +1,29 @@
 import {Tag} from '../../../common/cards/Tag';
 import {CardName} from '../../../common/cards/CardName';
-import {Player} from '../../Player';
 import {PreludeCard} from './PreludeCard';
-import {PlayProjectCard} from '../../deferredActions/PlayProjectCard';
 import {CardRenderer} from '../render/CardRenderer';
 
 export class EcologyExperts extends PreludeCard {
   constructor() {
     super({
       name: CardName.ECOLOGY_EXPERTS,
-      tags: [Tag.PLANT, Tag.MICROBE],
+      tags: [Tag.SCIENCE],
 
       behavior: {
-        production: {plants: 1},
+        production: {plants: 1, heat: 2},
       },
 
       metadata: {
         cardNumber: 'P10',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.plants(1)).br.br;
-          b.projectRequirements();
+          b.production((pb) => pb.plants(1).heat(2)).br.br;
+          b.plate('Global requirements').text(' : +/- 2');
         }),
-        description: 'Increase your plant production 1 step. Play a card from hand, ignoring global requirements.',
+        description: '(rework:) Increase your plant production 1 step and your heat production 2 steps. Your global requirements are +2 or -2 steps, your choice in each case.',
       },
     });
   }
-  public getRequirementBonus(player: Player): number {
-    if (player.lastCardPlayed === this.name) {
-      // Magic number high enough to always ignore requirements.
-      return 50;
-    }
-    return 0;
-  }
-  public override bespokePlay(player: Player) {
-    player.game.defer(new PlayProjectCard(player));
-    return undefined;
+  public getRequirementBonus(): number {
+    return 2;
   }
 }

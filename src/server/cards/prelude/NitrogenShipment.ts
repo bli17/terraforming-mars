@@ -8,7 +8,7 @@ export class NitrogenShipment extends PreludeCard implements IProjectCard {
   constructor() {
     super({
       name: CardName.NITROGEN_SHIPMENT,
-      startingMegacredits: 5,
+      startingMegacredits: 7,
 
       behavior: {
         production: {plants: 1},
@@ -19,14 +19,14 @@ export class NitrogenShipment extends PreludeCard implements IProjectCard {
         cardNumber: 'P24',
         renderData: CardRenderer.builder((b) => {
           b.production((pb) => pb.plants(1)).tr(1).br;
-          b.megacredits(5);
+          b.megacredits(7);
         }),
-        description: 'Increase your plant production 1 step. Increase your TR 1 step. Gain 5 M€.',
+        description: 'Increase your plant production 1 step. Increase your TR 1 step. Gain 7 (buff: +2) M€.',
       },
     });
   }
   public override bespokePlay(player: Player) {
-    player.megaCredits += 5;
+    player.megaCredits += 7;
     return undefined;
   }
 }

@@ -8,7 +8,7 @@ export class Loan extends PreludeCard implements IProjectCard {
   constructor() {
     super({
       name: CardName.LOAN,
-      startingMegacredits: 30,
+      startingMegacredits: 34,
 
       behavior: {
         production: {megacredits: -2},
@@ -18,14 +18,14 @@ export class Loan extends PreludeCard implements IProjectCard {
         cardNumber: 'P17',
         renderData: CardRenderer.builder((b) => {
           b.production((pb) => pb.minus().megacredits(2)).br;
-          b.megacredits(30);
+          b.megacredits(34);
         }),
-        description: 'Gain 30 M€. Decrease your M€ production 2 steps.',
+        description: 'Gain 34 (buff: +4) M€. Decrease your M€ production 2 steps.',
       },
     });
   }
   public override bespokePlay(player: Player) {
-    player.megaCredits += 30;
+    player.megaCredits += 34;
     return undefined;
   }
 }

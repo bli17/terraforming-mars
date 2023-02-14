@@ -11,15 +11,15 @@ export class PowerGeneration extends PreludeCard implements IProjectCard {
       tags: [Tag.POWER],
 
       behavior: {
-        production: {energy: 3},
+        production: {energy: 4},
       },
 
       metadata: {
         cardNumber: 'P27',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.energy(3));
+          b.production((pb) => pb.energy(4));
         }),
-        description: 'Increase your energy production 3 steps.',
+        description: 'Increase your energy production 4 (buff: +1) steps.',
       },
     });
   }

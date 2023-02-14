@@ -12,16 +12,16 @@ export class MiningOperations extends PreludeCard implements IProjectCard {
 
       behavior: {
         production: {steel: 2},
-        stock: {steel: 4},
+        stock: {steel: 3},
       },
 
       metadata: {
         cardNumber: 'P21',
         renderData: CardRenderer.builder((b) => {
           b.production((pb) => pb.steel(2)).br;
-          b.steel(4);
+          b.steel(3);
         }),
-        description: 'Increase your steel production 2 steps. Gain 4 steel.',
+        description: 'Increase your steel production 2 steps. Gain 3 (nerf: -1) steel.',
       },
     });
   }

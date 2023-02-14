@@ -1,4 +1,3 @@
-import {Tag} from '../../../common/cards/Tag';
 import {PreludeCard} from './PreludeCard';
 import {IProjectCard} from '../IProjectCard';
 import {CardName} from '../../../common/cards/CardName';
@@ -8,7 +7,6 @@ export class OrbitalConstructionYard extends PreludeCard implements IProjectCard
   constructor() {
     super({
       name: CardName.ORBITAL_CONSTRUCTION_YARD,
-      tags: [Tag.SPACE],
 
       behavior: {
         production: {titanium: 1},
@@ -21,7 +19,7 @@ export class OrbitalConstructionYard extends PreludeCard implements IProjectCard
           b.production((pb) => pb.titanium(1)).br;
           b.titanium(4);
         }),
-        description: 'Increase your titanium production 1 step. Gain 4 titanium.',
+        description: 'Increase your titanium production 1 step. Gain 4 titanium. (nerf: -1 Space tag)',
       },
     });
   }

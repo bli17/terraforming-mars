@@ -8,19 +8,19 @@ export class Donation extends PreludeCard {
     super({
       name: CardName.DONATION,
 
-      startingMegacredits: 21,
+      startingMegacredits: 23,
 
       metadata: {
         cardNumber: 'P08',
         renderData: CardRenderer.builder((b) => {
-          b.megacredits(21);
+          b.megacredits(23);
         }),
-        description: 'Gain 21 M€.',
+        description: 'Gain 23 (buff: +2) M€.',
       },
     });
   }
   public override bespokePlay(player: Player) {
-    player.megaCredits += 21;
+    player.megaCredits += 23;
     return undefined;
   }
 }

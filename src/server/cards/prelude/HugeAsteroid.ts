@@ -9,7 +9,7 @@ export class HugeAsteroid extends PreludeCard {
     super({
       name: CardName.HUGE_ASTEROID,
 
-      startingMegacredits: -5,
+      startingMegacredits: -7,
 
       behavior: {
         global: {temperature: 3},
@@ -19,17 +19,17 @@ export class HugeAsteroid extends PreludeCard {
         cardNumber: 'P15',
         renderData: CardRenderer.builder((b) => {
           b.temperature(3).br;
-          b.megacredits(-5);
+          b.megacredits(-7);
         }),
-        description: 'Increase temperature 3 steps. Pay 5 M€.',
+        description: 'Increase temperature 3 steps. Pay 7 (nerf: -2) M€.',
       },
     });
   }
   public override bespokeCanPlay(player: Player) {
-    return player.canAfford(5);
+    return player.canAfford(7);
   }
   public override bespokePlay(player: Player) {
-    player.game.defer(new SelectPaymentDeferred(player, 5));
+    player.game.defer(new SelectPaymentDeferred(player, 7));
     return undefined;
   }
 }

@@ -11,17 +11,17 @@ export class AlliedBanks extends PreludeCard {
       tags: [Tag.EARTH],
 
       behavior: {
-        production: {megacredits: 4},
+        production: {megacredits: 3},
       },
-      startingMegacredits: 3,
+      startingMegacredits: 6,
 
       metadata: {
         cardNumber: 'P01',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.megacredits(4)).br;
-          b.megacredits(3);
+          b.production((pb) => pb.megacredits(3)).br;
+          b.megacredits(6);
         }),
-        description: 'Increase your M€ production 4 steps. Gain 3 M€.',
+        description: 'Increase your M€ production 3 (nerf: -1) steps. Gain 6 (buff: +3) M€.',
       },
     });
   }

@@ -12,14 +12,16 @@ export class DomeFarming extends PreludeCard {
 
       behavior: {
         production: {megacredits: 2, plants: 1},
+		stock: {plants: 2},
       },
 
       metadata: {
         cardNumber: 'P07',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.megacredits(2).plants(1));
+          b.production((pb) => pb.megacredits(2).plants(1)).br;
+		  b.plants(2);
         }),
-        description: 'Increase your M€ production 2 steps and plant production 1 step.',
+        description: 'Increase your M€ production 2 steps and plant production 1 step. (buff:) Gain 2 plants.',
       },
     });
   }

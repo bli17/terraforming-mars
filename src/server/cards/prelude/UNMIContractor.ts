@@ -10,17 +10,17 @@ export class UNMIContractor extends PreludeCard {
       tags: [Tag.EARTH],
 
       behavior: {
-        drawCard: 1,
-        tr: 3,
+        drawCard: 2,
+        tr: 2,
       },
 
       metadata: {
         cardNumber: 'P34',
         renderData: CardRenderer.builder((b) => {
-          b.tr(3).br;
-          b.cards(1);
+          b.tr(2).br;
+          b.cards(2);
         }),
-        description: 'Increase your TR 3 steps. Draw a card.',
+        description: 'Increase your TR 2 (nerf: -1) steps. Draw 2 (buff: +1) cards.',
       },
     });
   }

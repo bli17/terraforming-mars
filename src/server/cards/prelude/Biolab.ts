@@ -10,17 +10,17 @@ export class Biolab extends PreludeCard {
       tags: [Tag.SCIENCE],
 
       behavior: {
-        production: {plants: 1},
-        drawCard: 3,
+        production: {megacredits: 1, plants: 1},
+        drawCard: 2,
       },
 
       metadata: {
         cardNumber: 'P04',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.plants(1)).br;
-          b.cards(3);
+          b.production((pb) => pb.megacredits(1).plants(1)).br;
+          b.cards(2);
         }),
-        description: 'Increase your plant production 1 step. Draw 3 cards.',
+        description: 'Increase your M€ (buff: +1) and plant production 1 step. Draw 2 (nerf: -1) cards.',
       },
     });
   }

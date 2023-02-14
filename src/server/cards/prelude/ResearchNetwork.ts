@@ -11,17 +11,17 @@ export class ResearchNetwork extends PreludeCard implements IProjectCard {
       tags: [Tag.WILD],
 
       behavior: {
-        production: {megacredits: 1},
-        drawCard: 3,
+        production: {megacredits: 2},
+        drawCard: 2,
       },
 
       metadata: {
         cardNumber: 'P28',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.megacredits(1)).br;
-          b.cards(3);
+          b.production((pb) => pb.megacredits(2)).br;
+          b.cards(2);
         }),
-        description: 'Increase your M€ production 1 step. Draw 3 cards. After being played, when you perform an action, the wild tag counts as any tag of your choice.',
+        description: 'Increase your M€ production 2 (buff: +1) steps. Draw 2 (nerf: -1) cards. After being played, when you perform an action, the wild tag counts as any tag of your choice.',
       },
     });
   }

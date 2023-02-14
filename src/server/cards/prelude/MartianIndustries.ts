@@ -14,20 +14,20 @@ export class MartianIndustries extends PreludeCard implements IProjectCard {
       behavior: {
         production: {energy: 1, steel: 1},
       },
-      startingMegacredits: 6,
+      startingMegacredits: 8,
 
       metadata: {
         cardNumber: 'P18',
         renderData: CardRenderer.builder((b) => {
           b.production((pb) => pb.energy(1).steel(1)).br;
-          b.megacredits(6);
+          b.megacredits(8);
         }),
-        description: 'Increase your energy and steel production 1 step. Gain 6 M€.',
+        description: 'Increase your energy and steel production 1 step. Gain 8 (buff: +2) M€.',
       },
     });
   }
   public override bespokePlay(player: Player) {
-    player.megaCredits += 6;
+    player.megaCredits += 8;
     return undefined;
   }
 }

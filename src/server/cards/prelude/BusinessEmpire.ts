@@ -12,26 +12,26 @@ export class BusinessEmpire extends PreludeCard {
       tags: [Tag.EARTH],
 
       behavior: {
-        production: {megacredits: 6},
+        production: {megacredits: 5},
       },
-      startingMegacredits: -6,
+      startingMegacredits: -5,
 
       metadata: {
         cardNumber: 'P06',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.megacredits(6)).br;
-          b.megacredits(-6);
+          b.production((pb) => pb.megacredits(5)).br;
+          b.megacredits(-5);
         }),
-        description: 'Increase your M€ production 6 steps. Pay 6 M€.',
+        description: 'Increase your M€ production 5 (nerf: -1) steps. Pay 5 (buff: +1) M€.',
       },
     });
   }
   public override bespokeCanPlay(player: Player) {
     if (player.isCorporation(CardName.MANUTECH)) return true;
-    return player.canAfford(6);
+    return player.canAfford(5);
   }
   public override bespokePlay(player: Player) {
-    player.game.defer(new SelectPaymentDeferred(player, 6));
+    player.game.defer(new SelectPaymentDeferred(player, 5));
     return undefined;
   }
 }
