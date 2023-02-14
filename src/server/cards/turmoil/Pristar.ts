@@ -12,7 +12,7 @@ export class Pristar extends Card implements ICorporationCard {
   constructor() {
     super({
       name: CardName.PRISTAR,
-      startingMegaCredits: 53,
+      startingMegaCredits: 63,
       resourceType: CardResource.PRESERVATION,
       cardType: CardType.CORPORATION,
 
@@ -20,11 +20,11 @@ export class Pristar extends Card implements ICorporationCard {
 
       metadata: {
         cardNumber: 'R07',
-        description: 'You start with 53 M€. Decrease your TR 2 steps. 1 VP per preservation resource here.',
+        description: 'You start with 63 (buff: +10) M€. Decrease your TR 2 steps. 1 VP per preservation resource here.',
 
         renderData: CardRenderer.builder((b) => {
           b.br.br.br;
-          b.megacredits(53).nbsp.nbsp.minus().tr(2, {size: Size.SMALL});
+          b.megacredits(63).nbsp.nbsp.minus().tr(2, {size: Size.SMALL});
           b.corpBox('effect', (ce) => {
             ce.effect('During production phase, if you did not get TR so far this generation, add one preservation resource here and gain 6 M€.', (eb) => {
               eb.tr(1, {size: Size.SMALL, cancelled: true}).startEffect.preservation(1).megacredits(6);

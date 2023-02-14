@@ -14,7 +14,7 @@ export class PointLuna extends Card implements ICorporationCard {
       cardType: CardType.CORPORATION,
       name: CardName.POINT_LUNA,
       tags: [Tag.SPACE, Tag.EARTH],
-      startingMegaCredits: 38,
+      startingMegaCredits: 33,
 
       behavior: {
         production: {titanium: 1},
@@ -23,10 +23,10 @@ export class PointLuna extends Card implements ICorporationCard {
 
       metadata: {
         cardNumber: 'R10',
-        description: 'You start with 1 titanium production and 38 M€.',
+        description: 'You start with 1 titanium production and 33 (nerf: -5) M€.',
         renderData: CardRenderer.builder((b) => {
           b.br;
-          b.production((pb) => pb.titanium(1)).nbsp.megacredits(38);
+          b.production((pb) => pb.titanium(1)).nbsp.megacredits(33);
           b.corpBox('effect', (ce) => {
             ce.effect('When you play an Earth tag, including this, draw a card.', (eb) => {
               eb.earth(1, {played}).startEffect.cards(1);

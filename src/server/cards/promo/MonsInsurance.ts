@@ -13,13 +13,13 @@ export class MonsInsurance extends Card implements ICorporationCard {
     super({
       cardType: CardType.CORPORATION,
       name: CardName.MONS_INSURANCE,
-      startingMegaCredits: 48,
+      startingMegaCredits: 58,
 
       metadata: {
         cardNumber: 'R46',
-        description: 'You start with 48 M€. Increase your M€ production 4 steps. ALL OPPONENTS DECREASE THEIR M€ production 2 STEPS. THIS DOES NOT TRIGGER THE EFFECT BELOW.',
+        description: 'You start with 58 (buff: +10) M€. Increase your M€ production 4 steps. ALL OPPONENTS DECREASE THEIR M€ production 2 STEPS. THIS DOES NOT TRIGGER THE EFFECT BELOW.',
         renderData: CardRenderer.builder((b) => {
-          b.megacredits(48).production((pb) => {
+          b.megacredits(58).production((pb) => {
             pb.megacredits(4).nbsp.megacredits(-2, {all}).asterix();
           });
           b.corpBox('effect', (cb) => {

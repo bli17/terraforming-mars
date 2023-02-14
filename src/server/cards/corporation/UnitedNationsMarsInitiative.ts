@@ -7,7 +7,7 @@ import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {CardRenderer} from '../render/CardRenderer';
 
-export const ACTION_COST = 3;
+export const ACTION_COST = 1;
 export class UnitedNationsMarsInitiative extends Card implements IActionCard, ICorporationCard {
   constructor() {
     super({
@@ -24,8 +24,8 @@ export class UnitedNationsMarsInitiative extends Card implements IActionCard, IC
           b.br.br.br;
           b.empty().nbsp.nbsp.nbsp.nbsp.megacredits(40);
           b.corpBox('action', (ce) => {
-            ce.action('If your Terraform Rating was raised this generation, you may pay 3 M€ to raise it 1 step more.', (eb) => {
-              eb.megacredits(3).startAction.tr(1).asterix();
+            ce.action('If your Terraform Rating was raised this generation, you may pay 1 (buff: -2) M€ to raise it 1 step more.', (eb) => {
+              eb.megacredits(1).startAction.tr(1).asterix();
             });
           });
         }),
@@ -37,7 +37,7 @@ export class UnitedNationsMarsInitiative extends Card implements IActionCard, IC
   }
   public action(player: Player) {
     player.payMegacreditsDeferred(
-      3,
+      1,
       'Select how to pay for UNMI action.',
       () => player.increaseTerraformRating());
     return undefined;

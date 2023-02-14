@@ -15,16 +15,16 @@ export class ValleyTrust extends Card implements ICorporationCard {
       cardType: CardType.CORPORATION,
       name: CardName.VALLEY_TRUST,
       tags: [Tag.EARTH],
-      startingMegaCredits: 37,
+      startingMegaCredits: 42,
       initialActionText: 'Draw 3 Prelude cards, and play one of them',
 
       cardDiscount: {tag: Tag.SCIENCE, amount: 2},
       metadata: {
         cardNumber: 'R34',
-        description: 'You start with 37 M€. As your first action, draw 3 Prelude cards, and play one of them. Discard the other two.',
+        description: 'You start with 42 (buff: +5) M€. As your first action, draw 3 Prelude cards, and play one of them. Discard the other two.',
         renderData: CardRenderer.builder((b) => {
           b.br.br;
-          b.megacredits(37).nbsp.prelude().asterix();
+          b.megacredits(42).nbsp.prelude().asterix();
           b.corpBox('effect', (ce) => {
             ce.effect('When you play a science tag, you pay 2M€ less for it.', (eb) => {
               eb.science(1, {played}).startEffect.megacredits(-2);

@@ -13,19 +13,19 @@ export class PhoboLog extends Card implements ICorporationCard {
       cardType: CardType.CORPORATION,
       name: CardName.PHOBOLOG,
       tags: [Tag.SPACE],
-      startingMegaCredits: 23,
+      startingMegaCredits: 35,
 
       behavior: {
-        stock: {titanium: 10},
+        stock: {titanium: 7},
         titanumValue: 1,
       },
 
       metadata: {
         cardNumber: 'R09',
-        description: 'You start with 10 titanium and 23 M€.',
+        description: 'You start with 7 (nerf: -3) titanium and 35 (buff: +12) M€.',
         renderData: CardRenderer.builder((b) => {
           b.br.br;
-          b.megacredits(23).nbsp.titanium(10, {digit});
+          b.megacredits(35).nbsp.titanium(7, {digit});
           b.corpBox('effect', (ce) => {
             ce.effect('Your titanium resources are each worth 1 M€ extra.', (eb) => {
               eb.titanium(1).startEffect.plus(Size.SMALL).megacredits(1);
