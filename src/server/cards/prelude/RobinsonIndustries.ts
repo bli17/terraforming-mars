@@ -23,8 +23,8 @@ export class RobinsonIndustries extends Card implements IActionCard, ICorporatio
           b.br.br.br;
           b.megacredits(47);
           b.corpBox('action', (ce) => {
-            ce.action('Spend 4 M€ to increase (one of) your LOWEST production 1 step.', (eb) => {
-              eb.megacredits(4).startAction.production((pb) => pb.wild(1).asterix());
+            ce.action('Spend 3 (buff: -1) M€ to increase (one of) your LOWEST production 1 step.', (eb) => {
+              eb.megacredits(3).startAction.production((pb) => pb.wild(1).asterix());
             });
           });
         }),
@@ -32,7 +32,7 @@ export class RobinsonIndustries extends Card implements IActionCard, ICorporatio
     });
   }
   public canAct(player: Player): boolean {
-    return player.canAfford(4);
+    return player.canAfford(3);
   }
 
   public action(player: Player) {
@@ -42,7 +42,7 @@ export class RobinsonIndustries extends Card implements IActionCard, ICorporatio
     [Resources.MEGACREDITS, Resources.STEEL, Resources.TITANIUM, Resources.PLANTS, Resources.ENERGY, Resources.HEAT].forEach((resource) => {
       const option = new SelectOption('Increase ' + resource + ' production 1 step', 'Select', () => {
         player.payMegacreditsDeferred(
-          4,
+          3,
           'Select how to pay for Robinson Industries action.',
           () => {
             // Add production after payment, to prevent Manutech from being in the way.

@@ -12,7 +12,7 @@ export class EcoLine extends Card implements ICorporationCard {
       cardType: CardType.CORPORATION,
       name: CardName.ECOLINE,
       tags: [Tag.PLANT],
-      startingMegaCredits: 36,
+      startingMegaCredits: 31,
 
       behavior: {
         production: {plants: 2},
@@ -22,10 +22,10 @@ export class EcoLine extends Card implements ICorporationCard {
 
       metadata: {
         cardNumber: 'R17',
-        description: 'You start with 2 plant production, 3 plants, and 36 M€.',
+        description: 'You start with 2 plant production, 3 plants, and 31 (nerf: -5) M€.',
         renderData: CardRenderer.builder((b) => {
           b.br;
-          b.production((pb) => pb.plants(2)).nbsp.megacredits(36).plants(3, {digit});
+          b.production((pb) => pb.plants(2)).nbsp.megacredits(31).plants(3, {digit});
           b.corpBox('effect', (ce) => {
             ce.effect('You may always pay 7 plants, instead of 8, to place greenery.', (eb) => {
               eb.plants(7, {digit}).startAction.greenery();
