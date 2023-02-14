@@ -20,7 +20,7 @@ export class Inventrix extends Card implements ICorporationCard {
 
       metadata: {
         cardNumber: 'R43',
-        description: 'As your first action in the game, draw 2 (nerf: -1) cards. Start with 45 M€.',
+        description: 'As your first action in the game, draw 2 (nerf: -1) cards. Start with 45 M€. (buff:) When you perform an action, the Wild tag counts as any tag of your choice.',
         renderData: CardRenderer.builder((b) => {
           b.br;
           b.megacredits(45).nbsp.cards(2);

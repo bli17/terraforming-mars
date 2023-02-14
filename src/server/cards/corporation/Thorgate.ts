@@ -23,7 +23,7 @@ export class Thorgate extends Card implements ICorporationCard {
       cardDiscount: {tag: Tag.POWER, amount: 2},
       metadata: {
         cardNumber: 'R13',
-        description: 'You start with 1 energy production and 48 M€. (buff: 1 VP per 2 Power tag you have.)',
+        description: 'You start with 1 energy production and 48 M€. (buff:) 1 VP per 2 Power tag you have.',
         renderData: CardRenderer.builder((b) => {
           b.br;
           b.production((pb) => pb.energy(1)).nbsp.megacredits(48);

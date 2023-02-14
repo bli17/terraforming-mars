@@ -27,7 +27,7 @@ export class TollStation extends Card implements IProjectCard {
             pb.megacredits(1).slash().space({played, all}).asterix();
           });
         }),
-        description: 'Increase your M€ production 1 step for each space tag your OPPONENTS have. (nerf: req. 3 Space tags)',
+        description: 'Increase your M€ production 1 step for each space tag your OPPONENTS have. (nerf: requires 3 Space tags)',
       },
     });
   }
