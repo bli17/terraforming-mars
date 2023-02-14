@@ -25,7 +25,7 @@ export class PowerPlantStandardProject extends StandardProjectCard {
   protected override discount(player: Player): number {
     let discount = 0;
     if (player.isCorporation(CardName.THORGATE)) {
-      discount += 3;
+      discount += 2;
     }
     if (player.cardIsInEffect(CardName.HIGH_TEMP_SUPERCONDUCTORS)) {
       discount += 3;
