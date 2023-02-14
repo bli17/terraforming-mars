@@ -10,7 +10,6 @@ import {Player} from '../../Player';
 import {Resources} from '../../../common/Resources';
 import {SelectCard} from '../../inputs/SelectCard';
 import {CardRenderer} from '../render/CardRenderer';
-import {OrOptions} from '../../inputs/OrOptions';
 
 export class AsteroidHollowing extends Card implements IActionCard, IProjectCard {
   constructor() {
@@ -45,7 +44,7 @@ export class AsteroidHollowing extends Card implements IActionCard, IProjectCard
 	const addAsteroidToSelf = function() {
 	  player.deductResource(Resources.TITANIUM, 1);
       player.production.add(Resources.MEGACREDITS, 1);
-      player.addResourceTo(this, {log: true});
+      player.addResourceTo(asteroidCards[0], {log: true});
 	  return undefined;
     };
 	
