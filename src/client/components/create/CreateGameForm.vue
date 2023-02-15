@@ -407,7 +407,6 @@
                 </div>
             </div>
 
-
             <div class="create-game--block" v-if="showCorporationList">
               <CorporationsFilter
                   ref="corporationsFilter"
@@ -1083,7 +1082,10 @@ export default (Vue as WithRefs<Refs>).extend({
         playerCustomCorpList = [component.p1Corporations, component.p2Corporations, component.p3Corporations, component.p4Corporations, component.p5Corporations, component.p6Corporations];
       }
 
-      let players = component.players.slice(0, component.playersCount);
+	  let players = component.players.map(e => ({ ... e })); //Deep copy of array
+	  players = players.slice(0, component.playersCount);
+	  
+	  let firstIndex = component.firstIndex;
 
       // Reshuffle players array to match player order
       // Rewrote random first player order code
@@ -1094,35 +1096,34 @@ export default (Vue as WithRefs<Refs>).extend({
       if (component.randomFirstPlayer) {
         // Shuffle players array to assign each player a random seat around the table
 
-        if (component.randomFirstPlayer) {
-          // Set first player index
-          component.firstIndex = Math.floor(component.seed * component.playersCount) + 1;
+        // Set first player index
+        firstIndex = Math.floor(component.seed * component.playersCount) + 1;
 
-          for (let i = 0; i < component.playersCount; i++) {
-            const rand_order = Math.floor(Math.random() * (i+1)); // roll what slot player i is in
-            playerOrderArray.splice(rand_order, 0, i); // insert player i in that slot
-          }
+        for (let i = 0; i < component.playersCount; i++) {
+          const rand_order = Math.floor(Math.random() * (i+1)); // roll what slot player i is in
+          playerOrderArray.splice(rand_order, 0, i); // insert player i in that slot
         }
       }
+	  
       // If not random first player, reshuffle players based on chosen starting player
       if (!component.randomFirstPlayer) {
         // find who the first player is
-        for (let i = 0; i < component.playersCount; i++) {
-          if (players[i].first) {
-            component.firstIndex = i+1;
-          }
-        }
+        //for (let i = 0; i < component.playersCount; i++) {
+        //  if (players[i].first) {
+        //    firstIndex = i + 1;
+        //  }
+        //}
         // Create the player order array
         for (let i = 0; i < component.playersCount; i++) {
-          // example: 4 players, 3rd player (index 2) is starting player
+          // example: 4 players, 3rd player (array index 2) is starting player
           // i=0: 0+3-1 <= 4-1 -> push 0+3-1 = 2
           // i=1: 1+3-1 <= 4-1 -> push 1+3-1 = 3
           // i=2: 2+3-1 !<= 4-1 -> push 2+3-1-4 = 0
           // i=3: 3+3-1 !<= 4-1 -> push 3+3-1-4 = 1
-          if (i + component.firstIndex - 1 <= component.playersCount - 1) {
-            playerOrderArray.push(i + component.firstIndex - 1);
+          if (i + firstIndex - 1 <= component.playersCount - 1) {
+            playerOrderArray.push(i + firstIndex - 1);
           } else {
-            playerOrderArray.push(i + component.firstIndex - 1 - component.playersCount);
+            playerOrderArray.push(i + firstIndex - 1 - component.playersCount);
           }
         }
       }
@@ -1143,7 +1144,7 @@ export default (Vue as WithRefs<Refs>).extend({
       }
       players = temp_array;
 
-      component.firstIndex = 1; // need to reset this so the new first player in the array is the first player
+      firstIndex = 1; // need to reset this so the new first player in the array is the first player
 
       // Re-order the player custom corporation lists to match player order array
       if (playerCustomCorpList.length > 0) {
@@ -1181,11 +1182,6 @@ export default (Vue as WithRefs<Refs>).extend({
             player.name = defaultPlayerName;
           }
         }
-      });
-
-      players.map((player: any) => {
-        player.first = (this.firstIndex === player.index);
-        return player;
       });
 
       const corporateEra = this.corporateEra;
