@@ -237,7 +237,7 @@
                                 <span v-i18n>Custom Corporation list</span>
                             </label>
 
-							<input type="checkbox" v-model="showPlayerCorporationList" id="playerCorps-checkbox">
+                            <input type="checkbox" v-model="showPlayerCorporationList" id="playerCorps-checkbox">
                             <label for="playerCorps-checkbox">
                                 <span v-i18n>Custom Corporation by player</span>
                             </label>
@@ -424,8 +424,8 @@
               ></CorporationsFilter>
             </div>
 
-			<div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 1">
-			  <h2>Player 1: {{ players[0].name }}</h2>
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 1">
+              <h2>Player 1: {{ players[0].name }}</h2>
               <CorporationsFilter
                   ref="p1CorporationsFilter"
                   v-on:corporation-list-changed="updateP1Corporations"
@@ -441,8 +441,8 @@
               ></CorporationsFilter>
             </div>
 
-			<div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 2">
-			  <h2>Player 2: {{ players[1].name }}</h2>
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 2">
+              <h2>Player 2: {{ players[1].name }}</h2>
               <CorporationsFilter
                   ref="p2CorporationsFilter"
                   v-on:corporation-list-changed="updateP2Corporations"
@@ -458,8 +458,8 @@
               ></CorporationsFilter>
             </div>
 
-			<div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 3">
-			  <h2>Player 3: {{ players[2].name }}</h2>
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 3">
+              <h2>Player 3: {{ players[2].name }}</h2>
               <CorporationsFilter
                   ref="p3CorporationsFilter"
                   v-on:corporation-list-changed="updateP3Corporations"
@@ -475,8 +475,8 @@
               ></CorporationsFilter>
             </div>
 
-			<div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 4">
-			  <h2>Player 4: {{ players[3].name }}</h2>
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 4">
+              <h2>Player 4: {{ players[3].name }}</h2>
               <CorporationsFilter
                   ref="p4CorporationsFilter"
                   v-on:corporation-list-changed="updateP4Corporations"
@@ -492,8 +492,8 @@
               ></CorporationsFilter>
             </div>
 
-			<div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 5">
-			  <h2>Player 5: {{ players[4].name }}</h2>
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 5">
+              <h2>Player 5: {{ players[4].name }}</h2>
               <CorporationsFilter
                   ref="p5CorporationsFilter"
                   v-on:corporation-list-changed="updateP5Corporations"
@@ -509,8 +509,8 @@
               ></CorporationsFilter>
             </div>
 
-			<div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 6">
-			  <h2>Player 6: {{ players[5].name }}</h2>
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 6">
+              <h2>Player 6: {{ players[5].name }}</h2>
               <CorporationsFilter
                   ref="p6CorporationsFilter"
                   v-on:corporation-list-changed="updateP6Corporations"
@@ -607,17 +607,17 @@ export interface CreateGameModel {
     bannedCards: Array<CardName>;
     customColonies: Array<ColonyName>;
     customCorporations: Array<CardName>;
-	playerCustomCorpList: Array<CardName[]>;
-	p1Corporations: Array<CardName>;
-	p2Corporations: Array<CardName>;
-	p3Corporations: Array<CardName>;
-	p4Corporations: Array<CardName>;
-	p5Corporations: Array<CardName>;
-	p6Corporations: Array<CardName>;
+    playerCustomCorpList: Array<CardName[]>;
+    p1Corporations: Array<CardName>;
+    p2Corporations: Array<CardName>;
+    p3Corporations: Array<CardName>;
+    p4Corporations: Array<CardName>;
+    p5Corporations: Array<CardName>;
+    p6Corporations: Array<CardName>;
     customPreludes: Array<CardName>;
     showBannedCards: boolean;
     showCorporationList: boolean;
-	showPlayerCorporationList: boolean;
+    showPlayerCorporationList: boolean;
     showColoniesList: boolean;
     showPreludesList: boolean;
     board: BoardNameType;
@@ -698,19 +698,19 @@ export default (Vue as WithRefs<Refs>).extend({
       colonies: false,
       showColoniesList: false,
       showCorporationList: false,
-	  showPlayerCorporationList: false,
+      showPlayerCorporationList: false,
       showPreludesList: false,
       showBannedCards: false,
       turmoil: false,
       customColonies: [],
       customCorporations: [],
-	  playerCustomCorpList: [],
-	  p1Corporations: [],
-	  p2Corporations: [],
-	  p3Corporations: [],
-	  p4Corporations: [],
-	  p5Corporations: [],
-	  p6Corporations: [],
+      playerCustomCorpList: [],
+      p1Corporations: [],
+      p2Corporations: [],
+      p3Corporations: [],
+      p4Corporations: [],
+      p5Corporations: [],
+      p6Corporations: [],
       customPreludes: [],
       bannedCards: [],
       board: BoardName.THARSIS,
@@ -850,13 +850,13 @@ export default (Vue as WithRefs<Refs>).extend({
               json_constants.CUSTOM_PRELUDES,
               json_constants.BANNED_CARDS,
               json_constants.OLD_BANNED_CARDS,
-			  'playerCustomCorpList',
-			  'p1Corporations',
-			  'p2Corporations',
-			  'p3Corporations',
-			  'p4Corporations',
-			  'p5Corporations',
-			  'p6Corporations',
+              'playerCustomCorpList',
+              'p1Corporations',
+              'p2Corporations',
+              'p3Corporations',
+              'p4Corporations',
+              'p5Corporations',
+              'p6Corporations',
               'players',
               'solarPhaseOption',
               'constants'];
@@ -1075,26 +1075,26 @@ export default (Vue as WithRefs<Refs>).extend({
       // TODO(kberg): remove 'component'
       const component: CreateGameModel = this;
 
-	  // Custom corporations list must be reshuffled with player order;
-	  // so define it here
-	  let playerCustomCorpList: Array<CardName[]> = [];
+      // Custom corporations list must be reshuffled with player order;
+      // so define it here
+      let playerCustomCorpList: Array<CardName[]> = [];
 
-	  if (component.showPlayerCorporationList) {
+      if (component.showPlayerCorporationList) {
         playerCustomCorpList = [component.p1Corporations, component.p2Corporations, component.p3Corporations, component.p4Corporations, component.p5Corporations, component.p6Corporations];
-	  }
+      }
 
       let players = component.players.slice(0, component.playersCount);
 
-	  // Reshuffle players array to match player order
-		  // Rewrote random first player order code
-		  // Previous version may not have truly randomized player order
-		  // Also allows for reshuffling player custom corps array in same order
+      // Reshuffle players array to match player order
+      // Rewrote random first player order code
+      // Previous version may not have truly randomized player order
+      // Also allows for reshuffling player custom corps array in same order
       const playerOrderArray: Array<number> = [];
 
-	  if (component.randomFirstPlayer) {
+      if (component.randomFirstPlayer) {
         // Shuffle players array to assign each player a random seat around the table
 
-		  if (component.randomFirstPlayer) {
+        if (component.randomFirstPlayer) {
           // Set first player index
           component.firstIndex = Math.floor(component.seed * component.playersCount) + 1;
 
@@ -1102,10 +1102,10 @@ export default (Vue as WithRefs<Refs>).extend({
             const rand_order = Math.floor(Math.random() * (i+1)); // roll what slot player i is in
             playerOrderArray.splice(rand_order, 0, i); // insert player i in that slot
           }
-		  }
-	  }
-	  // If not random first player, reshuffle players based on chosen starting player
-	  if (!component.randomFirstPlayer) {
+        }
+      }
+      // If not random first player, reshuffle players based on chosen starting player
+      if (!component.randomFirstPlayer) {
         // find who the first player is
         for (let i = 0; i < component.playersCount; i++) {
           if (players[i].first) {
@@ -1125,11 +1125,11 @@ export default (Vue as WithRefs<Refs>).extend({
             playerOrderArray.push(i + component.firstIndex - 1 - component.playersCount);
           }
         }
-	  }
+      }
 
-	  // Reorder players array to match player order array
-	  const temp_array: Array<NewPlayerModel> = [];
-	  for (let i = 0; i < component.playersCount; i++) {
+      // Reorder players array to match player order array
+      const temp_array: Array<NewPlayerModel> = [];
+      for (let i = 0; i < component.playersCount; i++) {
         const idx = playerOrderArray[i];
         temp_array.push(players[idx]);
 
@@ -1140,13 +1140,13 @@ export default (Vue as WithRefs<Refs>).extend({
         } else {
           temp_array[i].first = true;
         }
-	  }
-	  players = temp_array;
+      }
+      players = temp_array;
 
-	  component.firstIndex = 1; // need to reset this so the new first player in the array is the first player
+      component.firstIndex = 1; // need to reset this so the new first player in the array is the first player
 
-	  // Re-order the player custom corporation lists to match player order array
-	  if (playerCustomCorpList.length > 0) {
+      // Re-order the player custom corporation lists to match player order array
+      if (playerCustomCorpList.length > 0) {
         const temp_array2: Array<CardName[]> = [];
 
         for (let i = 0; i < component.playersCount; i++) {
@@ -1154,7 +1154,7 @@ export default (Vue as WithRefs<Refs>).extend({
           temp_array2.push(playerCustomCorpList[idx]);
         }
         playerCustomCorpList = temp_array2;
-	  }
+      }
 
       // Auto assign an available color if there are duplicates
       const uniqueColors = players.map((player) => player.color).filter((v, i, a) => a.indexOf(v) === i);
