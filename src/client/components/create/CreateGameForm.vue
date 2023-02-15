@@ -1082,10 +1082,10 @@ export default (Vue as WithRefs<Refs>).extend({
         playerCustomCorpList = [component.p1Corporations, component.p2Corporations, component.p3Corporations, component.p4Corporations, component.p5Corporations, component.p6Corporations];
       }
 
-	  let players = component.players.map(e => ({ ... e })); //Deep copy of array
-	  players = players.slice(0, component.playersCount);
-	  
-	  let firstIndex = component.firstIndex;
+      let players = component.players.map((e) => ({...e})); // Deep copy of array
+      players = players.slice(0, component.playersCount);
+
+      let firstIndex = component.firstIndex;
 
       // Reshuffle players array to match player order
       // Rewrote random first player order code
@@ -1104,15 +1104,15 @@ export default (Vue as WithRefs<Refs>).extend({
           playerOrderArray.splice(rand_order, 0, i); // insert player i in that slot
         }
       }
-	  
+
       // If not random first player, reshuffle players based on chosen starting player
       if (!component.randomFirstPlayer) {
         // find who the first player is
-        //for (let i = 0; i < component.playersCount; i++) {
+        // for (let i = 0; i < component.playersCount; i++) {
         //  if (players[i].first) {
         //    firstIndex = i + 1;
         //  }
-        //}
+        // }
         // Create the player order array
         for (let i = 0; i < component.playersCount; i++) {
           // example: 4 players, 3rd player (array index 2) is starting player
