@@ -21,10 +21,11 @@ export class Polyphemos extends Card implements ICorporationCard {
 
       metadata: {
         cardNumber: 'R11',
-        description: 'You start with 60 (buff: +10) M€. Increase your M€ production 5 steps. (nerf: -5 titanium)',
+        // description: 'You start with 60 (buff: +10) M€. Increase your M€ production 5 steps. (nerf: -5 titanium)',
         renderData: CardRenderer.builder((b) => {
           b.br;
           b.megacredits(60).nbsp.production((pb) => pb.megacredits(5));
+		  b.text('(Changed: +10 M€, -5 titanium).', Size.TINY, false, false);
           b.corpBox('effect', (ce) => {
 			ce.vSpace(Size.LARGE);
             ce.effect(undefined, (eb) => {
