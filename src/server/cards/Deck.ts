@@ -126,7 +126,6 @@ export class Deck<T extends ICard> {
   }
 
 
-
   public serialize(): SerializedDeck {
     return {
       drawPile: this.drawPile.map((c) => c.name),
