@@ -289,7 +289,7 @@ export class Game implements Logger {
     // handicaps.
     let player_number = -1; // used for player-specific custom corps list
     for (const player of game.getPlayersInGenerationOrder()) {
-	  player_number++; // used for player-specific custom corps list; index for playerCustomCorpList
+      player_number++; // used for player-specific custom corps list; index for playerCustomCorpList
       player.setTerraformRating(player.getTerraformRating() + player.handicap);
       if (!gameOptions.corporateEra) {
         player.production.override({
@@ -311,7 +311,7 @@ export class Game implements Logger {
         gameOptions.turmoilExtension ||
         gameOptions.initialDraftVariant ||
         gameOptions.ceoExtension) {
-        if (gameOptions.corporationsDraft === false && gameOptions.playerCustomCorpList.length == 0) {
+        if (gameOptions.corporationsDraft === false && gameOptions.playerCustomCorpList.length === 0) {
           for (let i = 0; i < gameOptions.startingCorporations; i++) {
             player.dealtCorporationCards.push(corporationDeck.draw(game));
           }
