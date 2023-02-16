@@ -237,6 +237,11 @@
                                 <span v-i18n>Custom Corporation list</span>
                             </label>
 
+                            <input type="checkbox" v-model="showPlayerCorporationList" id="playerCorps-checkbox">
+                            <label for="playerCorps-checkbox">
+                                <span v-i18n>Custom Corporation by player</span>
+                            </label>
+
                             <template v-if="prelude">
                               <input type="checkbox" v-model="showPreludesList" id="customPreludes-checkbox">
                               <label for="customPreludes-checkbox">
@@ -402,11 +407,112 @@
                 </div>
             </div>
 
-
             <div class="create-game--block" v-if="showCorporationList">
               <CorporationsFilter
                   ref="corporationsFilter"
                   v-on:corporation-list-changed="updatecustomCorporations"
+                  v-bind:corporateEra="corporateEra"
+                  v-bind:prelude="prelude"
+                  v-bind:venusNext="venusNext"
+                  v-bind:colonies="colonies"
+                  v-bind:turmoil="turmoil"
+                  v-bind:promoCardsOption="promoCardsOption"
+                  v-bind:communityCardsOption="communityCardsOption"
+                  v-bind:moonExpansion="moonExpansion"
+                  v-bind:pathfindersExpansion="pathfindersExpansion"
+              ></CorporationsFilter>
+            </div>
+
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 1">
+              <h2>Player 1: {{ players[0].name }}</h2>
+              <CorporationsFilter
+                  ref="p1CorporationsFilter"
+                  v-on:corporation-list-changed="updateP1Corporations"
+                  v-bind:corporateEra="corporateEra"
+                  v-bind:prelude="prelude"
+                  v-bind:venusNext="venusNext"
+                  v-bind:colonies="colonies"
+                  v-bind:turmoil="turmoil"
+                  v-bind:promoCardsOption="promoCardsOption"
+                  v-bind:communityCardsOption="communityCardsOption"
+                  v-bind:moonExpansion="moonExpansion"
+                  v-bind:pathfindersExpansion="pathfindersExpansion"
+              ></CorporationsFilter>
+            </div>
+
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 2">
+              <h2>Player 2: {{ players[1].name }}</h2>
+              <CorporationsFilter
+                  ref="p2CorporationsFilter"
+                  v-on:corporation-list-changed="updateP2Corporations"
+                  v-bind:corporateEra="corporateEra"
+                  v-bind:prelude="prelude"
+                  v-bind:venusNext="venusNext"
+                  v-bind:colonies="colonies"
+                  v-bind:turmoil="turmoil"
+                  v-bind:promoCardsOption="promoCardsOption"
+                  v-bind:communityCardsOption="communityCardsOption"
+                  v-bind:moonExpansion="moonExpansion"
+                  v-bind:pathfindersExpansion="pathfindersExpansion"
+              ></CorporationsFilter>
+            </div>
+
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 3">
+              <h2>Player 3: {{ players[2].name }}</h2>
+              <CorporationsFilter
+                  ref="p3CorporationsFilter"
+                  v-on:corporation-list-changed="updateP3Corporations"
+                  v-bind:corporateEra="corporateEra"
+                  v-bind:prelude="prelude"
+                  v-bind:venusNext="venusNext"
+                  v-bind:colonies="colonies"
+                  v-bind:turmoil="turmoil"
+                  v-bind:promoCardsOption="promoCardsOption"
+                  v-bind:communityCardsOption="communityCardsOption"
+                  v-bind:moonExpansion="moonExpansion"
+                  v-bind:pathfindersExpansion="pathfindersExpansion"
+              ></CorporationsFilter>
+            </div>
+
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 4">
+              <h2>Player 4: {{ players[3].name }}</h2>
+              <CorporationsFilter
+                  ref="p4CorporationsFilter"
+                  v-on:corporation-list-changed="updateP4Corporations"
+                  v-bind:corporateEra="corporateEra"
+                  v-bind:prelude="prelude"
+                  v-bind:venusNext="venusNext"
+                  v-bind:colonies="colonies"
+                  v-bind:turmoil="turmoil"
+                  v-bind:promoCardsOption="promoCardsOption"
+                  v-bind:communityCardsOption="communityCardsOption"
+                  v-bind:moonExpansion="moonExpansion"
+                  v-bind:pathfindersExpansion="pathfindersExpansion"
+              ></CorporationsFilter>
+            </div>
+
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 5">
+              <h2>Player 5: {{ players[4].name }}</h2>
+              <CorporationsFilter
+                  ref="p5CorporationsFilter"
+                  v-on:corporation-list-changed="updateP5Corporations"
+                  v-bind:corporateEra="corporateEra"
+                  v-bind:prelude="prelude"
+                  v-bind:venusNext="venusNext"
+                  v-bind:colonies="colonies"
+                  v-bind:turmoil="turmoil"
+                  v-bind:promoCardsOption="promoCardsOption"
+                  v-bind:communityCardsOption="communityCardsOption"
+                  v-bind:moonExpansion="moonExpansion"
+                  v-bind:pathfindersExpansion="pathfindersExpansion"
+              ></CorporationsFilter>
+            </div>
+
+            <div class="create-game--block" v-if="showPlayerCorporationList && playersCount >= 6">
+              <h2>Player 6: {{ players[5].name }}</h2>
+              <CorporationsFilter
+                  ref="p6CorporationsFilter"
+                  v-on:corporation-list-changed="updateP6Corporations"
                   v-bind:corporateEra="corporateEra"
                   v-bind:prelude="prelude"
                   v-bind:venusNext="venusNext"
@@ -500,9 +606,17 @@ export interface CreateGameModel {
     bannedCards: Array<CardName>;
     customColonies: Array<ColonyName>;
     customCorporations: Array<CardName>;
+    playerCustomCorpList: Array<CardName[]>;
+    p1Corporations: Array<CardName>;
+    p2Corporations: Array<CardName>;
+    p3Corporations: Array<CardName>;
+    p4Corporations: Array<CardName>;
+    p5Corporations: Array<CardName>;
+    p6Corporations: Array<CardName>;
     customPreludes: Array<CardName>;
     showBannedCards: boolean;
     showCorporationList: boolean;
+    showPlayerCorporationList: boolean;
     showColoniesList: boolean;
     showPreludesList: boolean;
     board: BoardNameType;
@@ -542,6 +656,12 @@ export interface CreateGameModel {
 type Refs = {
   coloniesFilter: InstanceType<typeof ColoniesFilter>,
   corporationsFilter: InstanceType<typeof CorporationsFilter>,
+  p1CorporationsFilter: InstanceType<typeof CorporationsFilter>,
+  p2CorporationsFilter: InstanceType<typeof CorporationsFilter>,
+  p3CorporationsFilter: InstanceType<typeof CorporationsFilter>,
+  p4CorporationsFilter: InstanceType<typeof CorporationsFilter>,
+  p5CorporationsFilter: InstanceType<typeof CorporationsFilter>,
+  p6CorporationsFilter: InstanceType<typeof CorporationsFilter>,
   preludesFilter: InstanceType<typeof PreludesFilter>,
   cardsFilter: InstanceType<typeof CardsFilter>,
   file: HTMLInputElement,
@@ -577,11 +697,19 @@ export default (Vue as WithRefs<Refs>).extend({
       colonies: false,
       showColoniesList: false,
       showCorporationList: false,
+      showPlayerCorporationList: false,
       showPreludesList: false,
       showBannedCards: false,
       turmoil: false,
       customColonies: [],
       customCorporations: [],
+      playerCustomCorpList: [],
+      p1Corporations: [],
+      p2Corporations: [],
+      p3Corporations: [],
+      p4Corporations: [],
+      p5Corporations: [],
+      p6Corporations: [],
       customPreludes: [],
       bannedCards: [],
       board: BoardName.THARSIS,
@@ -706,6 +834,9 @@ export default (Vue as WithRefs<Refs>).extend({
             component.showBannedCards = bannedCards.length > 0;
             component.showPreludesList = customPreludes.length > 0;
 
+            const playerCustomCorpList: Array<CardName[]> = results['playerCustomCorpList'];
+            component.showPlayerCorporationList = playerCustomCorpList.length > 0;
+
             // Capture the solar phase option since several of the other results will change
             // it via the watch mechanism.
             const capturedSolarPhaseOption = results.solarPhaseOption;
@@ -718,6 +849,13 @@ export default (Vue as WithRefs<Refs>).extend({
               json_constants.CUSTOM_PRELUDES,
               json_constants.BANNED_CARDS,
               json_constants.OLD_BANNED_CARDS,
+              'playerCustomCorpList',
+              'p1Corporations',
+              'p2Corporations',
+              'p3Corporations',
+              'p4Corporations',
+              'p5Corporations',
+              'p6Corporations',
               'players',
               'solarPhaseOption',
               'constants'];
@@ -740,6 +878,29 @@ export default (Vue as WithRefs<Refs>).extend({
                 if (component.showCorporationList) refs.corporationsFilter.selectedCorporations = customCorporations;
                 if (component.showPreludesList) refs.preludesFilter.updatePreludes(customPreludes);
                 if (component.showBannedCards) refs.cardsFilter.selectedCardNames = bannedCards;
+
+                if (component.showPlayerCorporationList) {
+                  if (playerCustomCorpList.length >= 1) {
+                    refs.p1CorporationsFilter.selectedCorporations = playerCustomCorpList[0];
+                  }
+                  if (playerCustomCorpList.length >= 2) {
+                    refs.p2CorporationsFilter.selectedCorporations = playerCustomCorpList[1];
+                  }
+                  if (playerCustomCorpList.length >= 3) {
+                    refs.p3CorporationsFilter.selectedCorporations = playerCustomCorpList[2];
+                  }
+                  if (playerCustomCorpList.length >= 4) {
+                    refs.p4CorporationsFilter.selectedCorporations = playerCustomCorpList[3];
+                  }
+                  if (playerCustomCorpList.length >= 5) {
+                    refs.p5CorporationsFilter.selectedCorporations = playerCustomCorpList[4];
+                  }
+                  if (playerCustomCorpList.length >= 6) {
+                    refs.p6CorporationsFilter.selectedCorporations = playerCustomCorpList[5];
+                  }
+                }
+
+
                 if (!component.seededGame) component.seed = Math.random();
                 // set to alter after any watched properties
                 component.solarPhaseOption = Boolean(capturedSolarPhaseOption);
@@ -771,6 +932,24 @@ export default (Vue as WithRefs<Refs>).extend({
     },
     updatecustomCorporations(customCorporations: Array<CardName>) {
       this.customCorporations = customCorporations;
+    },
+    updateP1Corporations(p1Corporations: Array<CardName>) {
+      this.p1Corporations = p1Corporations;
+    },
+    updateP2Corporations(p2Corporations: Array<CardName>) {
+      this.p2Corporations = p2Corporations;
+    },
+    updateP3Corporations(p3Corporations: Array<CardName>) {
+      this.p3Corporations = p3Corporations;
+    },
+    updateP4Corporations(p4Corporations: Array<CardName>) {
+      this.p4Corporations = p4Corporations;
+    },
+    updateP5Corporations(p5Corporations: Array<CardName>) {
+      this.p5Corporations = p5Corporations;
+    },
+    updateP6Corporations(p6Corporations: Array<CardName>) {
+      this.p6Corporations = p6Corporations;
     },
     updateCustomPreludes(customPreludes: Array<CardName>) {
       this.customPreludes = customPreludes;
@@ -892,14 +1071,90 @@ export default (Vue as WithRefs<Refs>).extend({
       return 'https://github.com/terraforming-mars/terraforming-mars/wiki/Maps#' + options[boardName];
     },
     async serializeSettings() {
-      let players = this.players.slice(0, this.playersCount);
+      // TODO(kberg): remove 'component'
+      const component: CreateGameModel = this;
 
-      if (this.randomFirstPlayer) {
+      // Custom corporations list must be reshuffled with player order;
+      // so define it here
+      let playerCustomCorpList: Array<CardName[]> = [];
+
+      if (component.showPlayerCorporationList) {
+        playerCustomCorpList = [component.p1Corporations, component.p2Corporations, component.p3Corporations, component.p4Corporations, component.p5Corporations, component.p6Corporations];
+      }
+
+      let players = component.players.map((e) => ({...e})); // Deep copy of array
+      players = players.slice(0, component.playersCount);
+
+      let firstIndex = component.firstIndex;
+
+      // Reshuffle players array to match player order
+      // Rewrote random first player order code
+      // Previous version may not have truly randomized player order
+      // Also allows for reshuffling player custom corps array in same order
+      const playerOrderArray: Array<number> = [];
+
+      if (component.randomFirstPlayer) {
         // Shuffle players array to assign each player a random seat around the table
-        players = players.map((a) => ({sort: Math.random(), value: a}))
-          .sort((a, b) => a.sort - b.sort)
-          .map((a) => a.value);
-        this.firstIndex = Math.floor(this.seed * this.playersCount) + 1;
+
+        // Set first player index
+        firstIndex = Math.floor(component.seed * component.playersCount) + 1;
+
+        for (let i = 0; i < component.playersCount; i++) {
+          const rand_order = Math.floor(Math.random() * (i+1)); // roll what slot player i is in
+          playerOrderArray.splice(rand_order, 0, i); // insert player i in that slot
+        }
+      }
+
+      // If not random first player, reshuffle players based on chosen starting player
+      if (!component.randomFirstPlayer) {
+        // find who the first player is
+        // for (let i = 0; i < component.playersCount; i++) {
+        //  if (players[i].first) {
+        //    firstIndex = i + 1;
+        //  }
+        // }
+        // Create the player order array
+        for (let i = 0; i < component.playersCount; i++) {
+          // example: 4 players, 3rd player (array index 2) is starting player
+          // i=0: 0+3-1 <= 4-1 -> push 0+3-1 = 2
+          // i=1: 1+3-1 <= 4-1 -> push 1+3-1 = 3
+          // i=2: 2+3-1 !<= 4-1 -> push 2+3-1-4 = 0
+          // i=3: 3+3-1 !<= 4-1 -> push 3+3-1-4 = 1
+          if (i + firstIndex - 1 <= component.playersCount - 1) {
+            playerOrderArray.push(i + firstIndex - 1);
+          } else {
+            playerOrderArray.push(i + firstIndex - 1 - component.playersCount);
+          }
+        }
+      }
+
+      // Reorder players array to match player order array
+      const temp_array: Array<NewPlayerModel> = [];
+      for (let i = 0; i < component.playersCount; i++) {
+        const idx = playerOrderArray[i];
+        temp_array.push(players[idx]);
+
+        // update index and first features to match new player order
+        temp_array[i].index = i + 1;
+        if (i > 0) {
+          temp_array[i].first = false;
+        } else {
+          temp_array[i].first = true;
+        }
+      }
+      players = temp_array;
+
+      firstIndex = 1; // need to reset this so the new first player in the array is the first player
+
+      // Re-order the player custom corporation lists to match player order array
+      if (playerCustomCorpList.length > 0) {
+        const temp_array2: Array<CardName[]> = [];
+
+        for (let i = 0; i < component.playersCount; i++) {
+          const idx = playerOrderArray[i];
+          temp_array2.push(playerCustomCorpList[idx]);
+        }
+        playerCustomCorpList = temp_array2;
       }
 
       // Auto assign an available color if there are duplicates
@@ -927,11 +1182,6 @@ export default (Vue as WithRefs<Refs>).extend({
             player.name = defaultPlayerName;
           }
         }
-      });
-
-      players.map((player: any) => {
-        player.first = (this.firstIndex === player.index);
-        return player;
       });
 
       const corporateEra = this.corporateEra;
@@ -1104,6 +1354,7 @@ export default (Vue as WithRefs<Refs>).extend({
         colonies,
         turmoil,
         customCorporationsList: customCorporations,
+        playerCustomCorpList: playerCustomCorpList,
         customColoniesList: customColonies,
         customPreludes,
         bannedCards,
