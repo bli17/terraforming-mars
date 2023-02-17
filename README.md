@@ -28,20 +28,11 @@ to foster. Note that any new features you see on this repo made available on tha
 
 The board game is great and this repository highly recommends [purchasing it](https://www.amazon.com/Stronghold-Games-6005SG-Terraforming-Board/dp/B01GSYA4K2) for personal use.
 
-## ⬤ This implementation
-This implementation of the Terraforming Mars makes two main changes compared to the main implementation.
-
-First, it implements custom corporations lists by player. We use it for our corporation round robin tournaments, where each player plays each corporation one time over the course of a season. This can also be used to allow each player to pick which corporations to play.
-
-Second, it implements some balance changes, as seen in [this Google Sheet](https://docs.google.com/spreadsheets/d/1uP6GvPa9XdG5sBtpbij3G68QYG5khlz7J-fLbo7-9fo/edit?usp=sharing). We play four player with only Preludes and Promos.
-
 ## ⬤ I want to join the community!
 [Join us over on Discord!](https://discord.gg/afeyggbN6Y).
 
 ## ⬤ I want to play!
-The main implementation of the web-app is available at https://terraforming-mars.herokuapp.com/. It's generally reliable, but read more below.
-
-The instance that implements this fork is on a Heroku Eco dyno so I prefer not to share it.
+There's a instance available at https://terraforming-mars.herokuapp.com/. It's generally reliable, but read more below.
 
 There's also this excellent
 [YouTube playlist](https://youtube.com/playlist?list=PLCGE78n9vCqhhmRe9YCrRh2GLNMPB_3j1) focused on tutorials custom for this app.
