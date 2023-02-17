@@ -68,7 +68,6 @@ import {TheNewSpaceRace} from './cards/pathfinders/TheNewSpaceRace';
 import {CorporationDeck, PreludeDeck, ProjectDeck, CeoDeck} from './cards/Deck';
 import {Logger} from './logs/Logger';
 import {addDays, dayStringToDays} from './database/utils.ts';
-import {ALL_TAGS, Tag} from '../common/cards/Tag';
 
 export interface Score {
   corporation: String;
@@ -141,8 +140,6 @@ export class Game implements Logger {
   // Syndicate Pirate Raids
   public syndicatePirateRaider?: PlayerId;
 
-  public readonly tags: ReadonlyArray<Tag>;
-
   private constructor(
     public id: GameId,
     private players: Array<Player>,
@@ -182,14 +179,6 @@ export class Game implements Logger {
     this.players.forEach((player) => {
       player.game = this;
       if (player.isCorporation(CardName.MONS_INSURANCE)) this.monsInsuranceOwner = player.id;
-    });
-
-    this.tags = ALL_TAGS.filter((tag) => {
-      if (tag === Tag.VENUS) return gameOptions.venusNextExtension;
-      if (tag === Tag.MOON) return gameOptions.moonExpansion;
-      if (tag === Tag.MARS) return gameOptions.pathfindersExpansion;
-      if (tag === Tag.CLONE) return gameOptions.pathfindersExpansion;
-      return true;
     });
   }
 

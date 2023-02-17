@@ -1,9 +1,9 @@
-import {IActionCard, ICard} from '../ICard';
+import {ICard} from '../ICard';
 import {Player} from '../../Player';
 import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
 
-export interface ICeoCard extends IProjectCard, Partial<IActionCard> {
+export interface ICeoCard extends IProjectCard {
   // TODO: Rename to something that indicates that it's usable even when this value is true.
   /** When true, the card cannot be activated again. */
   isDisabled?: boolean;

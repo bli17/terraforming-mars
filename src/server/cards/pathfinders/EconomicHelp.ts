@@ -4,7 +4,7 @@ import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
-import {isPlanetaryTag, PathfindersExpansion, PlanetaryTag, TRACKS} from '../../pathfinders/PathfindersExpansion';
+import {PathfindersExpansion, PlanetaryTag, TRACKS} from '../../pathfinders/PathfindersExpansion';
 import {Tag} from '../../../common/cards/Tag';
 import {Size} from '../../../common/cards/render/Size';
 import {played} from '../Options';
@@ -42,15 +42,18 @@ export class EconomicHelp extends Card implements IProjectCard {
     const value = data[tag];
     return TRACKS[tag].spaces.length === value ? -1 : value;
   }
-
   public override bespokePlay(player: Player) {
     const data = player.game.pathfindersData;
     if (data === undefined) {
       return undefined;
     }
-    const tags = player.game.tags.filter(isPlanetaryTag);
-    const values = tags.map((tag) => this.trackOffset(tag, data));
-
+    const values = [
+      this.trackOffset(Tag.EARTH, data),
+      this.trackOffset(Tag.JOVIAN, data),
+      this.trackOffset(Tag.MARS, data),
+    ];
+    if (player.game.gameOptions.moonExpansion === true) values.push(this.trackOffset(Tag.MOON, data));
+    if (player.game.gameOptions.venusNextExtension === true) values.push(this.trackOffset(Tag.VENUS, data));
     // Filter any maximized track.
     // Filter out -1.
     const lowest = Math.min(...(values.filter((v) => v >= 0)));

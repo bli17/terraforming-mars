@@ -16,22 +16,3 @@ export enum Tag {
     EVENT = 'event',
     CLONE = 'clone',
 }
-
-export const ALL_TAGS = [
-  Tag.BUILDING,
-  Tag.SPACE,
-  Tag.SCIENCE,
-  Tag.POWER,
-  Tag.EARTH,
-  Tag.JOVIAN,
-  Tag.VENUS,
-  Tag.PLANT,
-  Tag.MICROBE,
-  Tag.ANIMAL,
-  Tag.CITY,
-  Tag.MOON,
-  Tag.MARS,
-  Tag.WILD,
-  Tag.EVENT,
-  Tag.CLONE,
-] as const;

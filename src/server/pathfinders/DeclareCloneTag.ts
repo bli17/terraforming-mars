@@ -1,11 +1,11 @@
 import {Player} from '../Player';
 import {DeferredAction, Priority} from '../deferredActions/DeferredAction';
+import {Tag} from '../../common/cards/Tag';
 import {OrOptions} from '../inputs/OrOptions';
 import {SelectOption} from '../inputs/SelectOption';
 import {ICloneTagCard} from '../cards/pathfinders/ICloneTagCard';
 import {IProjectCard} from '../cards/IProjectCard';
-import {isPlanetaryTag, PlanetaryTag, PLANETARY_TAGS} from './PathfindersExpansion';
-import {intersection} from '../../common/utils/utils';
+import {PlanetaryTag} from './PathfindersExpansion';
 
 /**
  * Declare what tag a new card has. Must occur before anything else, including
@@ -28,12 +28,13 @@ export class DeclareCloneTag extends DeferredAction {
   }
 
   public execute() {
-    // This finds all the valid tags in the game.
-    // It also relies in `intersection` preserving order of the first array
-    // which defines the order of tags in SelectOption.
-    const tags = intersection(
-      PLANETARY_TAGS,
-      this.player.game.tags.filter(isPlanetaryTag));
+    const tags: Array<PlanetaryTag> = [Tag.EARTH, Tag.JOVIAN, Tag.MARS];
+    if (this.player.game.gameOptions.venusNextExtension === true) {
+      tags.push(Tag.VENUS);
+    }
+    if (this.player.game.gameOptions.moonExpansion === true) {
+      tags.push(Tag.MOON);
+    }
 
     const options = tags.map((tag) => {
       return new SelectOption(tag, 'Choose', () => {
