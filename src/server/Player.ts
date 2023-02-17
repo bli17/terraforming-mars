@@ -1457,7 +1457,7 @@ export class Player {
   }
 
   private endTurnOption(): PlayerInput {
-    return new SelectOption('End Turn', 'End', () => {
+    return new SelectOption('Skip 2nd Action (End Turn)', 'End', () => {
       this.actionsTakenThisRound = 1; // Why is this statement necessary?
       this.game.log('${0} ended turn', (b) => b.player(this));
       return undefined;
