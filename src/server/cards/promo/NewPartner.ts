@@ -5,18 +5,23 @@ import {CardName} from '../../../common/cards/CardName';
 import {Size} from '../../../common/cards/render/Size';
 import {CardRenderer} from '../render/CardRenderer';
 import {SelectCard} from '../../inputs/SelectCard';
+import {Tag} from '../../../common/cards/Tag';
 
 export class NewPartner extends PreludeCard {
   constructor() {
     super({
       name: CardName.NEW_PARTNER,
-
+	  tags: [Tag.WILD],
+      startingMegacredits: -8,
+      
       metadata: {
         cardNumber: 'P43',
-		description: '(Nerf: no longer raises M€ production 1 step.)',
+		description: '(Buff:) After being played, when you perform an action, the wild tag counts as any tag of your choice. (Nerf:) Pay 8 M€. (Nerf: -1 M€ production.))',
         renderData: CardRenderer.builder((b) => {
-          b.text('Immediately draw 3 (buff: +1) prelude cards. Play 1 of them, and discard the other.', Size.SMALL, true);
-        }),
+          b.megacredits(-8).nbsp.prelude().asterix();
+		  b.br.br;
+		  b.text('Immediately draw 3 (buff: +1) prelude cards. Play 1 of them, and discard the other.', Size.SMALL, true);
+		  }),
       },
     });
   }
