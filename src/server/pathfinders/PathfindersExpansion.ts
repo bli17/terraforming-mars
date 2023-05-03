@@ -5,7 +5,7 @@ import {Game} from '../Game';
 import {GameOptions} from '../GameOptions';
 import {GrantResourceDeferred} from './GrantResourceDeferred';
 import {ICard} from '../cards/ICard';
-import {PathfindersData} from './PathfindersData';
+import {PathfindersData, PlanetaryTag, isPlanetaryTag} from './PathfindersData';
 import {PlaceCityTile} from '../deferredActions/PlaceCityTile';
 import {PlaceGreeneryTile} from '../deferredActions/PlaceGreeneryTile';
 import {PlaceMoonMineTile} from '../moon/PlaceMoonMineTile';
@@ -20,22 +20,11 @@ import {SelectResourcesDeferred} from '../deferredActions/SelectResourcesDeferre
 import {SendDelegateToArea} from '../deferredActions/SendDelegateToArea';
 import {Tag} from '../../common/cards/Tag';
 import {Turmoil} from '../turmoil/Turmoil';
-import {VictoryPointsBreakdown} from '../VictoryPointsBreakdown';
+import {VictoryPointsBreakdown} from '../game/VictoryPointsBreakdown';
 import {GlobalEventName} from '../../common/turmoil/globalEvents/GlobalEventName';
-
-/**
- * The possible tags with planetary tracks.
- *
- * The order of this list matches the order of the list displayed in the UI.
- */
-export const PLANETARY_TAGS = [Tag.VENUS, Tag.EARTH, Tag.MARS, Tag.JOVIAN, Tag.MOON] as const;
-export type PlanetaryTag = typeof PLANETARY_TAGS[number];
 
 export const TRACKS = PlanetaryTracks.initialize();
 
-export function isPlanetaryTag(tag: Tag): tag is PlanetaryTag {
-  return PLANETARY_TAGS.includes(tag as PlanetaryTag);
-}
 export class PathfindersExpansion {
   private constructor() {
   }
@@ -58,12 +47,12 @@ export class PathfindersExpansion {
     const tags = card.tags;
     tags.forEach((tag) => {
       if (isPlanetaryTag(tag)) {
-        PathfindersExpansion.raiseTrack(tag as PlanetaryTag, player);
+        PathfindersExpansion.raiseTrack(tag, player);
       }
     });
 
     // Communication Center hook
-    if (card.cardType === CardType.EVENT) {
+    if (card.type === CardType.EVENT) {
       for (const p of player.game.getPlayers()) {
         for (const c of p.playedCards) {
           if (c.name === CardName.COMMUNICATION_CENTER) {
@@ -95,7 +84,7 @@ export class PathfindersExpansion {
       return;
     }
 
-    let space = PathfindersData.getValue(data, tag);
+    let space = data[tag];
 
     // Do not raise tracks unused this game.
     if (space === -1) {
@@ -119,7 +108,7 @@ export class PathfindersExpansion {
     // game.indentation++;
     while (space < lastSpace) {
       space++;
-      PathfindersData.setValue(data, tag, space);
+      data[tag] = space;
       const rewards = track.spaces[space];
 
       // Can be false because of the Constant Struggle global event.
@@ -150,7 +139,14 @@ export class PathfindersExpansion {
     }
   }
 
-  private static grant(reward: Reward, player: Player, tag: Tag) {
+  /**
+   * Grant the specified award.
+   *
+   * @param reward the reward to grant
+   * @param player the player gaining the reward (which may not be the same as the player who triggers the reward)
+   * @param tag the tag associated with the reward (used for logging VP rewards.)
+   */
+  public static grant(reward: Reward, player: Player, tag: PlanetaryTag): void {
     const game = player.game;
 
     switch (reward) {
@@ -179,7 +175,11 @@ export class PathfindersExpansion {
       break;
     case 'delegate':
       Turmoil.ifTurmoilElse(game,
-        () => game.defer(new SendDelegateToArea(player)),
+        (turmoil) => {
+          if (turmoil.hasDelegatesInReserve(player.id)) {
+            game.defer(new SendDelegateToArea(player));
+          }
+        },
         () => player.addResource(Resources.MEGACREDITS, 3, {log: true}));
       break;
     case 'energy':

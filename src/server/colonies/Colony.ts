@@ -8,7 +8,7 @@ import {DrawCards} from '../deferredActions/DrawCards';
 import {GiveColonyBonus} from '../deferredActions/GiveColonyBonus';
 import {IncreaseColonyTrack} from '../deferredActions/IncreaseColonyTrack';
 import {LogHelper} from '../LogHelper';
-import {MAX_COLONY_TRACK_POSITION} from '../../common/constants';
+import {MAX_COLONIES_PER_TILE, MAX_COLONY_TRACK_POSITION} from '../../common/constants';
 import {PlaceOceanTile} from '../deferredActions/PlaceOceanTile';
 import {Player} from '../Player';
 import {PlayerId} from '../../common/Types';
@@ -70,8 +70,8 @@ export abstract class Colony implements IColony {
       this.trackPosition = Math.max(this.trackPosition - value, this.colonies.length);
     }
 
-    public isColonyFull(): boolean {
-      return this.colonies.length >= 3;
+    public isFull(): boolean {
+      return this.colonies.length >= MAX_COLONIES_PER_TILE;
     }
 
     public addColony(player: Player, options?: {giveBonusTwice: boolean}): void {
@@ -96,7 +96,7 @@ export abstract class Colony implements IColony {
       // CEO Naomi hook
       if (player.cardIsInEffect(CardName.NAOMI)) {
         player.addResource(Resources.ENERGY, 2, {log: true});
-        player.addResource(Resources.MEGACREDITS, 2, {log: true});
+        player.addResource(Resources.MEGACREDITS, 3, {log: true});
       }
     }
 

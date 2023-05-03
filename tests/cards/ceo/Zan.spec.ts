@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import {Game} from '../../../src/server/Game';
 import {TestPlayer} from '../../TestPlayer';
-import {getTestPlayer, newTestGame} from '../../TestGame';
+import {testGame} from '../../TestGame';
 
 import {Zan} from '../../../src/server/cards/ceos/Zan';
 import {ReleaseOfInertGases} from '../../../src/server/cards/base/ReleaseOfInertGases';
@@ -15,8 +15,7 @@ describe('Zan', function() {
 
   beforeEach(() => {
     card = new Zan();
-    game = newTestGame(2, {ceoExtension: true, turmoilExtension: true});
-    player = getTestPlayer(game, 0);
+    [game, player] = testGame(2, {ceoExtension: true, turmoilExtension: true});
 
     player.playedCards.push(card);
   });
@@ -40,13 +39,16 @@ describe('Zan', function() {
 
   it('Takes OPG action', function() {
     const turmoil = game.turmoil!;
+    player.megaCredits = 0;
+    const expectedMegagredits = turmoil.getAvailableDelegateCount(player.id);
     card.action(player);
-
     while (game.deferredActions.length) {
       game.deferredActions.pop()!.execute();
     }
 
     expect(turmoil.getAvailableDelegateCount(player.id)).eq(0);
+    expect(player.megaCredits).eq(expectedMegagredits);
+
     expect(turmoil.dominantParty.name).eq(PartyName.REDS);
     expect(turmoil.dominantParty.partyLeader).eq(player.id);
     expect(card.isDisabled).is.true;

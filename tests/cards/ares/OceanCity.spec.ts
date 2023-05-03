@@ -1,6 +1,5 @@
 import {Game} from '../../../src/server/Game';
 import {OceanCity} from '../../../src/server/cards/ares/OceanCity';
-import {ARES_OPTIONS_NO_HAZARDS} from '../../ares/AresTestHelper';
 import {expect} from 'chai';
 import {Resources} from '../../../src/common/Resources';
 import {TileType} from '../../../src/common/TileType';
@@ -10,6 +9,7 @@ import {Capital} from '../../../src/server/cards/base/Capital';
 import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
 import {addOcean, cast, runAllActions} from '../../TestingUtils';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
+import {testGame} from '../../TestGame';
 
 describe('OceanCity', function() {
   let card: OceanCity;
@@ -18,9 +18,7 @@ describe('OceanCity', function() {
 
   beforeEach(function() {
     card = new OceanCity();
-    player = TestPlayer.BLUE.newPlayer();
-    const redPlayer = TestPlayer.RED.newPlayer();
-    game = Game.newInstance('gameid', [player, redPlayer], player, ARES_OPTIONS_NO_HAZARDS);
+    [game, player] = testGame(2, {aresExtension: true});
   });
 
   it('Can play', function() {

@@ -13,12 +13,12 @@ import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../../../common/cards/render/Size';
 import {Resources} from '../../../common/Resources';
 import {all, digit, played} from '../Options';
-import {SerializedCard} from '@/server/SerializedCard';
+import {SerializedCard} from '../../SerializedCard';
 
 export class PharmacyUnion extends Card implements ICorporationCard {
   constructor() {
     super({
-      cardType: CardType.CORPORATION,
+      type: CardType.CORPORATION,
       name: CardName.PHARMACY_UNION,
       startingMegaCredits: 46, // 54 minus 8 for the 2 deseases
       resourceType: CardResource.DISEASE,
