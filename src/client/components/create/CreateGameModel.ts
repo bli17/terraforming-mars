@@ -23,9 +23,18 @@ export interface CreateGameModel {
   bannedCards: Array<CardName>;
   customColonies: Array<ColonyName>;
   customCorporations: Array<CardName>;
+  playerCustomCorpList: Array<CardName[]>;
+  p1Corporations: Array<CardName>;
+  p2Corporations: Array<CardName>;
+  p3Corporations: Array<CardName>;
+  p4Corporations: Array<CardName>;
+  p5Corporations: Array<CardName>;
+  p6Corporations: Array<CardName>;
+  customPreludes: Array<CardName>;
   customPreludes: Array<CardName>;
   showBannedCards: boolean;
   showCorporationList: boolean;
+  showPlayerCorporationList: boolean;
   showColoniesList: boolean;
   showPreludesList: boolean;
   board: BoardNameType;
