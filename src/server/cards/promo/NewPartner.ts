@@ -10,16 +10,12 @@ export class NewPartner extends PreludeCard {
     super({
       name: CardName.NEW_PARTNER,
 
-      behavior: {
-        production: {megacredits: 1},
-      },
-
       metadata: {
         cardNumber: 'P43',
+		description: '',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.megacredits(1)).prelude().asterix();
+          b.text('(Nerf: no longer raises M€ production 1 step.) Immediately draw 3 (buff: +1) prelude cards. Play 1 of them, and discard the other.', Size.SMALL, true);
         }),
-        description: 'Raise your M€ production 1 step. Immediately draw 2 prelude cards. Play 1 of them, and discard the other.',
       },
     });
   }
@@ -28,15 +24,16 @@ export class NewPartner extends PreludeCard {
     const cardsDrawn: Array<IPreludeCard> = [
       player.game.preludeDeck.draw(player.game),
       player.game.preludeDeck.draw(player.game),
+	  player.game.preludeDeck.draw(player.game),
     ];
     player.game.log(
-      'You drew ${0} and ${1}',
-      (b) => b.card(cardsDrawn[0]).card(cardsDrawn[1]),
+      'You drew ${0}, ${1}, and ${2}',
+      (b) => b.card(cardsDrawn[0]).card(cardsDrawn[1]).card(cardsDrawn[2]),
       {reservedFor: player});
 
     const playableCards = cardsDrawn.filter((card) => card.canPlay(player) === true);
     if (playableCards.length === 0) {
-      player.game.log('${0} and ${1} were discarded as ${2} could not pay for both cards.', (b) => b.card(cardsDrawn[0]).card(cardsDrawn[1]).player(player));
+      player.game.log('${0}, ${1}, and ${2} were discarded as ${3} could not pay for both cards.', (b) => b.card(cardsDrawn[0]).card(cardsDrawn[1]).card(cardsDrawn[2]).player(player));
       return undefined;
     }
 

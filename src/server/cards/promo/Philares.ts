@@ -20,7 +20,7 @@ export class Philares extends Card implements ICorporationCard {
       type: CardType.CORPORATION,
       name: CardName.PHILARES,
       tags: [Tag.BUILDING],
-      startingMegaCredits: 47,
+      startingMegaCredits: 42,
 
       firstAction: {
         text: 'Place a greenery tile and raise the oxygen 1 step',
@@ -29,7 +29,7 @@ export class Philares extends Card implements ICorporationCard {
 
       metadata: {
         cardNumber: 'R25',
-        description: 'You start with 47 M€. As your first action, place a greenery tile and raise the oxygen 1 step.',
+        description: 'You start with 42 (nerf: -5) M€. As your first action, place a greenery tile and raise the oxygen 1 step.',
         renderData: CardRenderer.builder((b) => {
           b.megacredits(47).nbsp.greenery();
           b.corpBox('effect', (ce) => {

@@ -15,15 +15,15 @@ export class Psyche extends Card implements IProjectCard {
       victoryPoints: 2,
       behavior: {
         production: {titanium: 2},
-        stock: {titanium: 3},
+        stock: {titanium: 1},
       },
 
       metadata: {
         cardNumber: 'X44',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.titanium(2)).br.titanium(3);
+          b.production((pb) => pb.titanium(2)).br.titanium(1);
         }),
-        description: 'Increase titanium production 2 steps. Gain 3 titanium.',
+        description: 'Increase titanium production 2 steps. Gain 1 (nerf: -2) titanium.',
       },
     });
   }

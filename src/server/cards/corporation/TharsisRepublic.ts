@@ -35,7 +35,7 @@ export class TharsisRepublic extends Card implements ICorporationCard {
           b.br.br;
           b.megacredits(35).nbsp.city();
           b.corpBox('effect', (ce) => {
-            ce.effect('When any city tile is placed ON MARS, increase your M€ production 1 step. When you place a city tile, gain 3 M€.', (eb) => {
+            ce.effect('When any city tile is placed ON MARS, increase your M€ production 1 step. When you place a city tile, gain 2 (nerf: -1) M€.', (eb) => {
               eb.city({size: Size.SMALL, all}).asterix().colon();
               eb.production((pb) => pb.megacredits(1)).nbsp;
               eb.city({size: Size.SMALL}).startEffect.megacredits(3);
@@ -49,7 +49,7 @@ export class TharsisRepublic extends Card implements ICorporationCard {
   public onTilePlaced(cardOwner: Player, activePlayer: Player, space: ISpace) {
     if (Board.isCitySpace(space)) {
       if (cardOwner.id === activePlayer.id) {
-        cardOwner.game.defer(new GainResources(cardOwner, Resources.MEGACREDITS, {count: 3}));
+        cardOwner.game.defer(new GainResources(cardOwner, Resources.MEGACREDITS, {count: 2}));
       }
       if (space.spaceType !== SpaceType.COLONY) {
         cardOwner.game.defer(

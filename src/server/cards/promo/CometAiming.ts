@@ -26,8 +26,8 @@ export class CometAiming extends Card implements IActionCard, IProjectCard {
       metadata: {
         cardNumber: 'X16',
         renderData: CardRenderer.builder((b) => {
-          b.action('Spend 1 titanium to add 1 asteroid resource to ANY CARD.', (eb) => {
-            eb.titanium(1).startAction.asteroids(1).asterix();
+          b.action('Spend 1 M€ (buff: from 1 titanium) to add 1 asteroid resource to ANY CARD.', (eb) => {
+            eb.megacredits(1).startAction.asteroids(1).asterix();
           }).br;
           b.or().br;
           b.action('Remove 1 asteroid here to place an ocean.', (eb) => {
@@ -43,7 +43,7 @@ export class CometAiming extends Card implements IActionCard, IProjectCard {
   }
 
   public canAct(player: Player): boolean {
-    if (player.titanium > 0) {
+    if (player.canAfford(1)) {
       return true;
     }
     return this.resourceCount > 0 && this.canPlaceOcean(player);
@@ -53,7 +53,7 @@ export class CometAiming extends Card implements IActionCard, IProjectCard {
     const asteroidCards = player.getResourceCards(CardResource.ASTEROID);
 
     const addAsteroidToSelf = function() {
-      player.titanium--;
+      player.game.defer(new SelectPaymentDeferred(player, 1, {title: 'Select how to pay for asteroid'}));
       player.addResourceTo(asteroidCards[0], {log: true});
       return undefined;
     };
@@ -63,7 +63,7 @@ export class CometAiming extends Card implements IActionCard, IProjectCard {
       'Add asteroid',
       asteroidCards,
       ([card]) => {
-        player.titanium--;
+        player.game.defer(new SelectPaymentDeferred(player, 1, {title: 'Select how to pay for asteroid'}));
         player.addResourceTo(card, {log: true});
         return undefined;
       },
@@ -81,7 +81,7 @@ export class CometAiming extends Card implements IActionCard, IProjectCard {
       return addAsteroidToCard;
     }
 
-    if (player.titanium === 0) return spendAsteroidResource();
+    if (!player.canAfford(1)) return spendAsteroidResource();
 
     const availableActions: Array<PlayerInput> = [];
 
@@ -90,7 +90,7 @@ export class CometAiming extends Card implements IActionCard, IProjectCard {
     }
 
     if (asteroidCards.length === 1) {
-      availableActions.push(new SelectOption('Spend 1 titanium to gain 1 asteroid resource', 'Spend titanium', addAsteroidToSelf));
+      availableActions.push(new SelectOption('Spend 1 M€ to gain 1 asteroid resource', 'Spend 1 M€', addAsteroidToSelf));
     } else {
       availableActions.push(addAsteroidToCard);
     }
