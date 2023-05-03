@@ -11,9 +11,13 @@ import {all} from '../Options';
 export class MonsInsurance extends Card implements ICorporationCard {
   constructor() {
     super({
-      cardType: CardType.CORPORATION,
+      type: CardType.CORPORATION,
       name: CardName.MONS_INSURANCE,
       startingMegaCredits: 58,
+
+      behavior: {
+        production: {megacredits: 4},
+      },
 
       metadata: {
         cardNumber: 'R46',
@@ -35,9 +39,10 @@ export class MonsInsurance extends Card implements ICorporationCard {
   }
 
   public override bespokePlay(player: Player) {
-    player.production.add(Resources.MEGACREDITS, 6);
     for (const p of player.game.getPlayers()) {
-      p.production.add(Resources.MEGACREDITS, -2, {log: true});
+      if (p.id !== player.id) {
+        p.production.add(Resources.MEGACREDITS, -2, {log: true});
+      }
     }
     player.game.monsInsuranceOwner = player.id;
     return undefined;

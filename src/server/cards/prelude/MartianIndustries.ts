@@ -1,5 +1,4 @@
 import {Tag} from '../../../common/cards/Tag';
-import {Player} from '../../Player';
 import {PreludeCard} from './PreludeCard';
 import {IProjectCard} from '../IProjectCard';
 import {CardName} from '../../../common/cards/CardName';
@@ -13,8 +12,8 @@ export class MartianIndustries extends PreludeCard implements IProjectCard {
 
       behavior: {
         production: {energy: 1, steel: 1},
+        stock: {megacredits: 8},
       },
-      startingMegacredits: 8,
 
       metadata: {
         cardNumber: 'P18',
@@ -25,9 +24,5 @@ export class MartianIndustries extends PreludeCard implements IProjectCard {
         description: 'Increase your energy and steel production 1 step. Gain 8 (buff: +2) M€.',
       },
     });
-  }
-  public override bespokePlay(player: Player) {
-    player.megaCredits += 8;
-    return undefined;
   }
 }

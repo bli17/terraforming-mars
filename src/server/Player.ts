@@ -1,7 +1,6 @@
 import * as constants from '../common/constants';
 import {PlayerId} from '../common/Types';
 import {DEFAULT_FLOATERS_VALUE, DEFAULT_MICROBES_VALUE, MILESTONE_COST, REDS_RULING_POLICY_COST} from '../common/constants';
-import {Board} from './boards/Board';
 import {CardFinder} from './CardFinder';
 import {CardName} from '../common/cards/CardName';
 import {CardType} from '../common/cards/CardType';
@@ -14,7 +13,6 @@ import {ICard, isIActionCard, IActionCard, DynamicTRSource} from './cards/ICard'
 import {TRSource} from '../common/cards/TRSource';
 import {IMilestone} from './milestones/IMilestone';
 import {IProjectCard} from './cards/IProjectCard';
-import {LogMessageDataType} from '../common/logs/LogMessageDataType';
 import {OrOptions} from './inputs/OrOptions';
 import {PartyHooks} from './turmoil/parties/PartyHooks';
 import {PartyName} from '../common/turmoil/PartyName';
@@ -35,8 +33,6 @@ import {SerializedCard} from './SerializedCard';
 import {SerializedPlayer} from './SerializedPlayer';
 import {StormCraftIncorporated} from './cards/colonies/StormCraftIncorporated';
 import {Tag} from '../common/cards/Tag';
-import {VictoryPointsBreakdown} from './VictoryPointsBreakdown';
-import {IVictoryPointsBreakdown} from '../common/game/IVictoryPointsBreakdown';
 import {Timer} from '../common/Timer';
 import {TurmoilHandler} from './turmoil/TurmoilHandler';
 import {GameCards} from './GameCards';
@@ -66,9 +62,12 @@ import {Merger} from './cards/promo/Merger';
 import {getBehaviorExecutor} from './behavior/BehaviorExecutor';
 import {CeoExtension} from './CeoExtension';
 import {ICeoCard, isCeoCard} from './cards/ceos/ICeoCard';
-// import {VanAllen} from './cards/ceos/VanAllen';
-import {AwardScorer} from './awards/AwardScorer';
-import {FundedAward} from './awards/FundedAward';
+import {newMessage} from './logs/MessageBuilder';
+import {calculateVictoryPoints} from './game/calculateVictoryPoints';
+import {IVictoryPointsBreakdown} from '..//common/game/IVictoryPointsBreakdown';
+
+
+const THROW_WAITING_FOR = Boolean(process.env.THROW_WAITING_FOR);
 
 /**
  * Behavior when playing a card:
@@ -78,6 +77,7 @@ import {FundedAward} from './awards/FundedAward';
  */
 
 export type CardAction ='add' | 'discard' | 'nothing';
+
 export class Player {
   public readonly id: PlayerId;
   protected waitingFor?: PlayerInput;
@@ -156,6 +156,12 @@ export class Player {
   // removedFromPlayCards is a bit of a misname: it's a temporary storage for
   // cards that provide 'next card' discounts. This will clear between turns.
   public removedFromPlayCards: Array<IProjectCard> = [];
+
+  // The number of actions a player can take this round.
+  // It's almost always 2, but certain cards can change this value.
+  //
+  // This value isn't serialized. Probably ought to.
+  public availableActionsThisRound = 2;
 
   // Stats
   public actionsTakenThisGame: number = 0;
@@ -278,12 +284,10 @@ export class Player {
         player.corporations.forEach((corp) => {
           corp.onIncreaseTerraformRating?.(this, player, steps);
         });
+        player.playedCards.filter((card: IProjectCard) => card.type === CardType.CEO).forEach((ceo) => {
+          ceo.onIncreaseTerraformRating?.(this, player, steps);
+        });
       });
-      // Greta CEO hook
-      // if (this.cardIsInEffect(CardName.GRETA)) {
-      //   const greta = this.playedCards.find((card) => card.name === CardName.GRETA) as CeoCard;
-      //   greta.onTRIncrease!(this);
-      // }
     };
 
     if (PartyHooks.shouldApplyPolicy(this, PartyName.REDS)) {
@@ -485,79 +489,7 @@ export class Player {
   }
 
   public getVictoryPoints(): IVictoryPointsBreakdown {
-    const victoryPointsBreakdown = new VictoryPointsBreakdown();
-
-    // Victory points from cards
-    for (const playedCard of this.tableau) {
-      if (playedCard.victoryPoints !== undefined) {
-        victoryPointsBreakdown.setVictoryPoints('victoryPoints', playedCard.getVictoryPoints(this), playedCard.name);
-      }
-    }
-
-    // Victory points from TR
-    victoryPointsBreakdown.setVictoryPoints('terraformRating', this.terraformRating);
-
-    // Victory points from awards
-    this.giveAwards(victoryPointsBreakdown);
-
-    // Victory points from milestones
-    for (const milestone of this.game.claimedMilestones) {
-      if (milestone.player !== undefined && milestone.player.id === this.id) {
-        victoryPointsBreakdown.setVictoryPoints('milestones', 5, 'Claimed '+milestone.milestone.name+' milestone');
-      }
-    }
-
-    // Victory points from board
-    this.game.board.spaces.forEach((space) => {
-      // Victory points for greenery tiles
-      if (Board.isGreenerySpace(space) && Board.spaceOwnedBy(space, this)) {
-        victoryPointsBreakdown.setVictoryPoints('greenery', 1);
-      }
-
-      // Victory points for greenery tiles adjacent to cities
-      if (Board.isCitySpace(space) && Board.spaceOwnedBy(space, this)) {
-        const adjacent = this.game.board.getAdjacentSpaces(space);
-        for (const adj of adjacent) {
-          if (Board.isGreenerySpace(adj)) {
-            victoryPointsBreakdown.setVictoryPoints('city', 1);
-          }
-        }
-      }
-    });
-
-    // Turmoil Victory Points
-    const includeTurmoilVP = this.game.gameIsOver() || this.game.phase === Phase.END;
-
-    Turmoil.ifTurmoil(this.game, (turmoil) => {
-      if (includeTurmoilVP) {
-        victoryPointsBreakdown.setVictoryPoints('victoryPoints', turmoil.getPlayerVictoryPoints(this), 'Turmoil Points');
-      }
-    });
-
-    this.colonies.calculateVictoryPoints(victoryPointsBreakdown);
-    MoonExpansion.calculateVictoryPoints(this, victoryPointsBreakdown);
-    PathfindersExpansion.calculateVictoryPoints(this, victoryPointsBreakdown);
-    CeoExtension.calculateVictoryPoints(this, victoryPointsBreakdown);
-
-    // Escape velocity VP penalty
-    if (this.game.gameOptions.escapeVelocityMode) {
-      const threshold = this.game.gameOptions.escapeVelocityThreshold;
-      const period = this.game.gameOptions.escapeVelocityPeriod;
-      const penaltyPerMin = this.game.gameOptions.escapeVelocityPenalty ?? 1;
-      const elapsedTimeInMinutes = this.timer.getElapsedTimeInMinutes();
-      if (threshold !== undefined && period !== undefined && elapsedTimeInMinutes > threshold) {
-        const overTimeInMinutes = Math.max(elapsedTimeInMinutes - threshold - (this.actionsTakenThisGame * (constants.BONUS_SECONDS_PER_ACTION / 60)), 0);
-        // Don't lose more VP than what is available
-        victoryPointsBreakdown.updateTotal();
-
-        const totalBeforeEscapeVelocity = victoryPointsBreakdown.points.total;
-        const penaltyTotal = Math.min(penaltyPerMin * Math.floor(overTimeInMinutes / period), totalBeforeEscapeVelocity);
-        victoryPointsBreakdown.setVictoryPoints('escapeVelocity', -penaltyTotal, 'Escape Velocity Penalty');
-      }
-    }
-
-    victoryPointsBreakdown.updateTotal();
-    return victoryPointsBreakdown.points;
+    return calculateVictoryPoints(this);
   }
 
   public cardIsInEffect(cardName: CardName): boolean {
@@ -609,8 +541,8 @@ export class Player {
   public getNoTagsCount() {
     let noTagsCount = 0;
 
-    noTagsCount += this.corporations.filter((card) => card.cardType !== CardType.EVENT && card.tags.every((tag) => tag === Tag.WILD)).length;
-    noTagsCount += this.playedCards.filter((card) => card.cardType !== CardType.EVENT && card.tags.every((tag) => tag === Tag.WILD)).length;
+    noTagsCount += this.corporations.filter((card) => card.type !== CardType.EVENT && card.tags.every((tag) => tag === Tag.WILD)).length;
+    noTagsCount += this.playedCards.filter((card) => card.type !== CardType.EVENT && card.tags.every((tag) => tag === Tag.WILD)).length;
 
     return noTagsCount;
   }
@@ -631,9 +563,8 @@ export class Player {
     const game = this.game;
     if (game.monsInsuranceOwner !== undefined && game.monsInsuranceOwner !== this.id) {
       const monsInsuranceOwner = game.getPlayerById(game.monsInsuranceOwner);
-      // TODO(kberg): replace with "getCorporationOrThrow"?
-      const monsInsurance = <MonsInsurance> monsInsuranceOwner.getCorporation(CardName.MONS_INSURANCE);
-      monsInsurance?.payDebt(monsInsuranceOwner, this);
+      const monsInsurance = <MonsInsurance> monsInsuranceOwner.getCorporationOrThrow(CardName.MONS_INSURANCE);
+      monsInsurance.payDebt(monsInsuranceOwner, this);
     }
   }
 
@@ -669,7 +600,7 @@ export class Player {
    * Legend Milestone, Media Archives, and NOT Media Group.
    */
   public getPlayedEventsCount(): number {
-    let count = this.playedCards.filter((card) => card.cardType === CardType.EVENT).length;
+    let count = this.playedCards.filter((card) => card.type === CardType.EVENT).length;
     if (this.getCorporation(CardName.PHARMACY_UNION)?.isDisabled) count++;
 
     return count;
@@ -766,7 +697,7 @@ export class Player {
   }
 
   public getCardsByCardType(cardType: CardType) {
-    return this.playedCards.filter((card) => card.cardType === cardType);
+    return this.playedCards.filter((card) => card.type === cardType);
   }
 
   public deferInputCb(result: PlayerInput | undefined): void {
@@ -922,47 +853,44 @@ export class Player {
    *   step in the draft, and cards have to be dealt.
    */
   public askPlayerToDraft(initialDraft: boolean, playerName: string, passedCards?: Array<IProjectCard>): void {
+    let cardsToDraw = 4;
     let cardsToKeep = 1;
 
     let cards: Array<IProjectCard> = [];
     if (passedCards === undefined) {
-      if (!initialDraft) {
-        let cardsToDraw = 4;
+      if (initialDraft) {
+        cardsToDraw = 5;
+      } else {
         if (LunaProjectOffice.isActive(this)) {
           cardsToDraw = 5;
           cardsToKeep = 2;
         }
-
-        this.dealForDraft(cardsToDraw, cards);
-      } else {
-        this.dealForDraft(5, cards);
+        if (this.isCorporation(CardName.MARS_MATHS)) {
+          cardsToDraw = 5;
+          cardsToKeep = 2;
+        }
       }
+      this.dealForDraft(cardsToDraw, cards);
     } else {
       cards = passedCards;
     }
 
-    const message = cardsToKeep === 1 ?
+    const messageTitle = cardsToKeep === 1 ?
       'Select a card to keep and pass the rest to ${0}' :
       'Select two cards to keep and pass the rest to ${0}';
-
     this.setWaitingFor(
-      new SelectCard({
-        message: message,
-        data: [{
-          type: LogMessageDataType.RAW_STRING,
-          value: playerName,
-        }],
-      },
-      'Keep',
-      cards,
-      (selected) => {
-        selected.forEach((card) => {
-          this.draftedCards.push(card);
-          cards = cards.filter((c) => c !== card);
-        });
-        this.game.playerIsFinishedWithDraftingPhase(initialDraft, this, cards);
-        return undefined;
-      }, {min: cardsToKeep, max: cardsToKeep, played: false}),
+      new SelectCard(
+        newMessage(messageTitle, (b) => b.rawString(playerName)), // TODO(kberg): replace with player?`
+        'Keep',
+        cards,
+        (selected) => {
+          selected.forEach((card) => {
+            this.draftedCards.push(card);
+            cards = cards.filter((c) => c !== card);
+          });
+          this.game.playerIsFinishedWithDraftingPhase(initialDraft, this, cards);
+          return undefined;
+        }, {min: cardsToKeep, max: cardsToKeep, played: false}),
     );
   }
 
@@ -973,27 +901,20 @@ export class Player {
   public runDraftCorporationPhase(playerName: string, passedCards: Array<ICorporationCard>): void {
     let cards: Array<ICorporationCard> = passedCards;
 
-    const message = 'Select a corporation to keep and pass the rest to ${0}';
-
     this.setWaitingFor(
-      new SelectCard({
-        message: message,
-        data: [{
-          type: LogMessageDataType.RAW_STRING,
-          value: playerName,
-        }],
-      },
-      'Keep',
-      cards,
-      (foundCards: Array<ICorporationCard>) => {
-        foundCards.forEach((card) => {
-          this.draftedCorporations.push(card);
-          this.game.log('${0} kept ${1}', (b) => b.player(this).card(card));
-          cards = cards.filter((c) => c !== card);
-        });
-        this.game.playerIsFinishedWithDraftingCorporationPhase(this, cards);
-        return undefined;
-      }, {min: 1, max: 1, played: false}),
+      new SelectCard(
+        newMessage('Select a corporation to keep and pass the rest to ${0}', (b) => b.rawString(playerName)), // TODO(kberg): replace with player?`
+        'Keep',
+        cards,
+        (foundCards: Array<ICorporationCard>) => {
+          foundCards.forEach((card) => {
+            this.draftedCorporations.push(card);
+            this.game.log('${0} kept ${1}', (b) => b.player(this).card(card));
+            cards = cards.filter((c) => c !== card);
+          });
+          this.game.playerIsFinishedWithDraftingCorporationPhase(this, cards);
+          return undefined;
+        }, {min: 1, max: 1, played: false}),
     );
   }
 
@@ -1010,14 +931,27 @@ export class Player {
 
   public runResearchPhase(draftVariant: boolean): void {
     let dealtCards: Array<IProjectCard> = [];
-    if (!draftVariant) {
-      this.dealForDraft(LunaProjectOffice.isActive(this) ? 5 : 4, dealtCards);
-    } else {
+    if (draftVariant) {
       dealtCards = this.draftedCards;
       this.draftedCards = [];
+    } else {
+      let cardsToDraw = 4;
+      if (this.isCorporation(CardName.MARS_MATHS)) {
+        cardsToDraw = 5;
+      }
+      if (LunaProjectOffice.isActive(this)) {
+        cardsToDraw = 5;
+      }
+      this.dealForDraft(cardsToDraw, dealtCards);
     }
 
-    const action = DrawCards.choose(this, dealtCards, {paying: true});
+    let cardsToKeep = 4;
+    if (LunaProjectOffice.isActive(this)) {
+      // If Luna Project is active, they get to keep the 5 cards they drafted
+      cardsToKeep = 5;
+    }
+
+    const action = DrawCards.choose(this, dealtCards, {paying: true, keepMax: cardsToKeep});
     this.setWaitingFor(action, () => this.game.playerIsFinishedWithResearchPhase(this));
   }
 
@@ -1064,7 +998,7 @@ export class Player {
       microbes: card.tags.includes(Tag.PLANT),
       science: card.tags.includes(Tag.MOON),
       // TODO(kberg): add this.corporation.name === CardName.AURORAI
-      data: card.cardType === CardType.STANDARD_PROJECT,
+      data: card.type === CardType.STANDARD_PROJECT,
     };
   }
 
@@ -1163,7 +1097,7 @@ export class Player {
 
     ColoniesHandler.onCardPlayed(this.game, selectedCard);
 
-    if (selectedCard.cardType !== CardType.PROXY) {
+    if (selectedCard.type !== CardType.PROXY) {
       this.lastCardPlayed = selectedCard.name;
       this.game.log('${0} played ${1}', (b) => b.player(this).card(selectedCard));
     }
@@ -1233,7 +1167,7 @@ export class Player {
   }
 
   public onCardPlayed(card: IProjectCard) {
-    if (card.cardType === CardType.PROXY) {
+    if (card.type === CardType.PROXY) {
       return;
     }
     for (const playedCard of this.playedCards) {
@@ -1384,14 +1318,19 @@ export class Player {
 
   private claimMilestone(milestone: IMilestone): SelectOption {
     return new SelectOption(milestone.name, 'Claim - ' + '('+ milestone.name + ')', () => {
+      if (this.game.milestoneClaimed(milestone)) {
+        throw new Error(milestone.name + ' is already claimed');
+      }
       this.game.claimedMilestones.push({
         player: this,
         milestone: milestone,
       });
       // VanAllen CEO Hook for Milestones
-      if (this.cardIsInEffect(CardName.VANALLEN)) {
-        this.addResource(Resources.MEGACREDITS, 3, {log: true});
-      } else {
+      const vanAllen = this.game.getCardPlayerOrUndefined(CardName.VANALLEN);
+      if (vanAllen !== undefined) {
+        vanAllen.addResource(Resources.MEGACREDITS, 3, {log: true});
+      }
+      if (!this.cardIsInEffect(CardName.VANALLEN)) {
         this.game.defer(new SelectPaymentDeferred(this, MILESTONE_COST, {title: 'Select how to pay for milestone'}));
       }
       this.game.log('${0} claimed ${1} milestone', (b) => b.player(this).milestone(milestone));
@@ -1407,58 +1346,9 @@ export class Player {
     });
   }
 
-  private giveAwards(vpb: VictoryPointsBreakdown): void {
-    // Awards are disabled for 1 player games
-    if (this.game.isSoloMode()) return;
-
-    const maybeSetVP = (player: Player, fundedAward: FundedAward, vps: number, place: '1st' | '2nd') => {
-      if (player.id === this.id) {
-        vpb.setVictoryPoints(
-          'awards',
-          vps,
-          `${place} place for ${fundedAward.award.name} award (funded by ${fundedAward.player.name})`);
-      }
-    };
-
-    this.game.fundedAwards.forEach((fundedAward) => {
-      const award = fundedAward.award;
-      const scorer = new AwardScorer(this.game, award);
-      const players: Array<Player> = this.game.getPlayers().slice();
-      players.sort((p1, p2) => scorer.get(p2) - scorer.get(p1));
-
-      // There is one rank 1 player
-      if (scorer.get(players[0]) > scorer.get(players[1])) {
-        maybeSetVP(players[0], fundedAward, 5, '1st');
-        players.shift();
-
-        if (players.length > 1) {
-          // There is one rank 2 player
-          if (scorer.get(players[0]) > scorer.get(players[1])) {
-            maybeSetVP(players[0], fundedAward, 2, '2nd');
-          } else {
-            // There are at least two rank 2 players
-            const score = scorer.get(players[0]);
-            while (players.length > 0 && scorer.get(players[0]) === score) {
-              maybeSetVP(players[0], fundedAward, 2, '2nd');
-              players.shift();
-            }
-          }
-        }
-
-      // There are at least two rank 1 players
-      } else {
-        const score = scorer.get(players[0]);
-        while (players.length > 0 && scorer.get(players[0]) === score) {
-          maybeSetVP(players[0], fundedAward, 5, '1st');
-          players.shift();
-        }
-      }
-    });
-  }
-
   private endTurnOption(): PlayerInput {
-    return new SelectOption('End Turn', 'End', () => {
-      this.actionsTakenThisRound = 1; // Why is this statement necessary?
+    return new SelectOption('Skip 2nd Action (End Turn)', 'End', () => {
+      this.actionsTakenThisRound = this.availableActionsThisRound; // This allows for variable actions per turn, like Mars Maths
       this.game.log('${0} ended turn', (b) => b.player(this));
       return undefined;
     });
@@ -1517,7 +1407,7 @@ export class Player {
           return undefined;
         }),
       );
-      this.setWaitingFor(action);
+      this.setWaitingForSafely(action);
       return;
     }
 
@@ -1564,11 +1454,6 @@ export class Player {
 
   public canPlay(card: IProjectCard): boolean {
     return this.canAffordCard(card) && this.simpleCanPlay(card);
-  }
-
-  // TODO(kberg): Replace all uses of canPlayIgnoringCost with simpleCanPlay.
-  public canPlayIgnoringCost(card: IProjectCard) {
-    return this.simpleCanPlay(card);
   }
 
   /**
@@ -1774,8 +1659,9 @@ export class Player {
       game.phase = Phase.ACTION;
     }
 
-    if (game.hasPassedThisActionPhase(this) || (this.allOtherPlayersHavePassed() === false && this.actionsTakenThisRound >= 2)) {
+    if (game.hasPassedThisActionPhase(this) || (this.allOtherPlayersHavePassed() === false && this.actionsTakenThisRound >= this.availableActionsThisRound)) {
       this.actionsTakenThisRound = 0;
+      this.availableActionsThisRound = 2;
       game.resettable = true;
       game.playerIsFinishedTakingActions();
       return;
@@ -1797,13 +1683,8 @@ export class Player {
 
       this.pendingInitialActions.forEach((corp) => {
         const option = new SelectOption(
-          {
-            message: 'Take first action of ${0} corporation',
-            data: [{
-              type: LogMessageDataType.RAW_STRING,
-              value: corp.name,
-            }],
-          },
+          newMessage('Take first action of ${0} corporation', (b) => b.card(corp)),
+
           corp.initialActionText, () => {
             this.runInitialAction(corp);
             this.pendingInitialActions.splice(this.pendingInitialActions.indexOf(corp), 1);
@@ -1854,7 +1735,8 @@ export class Player {
       'Take your first action' : 'Take your next action';
     action.buttonLabel = 'Take action';
 
-    if (this.canAfford(MILESTONE_COST) && !this.game.allMilestonesClaimed()) {
+    // VanAllen can claim milestones for free:
+    if ((this.canAfford(MILESTONE_COST) || this.cardIsInEffect(CardName.VANALLEN)) && !this.game.allMilestonesClaimed() ) {
       const remainingMilestones = new OrOptions();
       remainingMilestones.title = 'Claim a milestone';
       remainingMilestones.options = this.game.milestones
@@ -1877,7 +1759,7 @@ export class Player {
     // Convert Heat
     const convertHeat = new ConvertHeat();
     if (convertHeat.canAct(this)) {
-      action.options.push(new SelectOption(`Convert ${constants.HEAT_FOR_TEMPERATURE} heat into temperature`, 'Convert heat', () => {
+      action.options.push(new SelectOption('Convert 8 heat into temperature', 'Convert heat', () => {
         return convertHeat.action(this);
       }));
     }
@@ -1932,13 +1814,7 @@ export class Player {
     const fundingCost = this.game.getAwardFundingCost();
     if (this.canAfford(fundingCost) && !this.game.allAwardsFunded()) {
       const remainingAwards = new OrOptions();
-      remainingAwards.title = {
-        data: [{
-          type: LogMessageDataType.RAW_STRING,
-          value: String(fundingCost),
-        }],
-        message: 'Fund an award (${0} M€)',
-      };
+      remainingAwards.title = newMessage('Fund an award (${0} M€)', (b) => b.number(fundingCost)),
       remainingAwards.buttonLabel = 'Confirm';
       remainingAwards.options = this.game.awards
         .filter((award: IAward) => this.game.hasBeenFunded(award) === false)
@@ -1993,11 +1869,36 @@ export class Player {
   public getWaitingFor(): PlayerInput | undefined {
     return this.waitingFor;
   }
+
   public setWaitingFor(input: PlayerInput, cb: () => void = () => {}): void {
+    if (this.waitingFor !== undefined) {
+      const message = 'Overwriting a waitingFor: ' + this.waitingFor.inputType;
+      if (THROW_WAITING_FOR) {
+        throw new Error(message);
+      } else {
+        console.warn(message);
+      }
+    }
     this.timer.start();
     this.waitingFor = input;
     this.waitingForCb = cb;
     this.game.inputsThisRound++;
+  }
+
+  // This was only built for the Philares/Final Greenery case. Might not work elsewhere.
+  public setWaitingForSafely(input: PlayerInput, cb: () => void = () => {}): void {
+    if (this.waitingFor === undefined) {
+      this.setWaitingFor(input, cb);
+    } else {
+      const oldcb = this.waitingForCb;
+      this.waitingForCb =
+        oldcb === undefined ?
+          cb :
+          () => {
+            oldcb();
+            this.setWaitingForSafely(input, cb);
+          };
+    }
   }
 
   public serialize(): SerializedPlayer {
@@ -2057,7 +1958,7 @@ export class Player {
       // Colonies
       // TODO(kberg): consider a ColoniesSerializer or something.
       fleetSize: this.colonies.getFleetSize(),
-      tradesThisTurn: this.colonies.tradesThisGeneration,
+      tradesThisGeneration: this.colonies.tradesThisGeneration,
       colonyTradeOffset: this.colonies.tradeOffset,
       colonyTradeDiscount: this.colonies.tradeDiscount,
       colonyVictoryPoints: this.colonies.victoryPoints,
@@ -2133,7 +2034,7 @@ export class Player {
     player.titanium = d.titanium;
     player.titaniumValue = d.titaniumValue;
     player.totalDelegatesPlaced = d.totalDelegatesPlaced;
-    player.colonies.tradesThisGeneration = d.tradesThisTurn;
+    player.colonies.tradesThisGeneration = d.tradesThisTurn ?? d.tradesThisGeneration ?? 0;
     player.turmoilPolicyActionUsed = d.turmoilPolicyActionUsed;
     player.politicalAgendasActionUsedCount = d.politicalAgendasActionUsedCount;
 

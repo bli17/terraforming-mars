@@ -1,7 +1,5 @@
 import {IProjectCard} from '../IProjectCard';
-import {IActionCard} from '../ICard';
-import {Card} from '../Card';
-import {VictoryPoints} from '../ICard';
+import {ActionCard} from '../ActionCard';
 import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {CardResource} from '../../../common/CardResource';
@@ -11,16 +9,16 @@ import {Resources} from '../../../common/Resources';
 import {SelectCard} from '../../inputs/SelectCard';
 import {CardRenderer} from '../render/CardRenderer';
 
-export class AsteroidHollowing extends Card implements IActionCard, IProjectCard {
+export class AsteroidHollowing extends ActionCard implements IProjectCard {
   constructor() {
     super({
-      cardType: CardType.ACTIVE,
+      type: CardType.ACTIVE,
       name: CardName.ASTEROID_HOLLOWING,
       tags: [Tag.SPACE],
       cost: 16,
       resourceType: CardResource.ASTEROID,
 
-      victoryPoints: VictoryPoints.resource(1, 2),
+      victoryPoints: {resourcesHere: {}, per: 2},
 
       metadata: {
         cardNumber: 'X15',

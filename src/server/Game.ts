@@ -60,14 +60,13 @@ import {GrantVenusAltTrackBonusDeferred} from './venusNext/GrantVenusAltTrackBon
 import {PathfindersExpansion} from './pathfinders/PathfindersExpansion';
 import {PathfindersData} from './pathfinders/PathfindersData';
 import {AddResourcesToCard} from './deferredActions/AddResourcesToCard';
-import {isProduction} from './utils/server';
 import {ColonyDeserializer} from './colonies/ColonyDeserializer';
 import {GameLoader} from './database/GameLoader';
 import {DEFAULT_GAME_OPTIONS, GameOptions} from './GameOptions';
 import {TheNewSpaceRace} from './cards/pathfinders/TheNewSpaceRace';
 import {CorporationDeck, PreludeDeck, ProjectDeck, CeoDeck} from './cards/Deck';
 import {Logger} from './logs/Logger';
-import {addDays, dayStringToDays} from './database/utils.ts';
+import {addDays, dayStringToDays} from './database/utils';
 import {ALL_TAGS, Tag} from '../common/cards/Tag';
 
 export interface Score {
@@ -202,7 +201,9 @@ export class Game implements Logger {
     if (gameOptions.clonedGamedId !== undefined) {
       throw new Error('Cloning should not come through this execution path.');
     }
-
+    if (gameOptions.corporationsDraft === true) {
+      throw new Error('No new games may be created with corporation draft.');
+    }
     const rng = new SeededRandom(seed);
     const board = GameSetup.newBoard(gameOptions, rng);
     const gameCards = new GameCards(gameOptions);
@@ -363,8 +364,7 @@ export class Game implements Logger {
           }
         }
         if (gameOptions.ceoExtension) {
-          // TODO: Replace this with i < gameOptions.startingCeos constants
-          for (let i = 0; i < 2; i++) {
+          for (let i = 0; i < gameOptions.startingCeos; i++) {
             const ceoCard = ceoDeck.draw(game);
             player.dealtCeoCards.push(ceoCard);
           }
@@ -589,6 +589,9 @@ export class Game implements Logger {
     this.log('${0} funded ${1} award',
       (b) => b.player(player).award(award));
 
+    if (this.hasBeenFunded(award)) {
+      throw new Error(award.name + ' cannot is already funded.');
+    }
     this.fundedAwards.push({
       award: award,
       player: player,
@@ -1224,14 +1227,6 @@ export class Game implements Logger {
     return passedPlayersColors;
   }
 
-  public getPlayer(name: string): Player {
-    const player = this.players.find((player) => player.name === name);
-    if (player === undefined) {
-      throw new Error('Player not found');
-    }
-    return player;
-  }
-
   public getCitiesOffMarsCount(player?: Player): number {
     return this.getCitiesCount(player, (space) => space.spaceType === SpaceType.COLONY);
   }
@@ -1412,12 +1407,11 @@ export class Game implements Logger {
     case SpaceBonus.ENERGY:
       player.addResource(Resources.ENERGY, count, {log: true});
       break;
+    case SpaceBonus.ASTEROID:
+      this.defer(new AddResourcesToCard(player, CardResource.ASTEROID, {count: count}));
+      break;
     default:
-      // TODO(kberg): Remove the isProduction condition after 2022-01-01.
-      // I tried this once and broke the server, so I'm wrapping it in isProduction for now.
-      if (!isProduction()) {
-        throw new Error('Unhandled space bonus ' + spaceBonus + '. Report this exact error, please.');
-      }
+      throw new Error('Unhandled space bonus ' + spaceBonus + '. Report this exact error, please.');
     }
   }
 
@@ -1492,16 +1486,29 @@ export class Game implements Logger {
     return ret;
   }
 
-  public getCardPlayer(name: CardName): Player {
+  /**
+   * Returns the Player holding this card, or throws.
+   */
+  public getCardPlayerOrThrow(name: CardName): Player {
+    const player = this.getCardPlayerOrUndefined(name);
+    if (player === undefined) {
+      throw new Error(`No player has played ${name}`);
+    }
+    return player;
+  }
+
+  /**
+   * Returns the Player holding this card, or throws.
+   */
+  public getCardPlayerOrUndefined(name: CardName): Player | undefined {
     for (const player of this.players) {
-      // Check cards player has played
       for (const card of player.tableau) {
         if (card.name === name) {
           return player;
         }
       }
     }
-    throw new Error(`No player has played ${name}`);
+    return undefined;
   }
 
   // Returns the player holding a card in hand. Return undefined when nobody has that card in hand.
@@ -1522,14 +1529,12 @@ export class Game implements Logger {
   }
 
   public getCardsInHandByType(player: Player, cardType: CardType) {
-    return player.cardsInHand.filter((card) => card.cardType === cardType);
+    return player.cardsInHand.filter((card) => card.type === cardType);
   }
 
   public log(message: string, f?: (builder: LogBuilder) => void, options?: {reservedFor?: Player}) {
     const builder = new LogBuilder(message);
-    if (f) {
-      f(builder);
-    }
+    f?.(builder);
     const logMessage = builder.build();
     logMessage.playerId = options?.reservedFor?.id;
     this.gameLog.push(logMessage);
@@ -1604,14 +1609,12 @@ export class Game implements Logger {
     const corporationDeck = CorporationDeck.deserialize(d.corporationDeck, rng);
     const preludeDeck = PreludeDeck.deserialize(d.preludeDeck, rng);
 
-    // TODO(dl): remove ?? {...} by 2023/03/20
-    const ceoDeck = CeoDeck.deserialize(d.ceoDeck ?? {drawPile: [], discardPile: []}, rng);
+    const ceoDeck = CeoDeck.deserialize(d.ceoDeck, rng);
 
     const game = new Game(d.id, players, first, d.activePlayer, gameOptions, rng, board, projectDeck, corporationDeck, preludeDeck, ceoDeck);
     game.resettable = true;
     game.spectatorId = d.spectatorId;
-    // TODO(kberg): remove ?? 0 by 2023-03-15
-    game.createdTime = new Date(d.createdTimeMs ?? 0);
+    game.createdTime = new Date(d.createdTimeMs);
 
     const milestones: Array<IMilestone> = [];
     d.milestones.forEach((element: IMilestone | string) => {

@@ -10,10 +10,10 @@ import {VictoryPoints} from '../ICard';
 export class Thorgate extends Card implements ICorporationCard {
   constructor() {
     super({
-      cardType: CardType.CORPORATION,
+      type: CardType.CORPORATION,
       name: CardName.THORGATE,
       tags: [Tag.POWER],
-      startingMegaCredits: 48,
+      startingMegaCredits: 53,
 
       victoryPoints: VictoryPoints.tags(Tag.POWER, 1, 2),
 	  behavior: {
@@ -23,13 +23,12 @@ export class Thorgate extends Card implements ICorporationCard {
       cardDiscount: {tag: Tag.POWER, amount: 2},
       metadata: {
         cardNumber: 'R13',
-        description: 'You start with 1 energy production and 48 M€. (buff:) 1 VP per 2 Power tag you have.',
+        description: 'You start with 1 energy production and 53 (buff: +5) M€. (buff:) 1 VP per 2 Power tag you have.',
         renderData: CardRenderer.builder((b) => {
           b.br;
           b.production((pb) => pb.energy(1)).nbsp.megacredits(48);
           b.corpBox('effect', (ce) => {
             ce.effect('When playing a power card OR THE STANDARD PROJECT POWER PLANT, you pay 2 (nerf: -1) M€ less for it.', (eb) => {
-              // TODO(chosta): energy().played needs to be power() [same for space()]
               eb.energy(1, {played}).asterix().startEffect.megacredits(-2);
             });
           });

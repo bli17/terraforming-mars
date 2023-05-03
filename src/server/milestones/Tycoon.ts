@@ -1,15 +1,16 @@
-import {IMilestone} from './IMilestone';
+import {BaseMilestone} from './IMilestone';
 import {Player} from '../Player';
 import {CardType} from '../../common/cards/CardType';
 
-export class Tycoon implements IMilestone {
-  public readonly name = 'Tycoon';
-  public readonly description = 'Requires that you have 12 (buffed: -3) project cards in play (blue and green cards)';
+export class Tycoon extends BaseMilestone {
+  constructor() {
+    super(
+      'Tycoon',
+      'Requires that you have 10 (buffed: -5) project cards in play (blue and green cards)',
+      10);
+  }
   public getScore(player: Player): number {
     return player.playedCards
-      .filter((card) => card.cardType === CardType.ACTIVE || card.cardType === CardType.AUTOMATED).length;
-  }
-  public canClaim(player: Player): boolean {
-    return this.getScore(player) > 11;
+      .filter((card) => card.type === CardType.ACTIVE || card.type === CardType.AUTOMATED).length;
   }
 }

@@ -31,7 +31,7 @@ The board game is great and this repository highly recommends [purchasing it](ht
 ## ⬤ This implementation
 This implementation of the Terraforming Mars makes two main changes compared to the main implementation.
 
-First, it implements custom corporation lists by player. We use it for our corporation round robin tournaments, where each player plays each corporation one time over the course of a season. This can also be used to allow each player to pick a specific corporation to play.
+First, it implements custom corporations lists by player. We use it for our corporation round robin tournaments, where each player plays each corporation one time over the course of a season. This can also be used to allow each player to pick which corporations to play.
 
 Second, it implements some balance changes, as seen in [this Google Sheet](https://docs.google.com/spreadsheets/d/1uP6GvPa9XdG5sBtpbij3G68QYG5khlz7J-fLbo7-9fo/edit?usp=sharing). We play four player with only Preludes and Promos.
 
@@ -46,7 +46,7 @@ The instance that implements this fork is on a Heroku Eco dyno so I prefer not t
 There's also this excellent
 [YouTube playlist](https://youtube.com/playlist?list=PLCGE78n9vCqhhmRe9YCrRh2GLNMPB_3j1) focused on tutorials custom for this app.
 
-NOTE: This site is restarted daily. A multiplayer game will remain available for 10 days, after which it will be flushed from the database.
+NOTE: This site is restarted daily. A multiplayer game will remain available for 15 days, after which it will be flushed from the database.
 Unfinished solo games are flushed after one day. We continue to make stability and scalability improvements in step with growth and popularity,
 but to make sure your game remains, we highly recommended to host your own web server.
 

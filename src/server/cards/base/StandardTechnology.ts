@@ -6,11 +6,12 @@ import {Player} from '../../Player';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {ICard} from '../ICard';
+import {Resources} from '../../../common/Resources';
 
 export class StandardTechnology extends Card implements IProjectCard {
   constructor() {
     super({
-      cardType: CardType.ACTIVE,
+      type: CardType.ACTIVE,
       name: CardName.STANDARD_TECHNOLOGY,
       tags: [Tag.SCIENCE],
       cost: 6,
@@ -27,7 +28,7 @@ export class StandardTechnology extends Card implements IProjectCard {
   }
   public onStandardProject(player: Player, projectType: ICard) {
     if (projectType.name !== CardName.SELL_PATENTS_STANDARD_PROJECT) {
-      player.megaCredits += 3;
+      player.addResource(Resources.MEGACREDITS, 3, {log: true});
     }
   }
 }
