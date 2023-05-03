@@ -38,7 +38,7 @@ export class TharsisRepublic extends Card implements ICorporationCard {
             ce.effect('When any city tile is placed ON MARS, increase your M€ production 1 step. When you place a city tile, gain 2 (nerf: -1) M€.', (eb) => {
               eb.city({size: Size.SMALL, all}).asterix().colon();
               eb.production((pb) => pb.megacredits(1)).nbsp;
-              eb.city({size: Size.SMALL}).startEffect.megacredits(3);
+              eb.city({size: Size.SMALL}).startEffect.megacredits(2);
             });
           });
         }),

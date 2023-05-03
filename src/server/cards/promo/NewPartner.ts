@@ -13,9 +13,9 @@ export class NewPartner extends PreludeCard {
 
       metadata: {
         cardNumber: 'P43',
-		description: '',
+		description: '(Nerf: no longer raises M€ production 1 step.)',
         renderData: CardRenderer.builder((b) => {
-          b.text('(Nerf: no longer raises M€ production 1 step.) Immediately draw 3 (buff: +1) prelude cards. Play 1 of them, and discard the other.', Size.SMALL, true);
+          b.text('Immediately draw 3 (buff: +1) prelude cards. Play 1 of them, and discard the other.', Size.SMALL, true);
         }),
       },
     });

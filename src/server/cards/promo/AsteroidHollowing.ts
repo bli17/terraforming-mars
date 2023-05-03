@@ -1,5 +1,6 @@
 import {IProjectCard} from '../IProjectCard';
 import {IActionCard} from '../ICard';
+import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {CardResource} from '../../../common/CardResource';
@@ -9,7 +10,7 @@ import {Resources} from '../../../common/Resources';
 import {SelectCard} from '../../inputs/SelectCard';
 import {CardRenderer} from '../render/CardRenderer';
 
-export class AsteroidHollowing extends ActionCard implements IProjectCard {
+export class AsteroidHollowing extends Card implements IActionCard, IProjectCard {
   constructor() {
     super({
       type: CardType.ACTIVE,
