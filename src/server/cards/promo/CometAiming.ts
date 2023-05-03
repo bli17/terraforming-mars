@@ -13,6 +13,7 @@ import {OrOptions} from '../../inputs/OrOptions';
 import {LogHelper} from '../../LogHelper';
 import {PlaceOceanTile} from '../../deferredActions/PlaceOceanTile';
 import {CardRenderer} from '../render/CardRenderer';
+import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 
 export class CometAiming extends Card implements IActionCard, IProjectCard {
   constructor() {

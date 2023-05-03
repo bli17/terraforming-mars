@@ -14,8 +14,8 @@ export class Thorgate extends Card implements ICorporationCard {
       name: CardName.THORGATE,
       tags: [Tag.POWER],
       startingMegaCredits: 53,
-
-      victoryPoints: VictoryPoints.tags(Tag.POWER, 1, 2),
+      victoryPoints: {tag: Tag.POWER, per: 2},
+	  
 	  behavior: {
         production: {energy: 1},
       },

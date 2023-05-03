@@ -31,7 +31,6 @@ export interface CreateGameModel {
   p5Corporations: Array<CardName>;
   p6Corporations: Array<CardName>;
   customPreludes: Array<CardName>;
-  customPreludes: Array<CardName>;
   showBannedCards: boolean;
   showCorporationList: boolean;
   showPlayerCorporationList: boolean;

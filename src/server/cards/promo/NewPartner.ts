@@ -2,6 +2,7 @@ import {Player} from '../../Player';
 import {PreludeCard} from '../prelude/PreludeCard';
 import {IPreludeCard} from '../prelude/IPreludeCard';
 import {CardName} from '../../../common/cards/CardName';
+import {Size} from '../../../common/cards/render/Size';
 import {CardRenderer} from '../render/CardRenderer';
 import {SelectCard} from '../../inputs/SelectCard';
 
