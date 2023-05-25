@@ -18,7 +18,7 @@ import {PartyHooks} from './turmoil/parties/PartyHooks';
 import {PartyName} from '../common/turmoil/PartyName';
 import {Phase} from '../common/Phase';
 import {PlayerInput} from './PlayerInput';
-import {Resources} from '../common/Resources';
+import {Resource} from '../common/Resource';
 import {CardResource} from '../common/CardResource';
 import {SelectCard} from './inputs/SelectCard';
 import {SellPatentsStandardProject} from './cards/base/standardProjects/SellPatentsStandardProject';
@@ -77,6 +77,8 @@ const THROW_WAITING_FOR = Boolean(process.env.THROW_WAITING_FOR);
  */
 
 export type CardAction ='add' | 'discard' | 'nothing';
+
+export type ResourceSource = Player | GlobalEventName | ICard;
 
 export class Player {
   public readonly id: PlayerId;
@@ -319,21 +321,21 @@ export class Player {
     return this.terraformRating = value;
   }
 
-  public getResource(resource: Resources): number {
-    if (resource === Resources.MEGACREDITS) return this.megaCredits;
-    if (resource === Resources.STEEL) return this.steel;
-    if (resource === Resources.TITANIUM) return this.titanium;
-    if (resource === Resources.PLANTS) return this.plants;
-    if (resource === Resources.ENERGY) return this.energy;
-    if (resource === Resources.HEAT) return this.heat;
+  public getResource(resource: Resource): number {
+    if (resource === Resource.MEGACREDITS) return this.megaCredits;
+    if (resource === Resource.STEEL) return this.steel;
+    if (resource === Resource.TITANIUM) return this.titanium;
+    if (resource === Resource.PLANTS) return this.plants;
+    if (resource === Resource.ENERGY) return this.energy;
+    if (resource === Resource.HEAT) return this.heat;
     throw new Error('Resource ' + resource + ' not found');
   }
 
   public logUnitDelta(
-    resource: Resources,
+    resource: Resource,
     amount: number,
     unitType: 'production' | 'amount',
-    from: Player | GlobalEventName | undefined,
+    from: ResourceSource | undefined,
     stealing = false,
   ) {
     if (amount === 0) {
@@ -360,29 +362,31 @@ export class Player {
         .number(absAmount);
       if (from instanceof Player) {
         b.player(from);
-      } else if (from !== undefined) {
+      } else if (typeof(from) === 'object') {
+        b.cardName(from.name);
+      } else if (typeof(from) === 'string') {
         b.globalEventName(from);
       }
     });
   }
 
   public deductResource(
-    resource: Resources,
+    resource: Resource,
     amount: number,
     options? : {
       log?: boolean,
-      from? : Player | GlobalEventName,
+      from? : ResourceSource,
       stealing?: boolean
     }) {
     this.addResource(resource, -amount, options);
   }
 
   public addResource(
-    resource: Resources,
+    resource: Resource,
     amount: number,
     options? : {
       log?: boolean,
-      from? : Player | GlobalEventName,
+      from? : ResourceSource,
       stealing?: boolean
     }) {
     // When amount is negative, sometimes the amount being asked to be removed is more than the player has.
@@ -410,12 +414,12 @@ export class Player {
         {player: {color: this.color, id: this.id, name: this.name}, resource, amount});
     }
 
-    if (resource === Resources.MEGACREDITS) this.megaCredits += delta;
-    else if (resource === Resources.STEEL) this.steel += delta;
-    else if (resource === Resources.TITANIUM) this.titanium += delta;
-    else if (resource === Resources.PLANTS) this.plants += delta;
-    else if (resource === Resources.ENERGY) this.energy += delta;
-    else if (resource === Resources.HEAT) this.heat += delta;
+    if (resource === Resource.MEGACREDITS) this.megaCredits += delta;
+    else if (resource === Resource.STEEL) this.steel += delta;
+    else if (resource === Resource.TITANIUM) this.titanium += delta;
+    else if (resource === Resource.PLANTS) this.plants += delta;
+    else if (resource === Resource.ENERGY) this.energy += delta;
+    else if (resource === Resource.HEAT) this.heat += delta;
     else {
       throw new Error(`tried to add unsupported resource ${resource}`);
     }
@@ -439,7 +443,7 @@ export class Player {
    * Steal up to `qty` units of `resource` from `from`. Or, at least as
    * much as possible.
    */
-  public stealResource(resource: Resources, qty: number, from: Player) {
+  public stealResource(resource: Resource, qty: number, from: Player) {
     const qtyToSteal = Math.min(this.getResource(resource), qty);
     if (qtyToSteal > 0) {
       this.deductResource(resource, qtyToSteal, {log: true, from: from, stealing: true});
@@ -460,23 +464,23 @@ export class Player {
 
   public addUnits(units: Partial<Units>, options? : {
     log?: boolean,
-    from? : Player | GlobalEventName,
+    from? : ResourceSource,
   }) {
-    this.addResource(Resources.MEGACREDITS, units.megacredits || 0, options);
-    this.addResource(Resources.STEEL, units.steel || 0, options);
-    this.addResource(Resources.TITANIUM, units.titanium || 0, options);
-    this.addResource(Resources.PLANTS, units.plants || 0, options);
-    this.addResource(Resources.ENERGY, units.energy || 0, options);
-    this.addResource(Resources.HEAT, units.heat || 0, options);
+    this.addResource(Resource.MEGACREDITS, units.megacredits || 0, options);
+    this.addResource(Resource.STEEL, units.steel || 0, options);
+    this.addResource(Resource.TITANIUM, units.titanium || 0, options);
+    this.addResource(Resource.PLANTS, units.plants || 0, options);
+    this.addResource(Resource.ENERGY, units.energy || 0, options);
+    this.addResource(Resource.HEAT, units.heat || 0, options);
   }
 
   public deductUnits(units: Units) {
-    this.deductResource(Resources.MEGACREDITS, units.megacredits);
-    this.deductResource(Resources.STEEL, units.steel);
-    this.deductResource(Resources.TITANIUM, units.titanium);
-    this.deductResource(Resources.PLANTS, units.plants);
-    this.deductResource(Resources.ENERGY, units.energy);
-    this.deductResource(Resources.HEAT, units.heat);
+    this.deductResource(Resource.MEGACREDITS, units.megacredits);
+    this.deductResource(Resource.STEEL, units.steel);
+    this.deductResource(Resource.TITANIUM, units.titanium);
+    this.deductResource(Resource.PLANTS, units.plants);
+    this.deductResource(Resource.ENERGY, units.energy);
+    this.deductResource(Resource.HEAT, units.heat);
   }
 
   public getActionsThisGeneration(): Set<CardName> {
@@ -509,21 +513,21 @@ export class Player {
     return this.cardIsInEffect(CardName.LUNAR_SECURITY_STATIONS);
   }
 
-  public canReduceAnyProduction(resource: Resources, minQuantity: number = 1): boolean {
+  public canReduceAnyProduction(resource: Resource, minQuantity: number = 1): boolean {
     // in soloMode you don't have to decrease resources
     const game = this.game;
     if (game.isSoloMode()) return true;
     return game.getPlayers().some((p) => p.canHaveProductionReduced(resource, minQuantity, this));
   }
 
-  public canHaveProductionReduced(resource: Resources, minQuantity: number, attacker: Player) {
-    if (resource === Resources.MEGACREDITS) {
+  public canHaveProductionReduced(resource: Resource, minQuantity: number, attacker: Player) {
+    if (resource === Resource.MEGACREDITS) {
       if ((this.production[resource] + 5) < minQuantity) return false;
     } else {
       if (this.production[resource] < minQuantity) return false;
     }
 
-    if (resource === Resources.STEEL || resource === Resources.TITANIUM) {
+    if (resource === Resource.STEEL || resource === Resource.TITANIUM) {
       if (this.alloysAreProtected()) return false;
     }
 
@@ -696,10 +700,6 @@ export class Player {
     return count;
   }
 
-  public getCardsByCardType(cardType: CardType) {
-    return this.playedCards.filter((card) => card.type === cardType);
-  }
-
   public deferInputCb(result: PlayerInput | undefined): void {
     this.defer(result, Priority.DEFAULT);
   }
@@ -787,7 +787,7 @@ export class Player {
         new SelectSpace(
           'Add an ocean',
           game.board.getAvailableSpacesForOcean(this), (space) => {
-            game.addOceanTile(this, space);
+            game.addOcean(this, space);
             game.log('${0} acted as World Government and placed an ocean', (b) => b.player(this));
             return undefined;
           },
@@ -894,30 +894,6 @@ export class Player {
     );
   }
 
-  /*
-   * @param playerName  The player _this_ player passes remaining cards to.
-   * @param passedCards The cards received from the draw, or from the prior player.
-   */
-  public runDraftCorporationPhase(playerName: string, passedCards: Array<ICorporationCard>): void {
-    let cards: Array<ICorporationCard> = passedCards;
-
-    this.setWaitingFor(
-      new SelectCard(
-        newMessage('Select a corporation to keep and pass the rest to ${0}', (b) => b.rawString(playerName)), // TODO(kberg): replace with player?`
-        'Keep',
-        cards,
-        (foundCards: Array<ICorporationCard>) => {
-          foundCards.forEach((card) => {
-            this.draftedCorporations.push(card);
-            this.game.log('${0} kept ${1}', (b) => b.player(this).card(card));
-            cards = cards.filter((c) => c !== card);
-          });
-          this.game.playerIsFinishedWithDraftingCorporationPhase(this, cards);
-          return undefined;
-        }, {min: 1, max: 1, played: false}),
-    );
-  }
-
   /**
    * @return {number} the number of avaialble megacredits. Which is just a shorthand for megacredits,
    * plus any units of heat available thanks to Helion (and Stormcraft, by proxy).
@@ -998,7 +974,7 @@ export class Player {
       microbes: card.tags.includes(Tag.PLANT),
       science: card.tags.includes(Tag.MOON),
       // TODO(kberg): add this.corporation.name === CardName.AURORAI
-      data: card.type === CardType.STANDARD_PROJECT,
+      auroraiData: card.type === CardType.STANDARD_PROJECT,
     };
   }
 
@@ -1056,9 +1032,9 @@ export class Player {
   }
 
   public pay(payment: Payment) {
-    this.deductResource(Resources.STEEL, payment.steel);
-    this.deductResource(Resources.TITANIUM, payment.titanium);
-    this.deductResource(Resources.MEGACREDITS, payment.megaCredits);
+    this.deductResource(Resource.STEEL, payment.steel);
+    this.deductResource(Resource.TITANIUM, payment.titanium);
+    this.deductResource(Resource.MEGACREDITS, payment.megaCredits);
 
     if (payment.heat > 0) {
       this.defer(this.spendHeat(payment.heat));
@@ -1083,10 +1059,10 @@ export class Player {
       if (soylent === undefined) throw new Error('Cannot pay with seeds without ' + CardName.SOYLENT_SEEDLING_SYSTEMS);
       this.removeResourceFrom(soylent, payment.seeds);
     }
-    if (payment.data > 0) {
+    if (payment.auroraiData > 0) {
       const aurorai = this.getCorporation(CardName.AURORAI);
       if (aurorai === undefined) throw new Error('Cannot pay with data without ' + CardName.AURORAI);
-      this.removeResourceFrom(aurorai, payment.data);
+      this.removeResourceFrom(aurorai, payment.auroraiData);
     }
   }
 
@@ -1262,7 +1238,7 @@ export class Player {
 
     if (additionalCorp === false && corporationCard.name !== CardName.BEGINNER_CORPORATION) {
       const diff = this.cardsInHand.length * this.cardCost;
-      this.deductResource(Resources.MEGACREDITS, diff);
+      this.deductResource(Resource.MEGACREDITS, diff);
     }
     corporationCard.play(this);
     if (corporationCard.initialAction !== undefined || corporationCard.firstAction !== undefined) {
@@ -1312,7 +1288,7 @@ export class Player {
     if (stormcraft?.resourceCount > 0) {
       return stormcraft.spendHeat(this, amount, cb);
     }
-    this.deductResource(Resources.HEAT, amount);
+    this.deductResource(Resource.HEAT, amount);
     return cb();
   }
 
@@ -1328,7 +1304,7 @@ export class Player {
       // VanAllen CEO Hook for Milestones
       const vanAllen = this.game.getCardPlayerOrUndefined(CardName.VANALLEN);
       if (vanAllen !== undefined) {
-        vanAllen.addResource(Resources.MEGACREDITS, 3, {log: true});
+        vanAllen.addResource(Resource.MEGACREDITS, 3, {log: true, from: this});
       }
       if (!this.cardIsInEffect(CardName.VANALLEN)) {
         this.game.defer(new SelectPaymentDeferred(this, MILESTONE_COST, {title: 'Select how to pay for milestone'}));
@@ -1391,7 +1367,7 @@ export class Player {
           this.game.board.getAvailableSpacesForGreenery(this), (space) => {
             // Do not raise oxygen or award TR for final greenery placements
             this.game.addGreenery(this, space, false);
-            this.deductResource(Resources.PLANTS, this.plantsNeededForGreenery);
+            this.deductResource(Resource.PLANTS, this.plantsNeededForGreenery);
 
             this.takeActionForFinalGreenery();
 
@@ -1477,7 +1453,7 @@ export class Player {
       microbes: this.getSpendableMicrobes(),
       science: this.getSpendableScienceResources(),
       seeds: this.getSpendableSeedResources(),
-      data: this.getSpendableData(),
+      auroraiData: this.getSpendableData(),
     };
   }
 
@@ -1508,7 +1484,7 @@ export class Player {
       floaters: DEFAULT_FLOATERS_VALUE,
       science: 1,
       seeds: constants.SEED_VALUE,
-      data: constants.DATA_VALUE,
+      auroraiData: constants.DATA_VALUE,
     };
 
     const usable: {[key in PaymentKey]: boolean} = {
@@ -1520,7 +1496,7 @@ export class Player {
       floaters: options?.floaters ?? false,
       science: options?.science ?? false,
       seeds: options?.seeds ?? false,
-      data: options?.data ?? false,
+      auroraiData: options?.auroraiData ?? false,
     };
 
     // HOOK: Luna Trade Federation
