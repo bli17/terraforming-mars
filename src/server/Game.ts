@@ -325,12 +325,12 @@ export class Game implements Logger {
         gameOptions.turmoilExtension ||
         gameOptions.initialDraftVariant ||
         gameOptions.ceoExtension) {
-        if (gameOptions.corporationsDraft === false && gameOptions.playerCustomCorpList.length === 0) {
+        if (gameOptions.playerCustomCorpList.length === 0) {
           for (let i = 0; i < gameOptions.startingCorporations; i++) {
             player.dealtCorporationCards.push(corporationDeck.draw(game));
           }
         }
-        if (gameOptions.corporationsDraft === false && gameOptions.playerCustomCorpList.length > 0) {
+        if (gameOptions.playerCustomCorpList.length > 0) {
           for (let i = 0; i < gameOptions.startingCorporations; i++) {
             // draw the corporation
             // the check for running out of cards is probably not ideal here, but hopefully it should work
