@@ -16,7 +16,7 @@ export class NewPartner extends PreludeCard {
       
       metadata: {
         cardNumber: 'P43',
-		description: '(Buff:) After being played, when you perform an action, the wild tag counts as any tag of your choice. (Nerf:) Pay 8 M€. (Nerf: -1 M€ production.))',
+		description: '(Buff:) After being played, when you perform an action, the wild tag counts as any tag of your choice. (Nerf:) Pay 8 M€, no longer increases M€ production by 1.',
         renderData: CardRenderer.builder((b) => {
           b.megacredits(-8).nbsp.prelude().asterix();
 		  b.br.br;
