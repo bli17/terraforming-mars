@@ -49,7 +49,7 @@ export class TharsisRepublic extends Card implements ICorporationCard {
   public onTilePlaced(cardOwner: Player, activePlayer: Player, space: ISpace) {
     if (Board.isCitySpace(space)) {
       if (cardOwner.id === activePlayer.id) {
-        cardOwner.game.defer(new GainResources(cardOwner, Resources.MEGACREDITS, {count: 2}));
+        cardOwner.game.defer(new GainResources(cardOwner, Resource.MEGACREDITS, {count: 2}));
       }
       if (space.spaceType !== SpaceType.COLONY) {
         cardOwner.game.defer(
