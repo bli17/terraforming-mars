@@ -29,7 +29,7 @@ describe('ShiftAresGlobalParameters', function() {
     floaters: undefined,
     science: undefined,
     seeds: undefined,
-    data: undefined,
+    auroraiData: undefined,
     coloniesModel: undefined,
     payProduction: undefined,
     aresData: {
@@ -79,7 +79,6 @@ describe('ShiftAresGlobalParameters', function() {
       highOceanDelta: 0,
       temperatureDelta: 0,
       oxygenDelta: 0,
-      ADJUSTMENT_RANGE: [-1, 0, 1],
     });
   });
 });

@@ -7,7 +7,7 @@ import {CardResource} from '../../../common/CardResource';
 import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../../../common/cards/render/Size';
 import {AltSecondaryTag} from '../../../common/cards/render/AltSecondaryTag';
-import {Resources} from '../../../common/Resources';
+import {Resource} from '../../../common/Resource';
 import {digit} from '../Options';
 import {CardType} from '../../../common/cards/CardType';
 import {SimpleDeferredAction} from '../../deferredActions/DeferredAction';
@@ -39,12 +39,17 @@ export class ValuableGases extends PreludeCard implements IProjectCard {
     return 0;
   }
   public override bespokePlay(player: Player) {
-    player.addResource(Resources.MEGACREDITS, 10);
+    player.addResource(Resource.MEGACREDITS, 10);
 
     const playableCards = player.cardsInHand.filter((card) => {
       return card.resourceType === CardResource.FLOATER &&
         card.type === CardType.ACTIVE &&
         player.canAffordCard(card);
+    }).map((card) => {
+      return {
+        card: card,
+        details: true,
+      };
     });
     if (playableCards.length !== 0) {
       player.game.defer(new SimpleDeferredAction(player, () => {

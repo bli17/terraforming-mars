@@ -474,6 +474,7 @@ export enum CardName {
     DOUBLE_DOWN = 'Double Down',
     PSYCHE = '16 Psyche',
     ROBOT_POLLINATORS = 'Robot Pollinators',
+    SUPERCAPACITORS = 'Supercapacitors',
 
     // Community corps
     AGRICOLA_INC = 'Agricola Inc',
@@ -515,6 +516,7 @@ export enum CardName {
     GREAT_DAM_ARES = 'Great Dam:ares',
     INDUSTRIAL_CENTER_ARES = 'Industrial Center:ares',
     LAVA_FLOWS_ARES = 'Lava Flows:ares',
+    MAGNETIC_FIELD_GENERATORS_ARES = 'Magnetic Field Generators:ares',
     MARKETING_EXPERTS = 'Marketing Experts',
     METALLIC_ASTEROID = 'Metallic Asteroid',
     MINING_AREA_ARES = 'Mining Area:ares',
