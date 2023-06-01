@@ -120,13 +120,13 @@ export default (Vue as WithRefs<Refs>).extend({
           result += card.productionBox?.megacredits ?? 0;
           break;
 
-        // When you place a city tile, gain 3 M€.
+        // When you place a city tile, gain 2 M€ (nerfed).
         case CardName.THARSIS_REPUBLIC:
           switch (prelude) {
           case CardName.SELF_SUFFICIENT_SETTLEMENT:
           case CardName.EARLY_SETTLEMENT:
           case CardName.STRATEGIC_BASE_PLANNING:
-            result += 3;
+            result += 2;
             break;
           }
           break;
