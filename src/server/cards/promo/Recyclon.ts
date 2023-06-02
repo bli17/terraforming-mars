@@ -23,7 +23,7 @@ export class Recyclon extends Card implements ICorporationCard {
 
       behavior: {
         production: {steel: 1},
-        addResources: 1,
+        addResources: 2,
       },
 
       metadata: {
