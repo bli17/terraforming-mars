@@ -87,6 +87,11 @@ export class CardRenderDynamicVictoryPoints implements ICardRenderDynamicVictory
   public static questionmark(): CardRenderDynamicVictoryPoints {
     return new CardRenderDynamicVictoryPoints(undefined, 0, 0);
   }
+  public static vpIcon(points: number): CardRenderDynamicVictoryPoints {
+    const item = new CardRenderItem(CardRenderItemType.VP);
+    item.size = Size.TINY;
+    return new CardRenderDynamicVictoryPoints(item, points, 1);
+  }
   public static any(points: number): CardRenderDynamicVictoryPoints {
     const item = new CardRenderDynamicVictoryPoints(undefined, points, points);
     item.anyPlayer = true;
