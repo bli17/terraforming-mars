@@ -286,7 +286,8 @@ export class Game implements Logger {
     if (minCorpsRequired > corporationDeck.drawPile.length) {
       gameOptions.startingCorporations = 2;
     }
-
+    
+	// Deal corps for each player if custom corp lists
     // Log each player's custom corporation lists
     // For simplicity, use drawn cards logger
     // Will need to write new logger function
@@ -296,14 +297,99 @@ export class Game implements Logger {
         player_number++;
         LogHelper.logCustomCorps(player, gameOptions.playerCustomCorpList[player_number], false);
       }
+	  
+	  //Corporation deal logic: randomize player array, deal each 1 card, randomize again, deal, etc.
+      //let templog1: Array<String> = [];
+	  //for (let player of game.getPlayers()){templog1.push(player.name);}
+	  //let templog2: Array<String> = [];
+	  //for (let player of game.getPlayersInGenerationOrder()){templog2.push(player.name);}
+	  //console.log(templog1);
+	  //console.log(templog2);
+	  
+	  let deal_order_number: Array<number> = [];
+	  let deal_order_player: Array<Player> = [];
+	  for (let i = 0; i < gameOptions.startingCorporations; i++) {
+		
+		//Randomize the deal order arrays, both for the Player objects and player_number objects
+        deal_order_number = [];
+        for (let ii = 0; ii < game.getPlayers().length; ii++){deal_order_number.push(ii);}
+        for (let ii = game.getPlayers().length - 1; ii > 0; ii--) {
+            const jj = Math.floor(Math.random() * (ii + 1));
+            [deal_order_number[ii], deal_order_number[jj]] = [deal_order_number[jj], deal_order_number[ii]];
+        }
+        deal_order_player = [];
+        for (let deal_order of deal_order_number){deal_order_player.push(game.getPlayersInGenerationOrder()[deal_order]);}
+        
+		//DEBUG
+		//console.log(gameOptions.playerCustomCorpList);
+		//console.log(deal_order_number);
+		//console.log("Dealing: ");
+		
+        let order_index = -1;
+        //Deal the cards
+        for (let player of deal_order_player){
+            order_index++;
+            let current_deal = deal_order_number[order_index];
+            
+            const cardFinder = new CardFinder();
+            const corp_index = Math.floor(Math.random() * gameOptions.playerCustomCorpList[current_deal].length);
+            const drawn_corp = gameOptions.playerCustomCorpList[current_deal][corp_index];
+            const drawn_corp_card = cardFinder.getCorporationCardByName(drawn_corp);
+            
+			if (drawn_corp_card !== undefined) {
+			    corporationDeck.moveToTop([drawn_corp_card.name]);
+                player.dealtCorporationCards.push(corporationDeck.draw(game, 'bottom')); // moveToTop method seems to move to bottom
+            } else {
+                player.dealtCorporationCards.push(new BeginnerCorporation());
+				// fill excess corp deals w/ beginner corps
+                // This is taking on faith that the code below properly removes dealt corps from every player's custom corp list
+                // Cleaner code would check that the corporationDeck.moveToTop did not throw an error
+            }
+			
+			//DEBUG
+			//console.log(current_deal);
+			//console.log(player.name);
+			//console.log(gameOptions.playerCustomCorpList[current_deal]);
+
+            // remove that corporation from everyone's lists and the corporation deck
+            for (let j = 0; j < players.length; j++) {
+                gameOptions.playerCustomCorpList[j] = gameOptions.playerCustomCorpList[j].filter((item: CardName) => item !== drawn_corp);
+            }
+			
+			
+		}
+	  }
+	  
+          //for (let i = 0; i < gameOptions.startingCorporations; i++) {
+            // draw the corporation
+            // the check for running out of cards is probably not ideal here, but hopefully it should work
+            // maybe fix it later
+            //const cardFinder = new CardFinder();
+            //const corp_index = Math.floor(Math.random() * gameOptions.playerCustomCorpList[player_number].length);
+            //const drawn_corp = gameOptions.playerCustomCorpList[player_number][corp_index];
+            //const drawn_corp_card = cardFinder.getCorporationCardByName(drawn_corp);
+            //if (drawn_corp_card !== undefined) {
+              //corporationDeck.moveToTop([drawn_corp_card.name]);
+              //player.dealtCorporationCards.push(corporationDeck.draw(game, 'bottom')); // moveToTop method seems to move to bottom
+            //} else {
+              //player.dealtCorporationCards.push(new BeginnerCorporation()); // fill excess corp deals w/ beginner corps
+              // This is taking on faith that the code below properly removes dealt corps from every player's custom corp list
+              // Cleaner code would check that the corporationDeck.moveToTop did not throw an error
+            //}
+
+            // remove that corporation from everyone's lists and the corporation deck
+            //for (let j = 0; j < players.length; j++) {
+              //gameOptions.playerCustomCorpList[j] = gameOptions.playerCustomCorpList[j].filter((item: CardName) => //item !== drawn_corp);
+            //}
+          //}
     }
 
     // Initialize each player:
     // Give them their corporation cards, other cards, starting production,
     // handicaps.
-    let player_number = -1; // used for player-specific custom corps list
+    //let player_number = -1; // used for player-specific custom corps list
     for (const player of game.getPlayersInGenerationOrder()) {
-      player_number++; // used for player-specific custom corps list; index for playerCustomCorpList
+      //player_number++; // used for player-specific custom corps list; index for playerCustomCorpList
       player.setTerraformRating(player.getTerraformRating() + player.handicap);
       if (!gameOptions.corporateEra) {
         player.production.override({
@@ -330,30 +416,30 @@ export class Game implements Logger {
             player.dealtCorporationCards.push(corporationDeck.draw(game));
           }
         }
-        if (gameOptions.playerCustomCorpList.length > 0) {
-          for (let i = 0; i < gameOptions.startingCorporations; i++) {
+        //if (gameOptions.playerCustomCorpList.length > 0) {
+          //for (let i = 0; i < gameOptions.startingCorporations; i++) {
             // draw the corporation
             // the check for running out of cards is probably not ideal here, but hopefully it should work
             // maybe fix it later
-            const cardFinder = new CardFinder();
-            const corp_index = Math.floor(Math.random() * gameOptions.playerCustomCorpList[player_number].length);
-            const drawn_corp = gameOptions.playerCustomCorpList[player_number][corp_index];
-            const drawn_corp_card = cardFinder.getCorporationCardByName(drawn_corp);
-            if (drawn_corp_card !== undefined) {
-              corporationDeck.moveToTop([drawn_corp_card.name]);
-              player.dealtCorporationCards.push(corporationDeck.draw(game, 'bottom')); // moveToTop method seems to move to bottom
-            } else {
-              player.dealtCorporationCards.push(new BeginnerCorporation()); // fill excess corp deals w/ beginner corps
+            //const cardFinder = new CardFinder();
+            //const corp_index = Math.floor(Math.random() * gameOptions.playerCustomCorpList[player_number].length);
+            //const drawn_corp = gameOptions.playerCustomCorpList[player_number][corp_index];
+            //const drawn_corp_card = cardFinder.getCorporationCardByName(drawn_corp);
+            //if (drawn_corp_card !== undefined) {
+              //corporationDeck.moveToTop([drawn_corp_card.name]);
+              //player.dealtCorporationCards.push(corporationDeck.draw(game, 'bottom')); // moveToTop method seems to move to bottom
+            //} else {
+              //player.dealtCorporationCards.push(new BeginnerCorporation()); // fill excess corp deals w/ beginner corps
               // This is taking on faith that the code below properly removes dealt corps from every player's custom corp list
               // Cleaner code would check that the corporationDeck.moveToTop did not throw an error
-            }
+            //}
 
             // remove that corporation from everyone's lists and the corporation deck
-            for (let j = 0; j < players.length; j++) {
-              gameOptions.playerCustomCorpList[j] = gameOptions.playerCustomCorpList[j].filter((item: CardName) => item !== drawn_corp);
-            }
-          }
-        }
+            //for (let j = 0; j < players.length; j++) {
+              //gameOptions.playerCustomCorpList[j] = gameOptions.playerCustomCorpList[j].filter((item: CardName) => //item !== drawn_corp);
+            //}
+          //}
+        //}
         if (gameOptions.initialDraftVariant === false) {
           for (let i = 0; i < 10; i++) {
             player.dealtProjectCards.push(projectDeck.draw(game));
