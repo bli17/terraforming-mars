@@ -42,7 +42,7 @@ export class Polyphemos extends Card implements ICorporationCard {
   }
   
   public onCardPlayed(player: Player, card: IProjectCard) {
-    if (card.cost >= 20) {
+    if (card.cost >= 20 && player.isCorporation(CardName.POLYPHEMOS)) {
       player.drawCard();
     }
   }
