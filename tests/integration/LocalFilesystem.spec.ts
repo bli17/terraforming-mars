@@ -4,7 +4,7 @@ import {tmpdir} from 'os';
 
 import {describeDatabaseSuite} from '../database/databaseSuite';
 import {ITestDatabase, Status} from '../database/ITestDatabase';
-import {Game} from '../../src/server/Game';
+import {IGame} from '../../src/server/IGame';
 import {LocalFilesystem} from '../../src/server/database/LocalFilesystem';
 import {GameId} from '../../src/common/Types';
 
@@ -22,14 +22,14 @@ class TestLocalFilesystem extends LocalFilesystem implements ITestDatabase {
   }
 
   // Tests can wait for saveGamePromise since save() is called inside other methods.
-  public override async saveGame(game: Game): Promise<void> {
+  public override async saveGame(game: IGame): Promise<void> {
     this.lastSaveGamePromise = super.saveGame(game);
     this.promises.push(this.lastSaveGamePromise);
     return this.lastSaveGamePromise;
   }
 
   public async afterEach() {
-    fs.rmdirSync(this.dbFolder, {recursive: true});
+    fs.rmSync(this.dbFolder, {recursive: true});
   }
 
   public override async stats(): Promise<{[key: string]: string | number}> {

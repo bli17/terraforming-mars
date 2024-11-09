@@ -4,7 +4,6 @@
       :space="space"
       :aresExtension="false"
       :tileView="tileView"
-      :restricted="false"
     ></board-space-tile>
     <div class="board-space-text" v-if="text" v-i18n>{{ text }}</div>
     <bonus v-if="space.tileType === undefined || tileView === 'hide'" :bonus="space.bonus" />
@@ -16,6 +15,12 @@
       class="board-cube"
       :class="`board-cube--${space.color}`"
     />
+    <div
+      v-if="space.coOwner !== undefined && tileView === 'show'"
+      class="board-cube-coOwner"
+      :class="`board-cube--${space.coOwner}`"
+    />
+
   </div>
 </template>
 
@@ -34,9 +39,7 @@ export default Vue.extend({
     },
     text: {
       type: String,
-    },
-    is_selectable: {
-      type: Boolean,
+      required: false,
     },
     tileView: {
       type: String as () => TileView,
@@ -50,10 +53,7 @@ export default Vue.extend({
   computed: {
     mainClass(): string {
       let css = 'board-space moon-space-' + this.space.id.toString();
-
-      if (this.is_selectable) {
-        css += ' board-space-selectable';
-      }
+      css += ' board-space-selectable';
 
       if (this.space.spaceType === 'lunar_mine') {
         css += ' moon-space-type-mine';

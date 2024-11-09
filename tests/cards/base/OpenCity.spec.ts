@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {OpenCity} from '../../../src/server/cards/base/OpenCity';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
 import {Resource} from '../../../src/common/Resource';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
@@ -10,7 +10,7 @@ import {testGame} from '../../TestGame';
 describe('OpenCity', function() {
   let card: OpenCity;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new OpenCity();
@@ -36,8 +36,8 @@ describe('OpenCity', function() {
     runAllActions(player.game);
     const action = cast(player.popWaitingFor(), SelectSpace);
 
-    action.cb(action.availableSpaces[0]);
-    expect(game.getCitiesOnMarsCount()).to.eq(1);
+    action.cb(action.spaces[0]);
+    expect(game.board.getCitiesOnMars()).has.length(1);
 
     expect(player.production.energy).to.eq(0);
     expect(player.production.megacredits).to.eq(4);

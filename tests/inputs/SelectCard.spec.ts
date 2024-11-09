@@ -10,8 +10,8 @@ describe('SelectCard', function() {
   let aquiferPumping: ICard;
   let roboticWorkforce: ICard;
   let ioMiningIndustries: ICard;
-  let selected: Array<ICard>;
-  const cb = (cards: Array<ICard>) => {
+  let selected: ReadonlyArray<ICard>;
+  const cb = (cards: ReadonlyArray<ICard>) => {
     selected = cards;
     return undefined;
   };
@@ -27,9 +27,8 @@ describe('SelectCard', function() {
     const selectCards = new SelectCard(
       'Select card',
       'Save',
-      [aquiferPumping, ioMiningIndustries],
-      cb,
-    );
+      [aquiferPumping, ioMiningIndustries])
+      .andThen(cb);
 
     selectCards.process({type: 'card', cards: [CardName.AQUIFER_PUMPING]});
     expect(selected).deep.eq([aquiferPumping]);
@@ -42,9 +41,8 @@ describe('SelectCard', function() {
     const selectCards = new SelectCard(
       'Select card',
       'Save',
-      [aquiferPumping, roboticWorkforce],
-      cb,
-    );
+      [aquiferPumping, roboticWorkforce])
+      .andThen(cb);
 
     expect(() => selectCards.process({type: 'card', cards: [CardName.DIRECTED_IMPACTORS]}))
       .to.throw(Error, /Card Directed Impactors not found/);
@@ -55,9 +53,8 @@ describe('SelectCard', function() {
       'Select card',
       'Save',
       [aquiferPumping, roboticWorkforce, ioMiningIndustries],
-      cb,
-      {enabled: [true, false, true]},
-    );
+      {enabled: [true, false, true]})
+      .andThen(cb);
 
     selectCards.process({type: 'card', cards: [CardName.AQUIFER_PUMPING]});
     expect(selected).deep.eq([aquiferPumping]);

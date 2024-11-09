@@ -1,5 +1,5 @@
 import {IProjectCard} from '../IProjectCard';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {CardName} from '../../../common/cards/CardName';
@@ -7,7 +7,6 @@ import {CardRenderer} from '../render/CardRenderer';
 import {Tag} from '../../../common/cards/Tag';
 import {CardResource} from '../../../common/CardResource';
 import {ICard} from '../ICard';
-import {played} from '../Options';
 
 export class MartianRepository extends Card implements IProjectCard {
   constructor() {
@@ -28,7 +27,7 @@ export class MartianRepository extends Card implements IProjectCard {
         cardNumber: 'Pf29',
         renderData: CardRenderer.builder((b) => {
           b.effect('For every science or Mars tag you play (including these) add 1 data to this card.', (eb) => {
-            eb.science(1, {played}).mars(1, {played}).startEffect.data();
+            eb.tag(Tag.SCIENCE).tag(Tag.MARS).startEffect.resource(CardResource.DATA);
           }).br;
           b.minus().production((pb) => pb.energy(1));
         }),
@@ -38,7 +37,7 @@ export class MartianRepository extends Card implements IProjectCard {
   }
 
 
-  public onCardPlayed(player: Player, card: ICard) {
+  public onCardPlayed(player: IPlayer, card: ICard) {
     const qty = player.tags.cardTagCount(card, Tag.SCIENCE) + player.tags.cardTagCount(card, Tag. MARS);
     if (qty > 0) player.addResourceTo(this, {qty, log: true});
   }

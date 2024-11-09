@@ -1,31 +1,33 @@
-import {Player} from '../Player';
+import {IPlayer} from '../IPlayer';
 import {SelectSpace} from '../inputs/SelectSpace';
-import {ISpace} from '../boards/ISpace';
-import {DeferredAction, Priority} from './DeferredAction';
+import {DeferredAction} from './DeferredAction';
+import {Priority} from './Priority';
 import {PlacementType} from '../boards/PlacementType';
+import {Space} from '../boards/Space';
 
-export class PlaceGreeneryTile extends DeferredAction {
+export class PlaceGreeneryTile extends DeferredAction<Space | undefined> {
   constructor(
-    player: Player,
+    player: IPlayer,
     private on: PlacementType = 'greenery',
   ) {
     super(player, Priority.DEFAULT);
   }
 
   public execute() {
-    const availableSpaces = this.player.game.board.getAvailableSpacesForType(this.player, this.on);
-    if (availableSpaces.length === 0) {
+    const board = this.player.game.board;
+    const spacesForType = board.getAvailableSpacesForType(this.player, this.on);
+    const filtered = board.filterSpacesAroundRedCity(spacesForType);
+    if (filtered.length === 0) {
+      this.cb(undefined);
       return undefined;
     }
 
-    return new SelectSpace(
-      this.getTitle(),
-      availableSpaces,
-      (space: ISpace) => {
+    return new SelectSpace(this.getTitle(), filtered)
+      .andThen((space) => {
         this.player.game.addGreenery(this.player, space);
+        this.cb(space);
         return undefined;
-      },
-    );
+      });
   }
 
   private getTitle() {

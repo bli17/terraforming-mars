@@ -1,5 +1,5 @@
 import {CardName} from '../../../common/cards/CardName';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {CardType} from '../../../common/cards/CardType';
 import {Tag} from '../../../common/cards/Tag';
 import {CardResource} from '../../../common/CardResource';
@@ -25,7 +25,7 @@ export class AncientShipyards extends Card {
         cardNumber: 'M19',
         renderData: CardRenderer.builder((b) => {
           b.action('Steal 2 M€ from each player and add a resource cube here.', (eb) => {
-            eb.empty().startAction.text('Steal').nbsp.megacredits(2, {all}).asterix().colon().resourceCube(1);
+            eb.empty().startAction.text('Steal').nbsp.megacredits(2, {all}).asterix().colon().resource(CardResource.RESOURCE_CUBE);
           }).br.br;
           b.minus().titanium(3);
         }),
@@ -37,14 +37,18 @@ export class AncientShipyards extends Card {
     return true;
   }
 
-  public action(player: Player) {
+  public action(player: IPlayer) {
     const game = player.game;
-    for (const p of game.getPlayers()) {
-      if (p === player) continue;
-      p.stealResource(Resource.MEGACREDITS, 2, player);
+    for (const target of player.getOpponents()) {
+      target.maybeBlockAttack(player, (proceed) => {
+        if (proceed) {
+          target.stock.steal(Resource.MEGACREDITS, 2, player);
+        }
+        return undefined;
+      });
     }
     if (game.isSoloMode()) {
-      player.addResource(Resource.MEGACREDITS, 2);
+      player.stock.add(Resource.MEGACREDITS, 2);
     }
     player.addResourceTo(this, 1);
     return undefined;

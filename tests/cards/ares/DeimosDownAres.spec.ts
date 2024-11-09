@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 import {TileType} from '../../../src/common/TileType';
 import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
@@ -16,7 +16,7 @@ describe('DeimosDownAres', function() {
   let card: DeimosDownAres;
   let player: TestPlayer;
   let player2: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(() => {
     card = new DeimosDownAres();
@@ -76,7 +76,7 @@ describe('DeimosDownAres', function() {
     runAllActions(game);
 
     const action = cast(player.popWaitingFor(), SelectSpace);
-    const space = action.availableSpaces[0];
+    const space = action.spaces[0];
     action.cb(space);
 
     expect(space.tile?.tileType).to.eq(TileType.DEIMOS_DOWN);
@@ -90,7 +90,7 @@ describe('DeimosDownAres', function() {
     card.play(player);
     runAllActions(game);
     const action = cast(player.popWaitingFor(), SelectSpace);
-    const space = action.availableSpaces[0];
+    const space = action.spaces[0];
     action.cb(space);
 
     player.megaCredits = 0;
@@ -122,7 +122,7 @@ describe('DeimosDownAres', function() {
     card.play(player);
     runAllActions(game);
     const action = cast(player.popWaitingFor(), SelectSpace);
-    const space = action.availableSpaces[0];
+    const space = action.spaces[0];
     action.cb(space);
 
     player.megaCredits = 0;

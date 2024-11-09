@@ -1,19 +1,18 @@
 import {expect} from 'chai';
 import {OumuamuaTypeObjectSurvey} from '../../../src/server/cards/pathfinders/OumuamuaTypeObjectSurvey';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
 import {LunarObservationPost} from '../../../src/server/cards/moon/LunarObservationPost';
-import {fakeCard, runAllActions, setTemperature} from '../../TestingUtils';
+import {fakeCard, runAllActions, setTemperature, testGame} from '../../TestingUtils';
 import {IProjectCard} from '../../../src/server/cards/IProjectCard';
 import {CardName} from '../../../src/common/cards/CardName';
 import {Tag} from '../../../src/common/cards/Tag';
-import {CardRequirements} from '../../../src/server/cards/requirements/CardRequirements';
 import {ProjectDeck} from '../../../src/server/cards/Deck';
 
 describe('OumuamuaTypeObjectSurvey', function() {
   let card: OumuamuaTypeObjectSurvey;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
   let projectDeck: ProjectDeck;
 
   const noTags = fakeCard({
@@ -49,7 +48,7 @@ describe('OumuamuaTypeObjectSurvey', function() {
     cost: 10,
     name: 'req' as CardName,
     tags: [Tag.SCIENCE],
-    requirements: CardRequirements.builder((b) => b.temperature(-28, {max: true})),
+    requirements: [{temperature: -28, max: true}],
   });
   // The slug is the card at the bottom of the deck. If it were drawn, the deck would be empty and refilled from the discard pile.
   const slug = fakeCard({
@@ -59,8 +58,7 @@ describe('OumuamuaTypeObjectSurvey', function() {
 
   beforeEach(function() {
     card = new OumuamuaTypeObjectSurvey();
-    player = TestPlayer.BLUE.newPlayer();
-    game = Game.newInstance('gameid', [player], player);
+    [game, player] = testGame(1);
     projectDeck = game.projectDeck;
     projectDeck.discardPile = [];
     player.megaCredits = 100;
@@ -181,4 +179,23 @@ describe('OumuamuaTypeObjectSurvey', function() {
 
     expect(lunarObservationPost.resourceCount).eq(2);
   });
+
+  // it('Card has a science tag and data resources', () => {
+  //   const lunarObservationPost = new LunarObservationPost();
+  //   projectDeck.drawPile = [slug, lunarObservationPost, noTags];
+
+  //   card.play(player);
+
+  //   expect(projectDeck.drawPile).deep.eq([slug]);
+  //   expect(player.cardsInHand).deep.eq([noTags]);
+  //   expect(player.playedCards).deep.eq([lunarObservationPost]);
+  //   expect(player.production.energy).eq(0);
+  //   // played card doesn't cost anything.
+  //   expect(player.megaCredits).eq(100);
+
+  //   card.play(player);
+  //   runAllActions(game);
+
+  //   expect(lunarObservationPost.resourceCount).eq(2);
+  // });
 });

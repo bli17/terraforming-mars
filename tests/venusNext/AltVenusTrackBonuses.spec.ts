@@ -2,7 +2,7 @@
 // including the altVenusBoard
 
 import {expect} from 'chai';
-import {Game} from '../../src/server/Game';
+import {IGame} from '../../src/server/IGame';
 import {cast, setVenusScaleLevel} from '../TestingUtils';
 import {TestPlayer} from '../TestPlayer';
 import {GrantVenusAltTrackBonusDeferred} from '../../src/server/venusNext/GrantVenusAltTrackBonusDeferred';
@@ -10,13 +10,13 @@ import {testGame} from '../TestGame';
 
 describe('AltVenusTrackBonuses', function() {
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(() => {
     [game, player] = testGame(1, {altVenusBoard: true});
   });
 
-  function getAction(game: Game) {
+  function getAction(game: IGame) {
     const deferred = cast(game.deferredActions.pop(), GrantVenusAltTrackBonusDeferred);
     return {standardResourceCount: deferred.standardResourceCount, wildResource: deferred.wildResource};
   }

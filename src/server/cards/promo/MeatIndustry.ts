@@ -4,7 +4,7 @@ import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {CardRenderer} from '../render/CardRenderer';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {ICard} from '../ICard';
 import {CardResource} from '../../../common/CardResource';
 import {Resource} from '../../../common/Resource';
@@ -21,16 +21,16 @@ export class MeatIndustry extends Card implements IProjectCard {
         cardNumber: 'X25',
         renderData: CardRenderer.builder((b) => {
           b.effect('When you gain an animal to ANY CARD, gain 2 M€.', (eb) => {
-            eb.animals(1).asterix().startEffect.megacredits(2);
+            eb.resource(CardResource.ANIMAL).asterix().startEffect.megacredits(2);
           });
         }),
       },
     });
   }
 
-  public onResourceAdded(player: Player, card: ICard, count: number) {
+  public onResourceAdded(player: IPlayer, card: ICard, count: number) {
     if (card.resourceType === CardResource.ANIMAL) {
-      player.addResource(Resource.MEGACREDITS, count * 2, {log: true});
+      player.stock.add(Resource.MEGACREDITS, count * 2, {log: true});
     }
   }
 }

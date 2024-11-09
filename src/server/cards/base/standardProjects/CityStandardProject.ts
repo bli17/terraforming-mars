@@ -1,4 +1,4 @@
-import {Player} from '../../../Player';
+import {IPlayer} from '../../../IPlayer';
 import {CardName} from '../../../../common/cards/CardName';
 import {CardRenderer} from '../../render/CardRenderer';
 import {StandardProjectCard} from '../../StandardProjectCard';
@@ -23,26 +23,30 @@ export class CityStandardProject extends StandardProjectCard {
     });
   }
 
-  protected override discount(player: Player): number {
-    if (player.playedCards.find((card) => card.name === CardName.PREFABRICATION_OF_HUMAN_HABITATS)) {
+  protected override discount(player: IPlayer): number {
+    if (player.getPlayedCard(CardName.PREFABRICATION_OF_HUMAN_HABITATS)) {
       return 2 + super.discount(player);
     }
     return super.discount(player);
   }
 
-  public override canPayWith(player: Player) {
-    if (player.playedCards.find((card) => card.name === CardName.PREFABRICATION_OF_HUMAN_HABITATS)) {
+  public override canPayWith(player: IPlayer) {
+    if (player.getPlayedCard(CardName.PREFABRICATION_OF_HUMAN_HABITATS)) {
       return {steel: true};
     } else {
       return {};
     }
   }
 
-  public override canAct(player: Player): boolean {
-    return super.canAct(player) && player.game.board.getAvailableSpacesForCity(player).length > 0;
+  public override canAct(player: IPlayer): boolean {
+    // This is pricey because it forces calling canPlayOptions twice.
+    if (player.game.board.getAvailableSpacesForCity(player, this.canPlayOptions(player)).length === 0) {
+      return false;
+    }
+    return super.canAct(player);
   }
 
-  actionEssence(player: Player): void {
+  actionEssence(player: IPlayer): void {
     player.game.defer(new PlaceCityTile(player));
     player.production.add(Resource.MEGACREDITS, 1);
   }

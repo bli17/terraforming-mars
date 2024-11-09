@@ -15,11 +15,11 @@ export interface ITestDatabase extends IDatabase {
   /**
    * Shut down operations after each test.
    */
-  afterEach?: () => Promise<void>;
+  afterEach?(): Promise<void>;
   /**
    * Return the status of a given game id.
    */
-  status(gameId: GameId): Promise<Status>
+  status(gameId: GameId): Promise<Status>;
   /**
    * If the game is waiting to be purged, return the time the game was completed. Otherwise, return `undefined`.
    */

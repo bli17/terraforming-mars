@@ -1,4 +1,4 @@
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {StandardProjectCard} from '../StandardProjectCard';
@@ -18,7 +18,7 @@ export class MoonRoadStandardProject extends StandardProjectCard {
     metadata: {
       cardNumber: '',
       renderData: CardRenderer.builder((b) =>
-        b.standardProject('Spend 18 M€ and 1 steel to place a road on the moon and raise the Logistics Rate 1 step.', (eb) => {
+        b.standardProject('Spend 18 M€ and 1 steel to place a road on The Moon and raise the Logistics Rate 1 step.', (eb) => {
           eb.megacredits(18).steel(1).startAction.moonRoad({secondaryTag: AltSecondaryTag.MOON_LOGISTICS_RATE});
         }),
       ),
@@ -27,14 +27,14 @@ export class MoonRoadStandardProject extends StandardProjectCard {
     super(properties);
   }
 
-  protected override discount(player: Player): number {
-    if (player.playedCards.find((card) => card.name === CardName.MOONCRATE_BLOCK_FACTORY)) {
+  protected override discount(player: IPlayer): number {
+    if (player.getPlayedCard(CardName.MOONCRATE_BLOCK_FACTORY)) {
       return 4;
     }
     return super.discount(player);
   }
 
-  public override canAct(player: Player): boolean {
+  public override canAct(player: IPlayer): boolean {
     const moonData = MoonExpansion.moonData(player.game);
     const spaces = moonData.moon.getAvailableSpacesOnLand(player);
 
@@ -45,9 +45,9 @@ export class MoonRoadStandardProject extends StandardProjectCard {
     return super.canAct(player);
   }
 
-  actionEssence(player: Player): void {
+  actionEssence(player: IPlayer): void {
     const adjustedReserveUnits = MoonExpansion.adjustedReserveCosts(player, this);
-    player.deductUnits(adjustedReserveUnits);
+    player.stock.deductUnits(adjustedReserveUnits);
     player.game.defer(new PlaceMoonRoadTile(player));
   }
 }

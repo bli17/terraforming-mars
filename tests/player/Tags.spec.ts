@@ -1,15 +1,17 @@
 import {expect} from 'chai';
 import {Tag} from '../../src/common/cards/Tag';
-import {Color} from '../../src/common/Color';
-import {Player} from '../../src/server/Player';
+import {IPlayer} from '../../src/server/IPlayer';
+import {TestPlayer} from '../TestPlayer';
 import {Tags} from '../../src/server/player/Tags';
 import {isICorporationCard} from '../../src/server/cards/corporation/ICorporationCard';
 import {fakeCard} from '../TestingUtils';
 import {CardType} from '../../src/common/cards/CardType';
+import {CardName} from '../../src/common/cards/CardName';
+import {newCard} from '../../src/server/createCard';
 
 // Exposes rawCount available for testing.
 class TestableTags extends Tags {
-  constructor(player: Player) {
+  constructor(player: IPlayer) {
     super(player);
   }
   public override rawCount(tag: Tag, includeEventsTags: boolean) {
@@ -18,11 +20,11 @@ class TestableTags extends Tags {
 }
 
 describe('Tags', function() {
-  let player: Player;
+  let player: IPlayer;
   let tags: TestableTags;
 
   beforeEach(() => {
-    player = new Player('name', Color.BLUE, false, 0, 'p-id');
+    player = TestPlayer.BLACK.newPlayer();
     tags = new TestableTags(player);
   });
 
@@ -47,7 +49,18 @@ describe('Tags', function() {
 
   // getAllTags
   // count(...)
-  // cardHasTag()
+
+  const cardHasTagRuns = [
+    {card: CardName.MICRO_MILLS, tag: Tag.ANIMAL, expected: false},
+    {card: CardName.BIRDS, tag: Tag.ANIMAL, expected: true},
+    {card: CardName.BRIBED_COMMITTEE, tag: Tag.EVENT, expected: true},
+  ] as const;
+  for (const run of cardHasTagRuns) {
+    it('cardHasTag ' + JSON.stringify(run), () => {
+      expect(tags.cardHasTag(newCard(run.card)!, run.tag)).eq(run.expected);
+    });
+  }
+
   // cardTagCount()
   // multipleCount
   // distinctCount

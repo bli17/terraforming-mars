@@ -1,6 +1,6 @@
 import {Tag} from '../../../common/cards/Tag';
 import {CardName} from '../../../common/cards/CardName';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {PreludeCard} from './PreludeCard';
 import {PlayProjectCard} from '../../deferredActions/PlayProjectCard';
 import {CardRenderer} from '../render/CardRenderer';
@@ -21,18 +21,18 @@ export class EcologyExperts extends PreludeCard {
           b.production((pb) => pb.plants(1)).br.br;
           b.projectRequirements();
         }),
-        description: 'Increase your plant production 1 step. Play a card from hand, ignoring global requirements.',
+        description: 'Increase your plant production 1 step. PLAY A CARD FROM HAND, IGNORING GLOBAL REQUIREMENTS.',
       },
     });
   }
-  public getRequirementBonus(player: Player): number {
+  public override getGlobalParameterRequirementBonus(player: IPlayer): number {
     if (player.lastCardPlayed === this.name) {
       // Magic number high enough to always ignore requirements.
       return 50;
     }
     return 0;
   }
-  public override bespokePlay(player: Player) {
+  public override bespokePlay(player: IPlayer) {
     player.game.defer(new PlayProjectCard(player));
     return undefined;
   }

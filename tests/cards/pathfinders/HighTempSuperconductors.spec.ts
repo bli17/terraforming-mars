@@ -1,21 +1,22 @@
 import {expect} from 'chai';
 import {HighTempSuperconductors} from '../../../src/server/cards/pathfinders/HighTempSuperconductors';
 import {Thorgate} from '../../../src/server/cards/corporation/Thorgate';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
 import {testGame} from '../../TestGame';
 import {Reds} from '../../../src/server/turmoil/parties/Reds';
 import {Kelvinists, KELVINISTS_POLICY_1} from '../../../src/server/turmoil/parties/Kelvinists';
 import {Turmoil} from '../../../src/server/turmoil/Turmoil';
-import {fakeCard, setRulingPartyAndRulingPolicy} from '../../TestingUtils';
+import {fakeCard, setRulingParty} from '../../TestingUtils';
 import {Units} from '../../../src/common/Units';
 import {Tag} from '../../../src/common/cards/Tag';
 import {PowerPlantStandardProject} from '../../../src/server/cards/base/standardProjects/PowerPlantStandardProject';
+import {PartyName} from '../../../src/common/turmoil/PartyName';
 
 describe('HighTempSuperconductors', function() {
   let card: HighTempSuperconductors;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
   let turmoil: Turmoil;
 
   beforeEach(function() {
@@ -67,7 +68,7 @@ describe('HighTempSuperconductors', function() {
 
   it('double-discount with Thorgate', function() {
     player.playedCards.push(card);
-    player.setCorporationForTest(new Thorgate());
+    player.corporations.push(new Thorgate());
 
     const powerPlant = new PowerPlantStandardProject();
     player.megaCredits = powerPlant.cost - 7;
@@ -77,7 +78,7 @@ describe('HighTempSuperconductors', function() {
   });
 
   it('discount Kelvinists ruling bonus', function() {
-    setRulingPartyAndRulingPolicy(game, turmoil, new Kelvinists(), 'kp01');
+    setRulingParty(game, PartyName.KELVINISTS);
 
     player.megaCredits = 9;
     expect(KELVINISTS_POLICY_1.canAct(player)).is.false;

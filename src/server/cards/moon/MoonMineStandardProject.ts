@@ -1,4 +1,4 @@
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {StandardProjectCard} from '../StandardProjectCard';
@@ -19,7 +19,7 @@ export class MoonMineStandardProject extends StandardProjectCard {
     metadata: {
       cardNumber: '',
       renderData: CardRenderer.builder((b) =>
-        b.standardProject('Spend 20 M€ and 1 titanium to place a mine on the moon, raise the mining rate 1 step, and raise steel production 1 step.', (eb) => {
+        b.standardProject('Spend 20 M€ and 1 titanium to place a mine on The Moon, raise the mining rate 1 step, and raise steel production 1 step.', (eb) => {
           eb.megacredits(20).titanium(1).startAction.moonMine({secondaryTag: AltSecondaryTag.MOON_MINING_RATE}).production((pb) => pb.steel(1));
         }),
       ),
@@ -28,14 +28,14 @@ export class MoonMineStandardProject extends StandardProjectCard {
     super(properties);
   }
 
-  protected override discount(player: Player): number {
-    if (player.playedCards.find((card) => card.name === CardName.MOONCRATE_BLOCK_FACTORY)) {
+  protected override discount(player: IPlayer): number {
+    if (player.getPlayedCard(CardName.MOONCRATE_BLOCK_FACTORY)) {
       return 4;
     }
     return super.discount(player);
   }
 
-  public override canAct(player: Player): boolean {
+  public override canAct(player: IPlayer): boolean {
     const moonData = MoonExpansion.moonData(player.game);
     const spaces = moonData.moon.getAvailableSpacesForMine(player);
 
@@ -46,9 +46,9 @@ export class MoonMineStandardProject extends StandardProjectCard {
     return super.canAct(player);
   }
 
-  actionEssence(player: Player): void {
+  actionEssence(player: IPlayer): void {
     const adjustedReserveUnits = MoonExpansion.adjustedReserveCosts(player, this);
-    player.deductUnits(adjustedReserveUnits);
+    player.stock.deductUnits(adjustedReserveUnits);
     player.game.defer(new PlaceMoonMineTile(player));
     player.production.add(Resource.STEEL, 1, {log: true});
   }

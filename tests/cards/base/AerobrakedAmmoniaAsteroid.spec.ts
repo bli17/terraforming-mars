@@ -4,14 +4,14 @@ import {cast, runAllActions} from '../../TestingUtils';
 import {AerobrakedAmmoniaAsteroid} from '../../../src/server/cards/base/AerobrakedAmmoniaAsteroid';
 import {Ants} from '../../../src/server/cards/base/Ants';
 import {Decomposers} from '../../../src/server/cards/base/Decomposers';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
 import {testGame} from '../../TestGame';
 
 describe('AerobrakedAmmoniaAsteroid', function() {
   let card: AerobrakedAmmoniaAsteroid;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new AerobrakedAmmoniaAsteroid();
@@ -25,7 +25,7 @@ describe('AerobrakedAmmoniaAsteroid', function() {
     expect(player.production.plants).to.eq(1);
 
     // It's okay to not have a card to collect Microbes on
-    expect(action).is.undefined;
+    cast(action, undefined);
   });
 
   it('Adds microbes automatically if only 1 target', function() {

@@ -8,6 +8,7 @@ import {IProjectCard} from '../../../src/server/cards/IProjectCard';
 import {MartianSurvey} from '../../../src/server/cards/prelude/MartianSurvey';
 import {LawSuit} from '../../../src/server/cards/promo/LawSuit';
 import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {SelectCard} from '../../../src/server/inputs/SelectCard';
 import {SelectPlayer} from '../../../src/server/inputs/SelectPlayer';
 import {TestPlayer} from '../../TestPlayer';
@@ -22,14 +23,14 @@ describe('Playwrights', () => {
   let card: Playwrights;
   let player: TestPlayer;
   let player2: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(() => {
     card = new Playwrights();
     [game, player, player2] = testGame(2);
 
     card.play(player);
-    player.setCorporationForTest(card);
+    player.corporations.push(card);
   });
 
   it('Cannot act without any played events', () => {
@@ -140,13 +141,13 @@ describe('Playwrights', () => {
 
     runAllActions(game);
 
-    expect(player.getRequirementsBonus(GlobalParameter.OXYGEN)).to.eq(2);
+    expect(player.getGlobalParameterRequirementBonus(GlobalParameter.OXYGEN)).to.eq(2);
 
     const lastRemovedFromPlayCard = player.removedFromPlayCards[player.removedFromPlayCards.length - 1];
     expect(lastRemovedFromPlayCard.name).to.eq(event.name);
 
     player.playCard(new Worms());
-    expect(player.getRequirementsBonus(GlobalParameter.OXYGEN)).to.eq(0);
+    expect(player.getGlobalParameterRequirementBonus(GlobalParameter.OXYGEN)).to.eq(0);
     expect(player.removedFromPlayCards).deep.eq([event]);
   });
 
@@ -162,7 +163,7 @@ describe('Playwrights', () => {
 
     runAllActions(game);
 
-    expect(player.getRequirementsBonus(GlobalParameter.OXYGEN)).to.eq(2);
+    expect(player.getGlobalParameterRequirementBonus(GlobalParameter.OXYGEN)).to.eq(2);
 
     const serialized = game.serialize();
     const newGame = Game.deserialize(serialized);
@@ -172,7 +173,7 @@ describe('Playwrights', () => {
     expect(lastRemovedFromPlayCard.name).to.eq(event.name);
 
     newPlayer.playCard(new Worms());
-    expect(newPlayer.getRequirementsBonus(GlobalParameter.OXYGEN)).to.eq(0);
+    expect(newPlayer.getGlobalParameterRequirementBonus(GlobalParameter.OXYGEN)).to.eq(0);
     expect(newPlayer.removedFromPlayCards).deep.eq([event]);
   });
 });

@@ -1,5 +1,5 @@
-import {Game, Score} from '../Game';
-import {GameOptions} from '../GameOptions';
+import {IGame, Score} from '../IGame';
+import {GameOptions} from '../game/GameOptions';
 import {GameId, ParticipantId} from '../../common/Types';
 import {SerializedGame} from '../SerializedGame';
 
@@ -19,7 +19,6 @@ export type GameIdLedger = {gameId: GameId, participantIds: Array<ParticipantId>
  * in the game. Why, I have no idea, says kberg.
 */
 export interface IDatabase {
-
     /**
      * Creates any tables needed
      */
@@ -72,7 +71,7 @@ export interface IDatabase {
      *
      * Do not call directly.
      */
-    saveGame(game: Game): Promise<void>;
+    saveGame(game: IGame): Promise<void>;
 
     /**
      * Stores the results of a game in perpetuity in a separate table from normal
@@ -85,11 +84,6 @@ export interface IDatabase {
      * @param scores an array of scores correlated to the player's corporation.
      */
     saveGameResults(gameId: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>): void;
-
-    /**
-     * Load a game at save point 0, and provide it in the callback.
-     */
-    loadCloneableGame(gameId: GameId): Promise<SerializedGame>;
 
     /**
      * Deletes the last `rollbackCount` saves of the specified game.
@@ -108,7 +102,6 @@ export interface IDatabase {
      *   (Purges all saves between `(0, last save]`.)
      */
     markFinished(gameId: GameId): Promise<void>;
-
 
     /**
      * A maintenance task that purges abandoned solo games older

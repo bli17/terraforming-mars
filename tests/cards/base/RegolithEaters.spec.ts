@@ -1,7 +1,7 @@
 import {expect} from 'chai';
-import {cardAction, cast, runAllActions} from '../../TestingUtils';
+import {cast, churn, runAllActions} from '../../TestingUtils';
 import {RegolithEaters} from '../../../src/server/cards/base/RegolithEaters';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {OrOptions} from '../../../src/server/inputs/OrOptions';
 import {TestPlayer} from '../../TestPlayer';
 import {testGame} from '../../TestGame';
@@ -9,7 +9,7 @@ import {testGame} from '../../TestGame';
 describe('RegolithEaters', function() {
   let card: RegolithEaters;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new RegolithEaters();
@@ -18,13 +18,13 @@ describe('RegolithEaters', function() {
 
   it('Should act', function() {
     player.playedCards.push(card);
-    expect(cardAction(card, player)).is.undefined;
+    expect(churn(card.action(player), player)).is.undefined;
     expect(card.resourceCount).to.eq(1);
 
-    expect(cardAction(card, player)).is.undefined;
+    expect(churn(card.action(player), player)).is.undefined;
     expect(card.resourceCount).to.eq(2);
 
-    const orOptions = cast(cardAction(card, player), OrOptions);
+    const orOptions = cast(churn(card.action(player), player), OrOptions);
 
     orOptions.options[1].cb();
     runAllActions(game);

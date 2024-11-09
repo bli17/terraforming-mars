@@ -1,12 +1,12 @@
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {IProjectCard} from '../IProjectCard';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {PreludeCard} from '../prelude/PreludeCard';
-import {Resource} from '../../../common/Resource';
 import {Tag} from '../../../common/cards/Tag';
-import {Game} from '../../Game';
+import {IGame} from '../../IGame';
 import {Turmoil} from '../../turmoil/Turmoil';
+import {ChooseRulingPartyDeferred} from '../../turmoil/ChooseRulingPartyDeferred';
 
 export class TheNewSpaceRace extends PreludeCard implements IProjectCard {
   constructor() {
@@ -14,8 +14,12 @@ export class TheNewSpaceRace extends PreludeCard implements IProjectCard {
       name: CardName.THE_NEW_SPACE_RACE,
       tags: [Tag.SCIENCE, Tag.EARTH],
 
+      behavior: {
+        stock: {megacredits: 12},
+      },
+
       metadata: {
-        cardNumber: '',
+        cardNumber: 'PfP14',
         renderData: CardRenderer.builder((b) => {
           b.firstPlayer().rulingParty().megacredits(12).br;
         }),
@@ -23,18 +27,17 @@ export class TheNewSpaceRace extends PreludeCard implements IProjectCard {
       },
     });
   }
-  public override bespokePlay(player: Player) {
+  public override bespokePlay(player: IPlayer) {
     const game = player.game;
-    player.addResource(Resource.MEGACREDITS, 12);
     game.overrideFirstPlayer(player);
     Turmoil.ifTurmoil((player.game), (turmoil) => {
-      turmoil.chooseRulingParty(player);
+      player.game.defer(new ChooseRulingPartyDeferred(player, turmoil));
     });
 
     return undefined;
   }
 
-  public static potentiallyChangeFirstPlayer(game: Game) {
+  public static potentiallyChangeFirstPlayer(game: IGame) {
     const [cardHolder, card] = game.getCardHolder(CardName.THE_NEW_SPACE_RACE);
     if (cardHolder !== undefined && card !== undefined) {
       game.log('${0} has ${1}, which is played before any other Prelude and makes them first player.', (b) => b.player(cardHolder).card(card));

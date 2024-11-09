@@ -4,9 +4,7 @@ import {CardType} from '../../../common/cards/CardType';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {Tag} from '../../../common/cards/Tag';
-import {CardRequirements} from '../requirements/CardRequirements';
 import {PartyName} from '../../../common/turmoil/PartyName';
-import {played} from '../Options';
 
 export class HighTempSuperconductors extends Card implements IProjectCard {
   constructor() {
@@ -16,7 +14,7 @@ export class HighTempSuperconductors extends Card implements IProjectCard {
       cost: 10,
       tags: [Tag.POWER, Tag.SCIENCE],
 
-      requirements: CardRequirements.builder((b) => b.party(PartyName.KELVINISTS)),
+      requirements: {party: PartyName.KELVINISTS},
       cardDiscount: {tag: Tag.POWER, amount: 3},
 
       behavior: {
@@ -27,7 +25,7 @@ export class HighTempSuperconductors extends Card implements IProjectCard {
         cardNumber: 'PfTMP',
         renderData: CardRenderer.builder((b) => {
           b.effect('When playing a power card, THE STANDARD PROJECT POWER PLANT, OR THE KELVINIST RULING POLICY ACTION, pay 3M€ less.', (eb) => {
-            eb.energy(1, {played}).asterix().slash().text('Kelvinists').startEffect.megacredits(-3);
+            eb.tag(Tag.POWER).asterix().slash().text('Kelvinists').startEffect.megacredits(-3);
           }).br;
           b.production((pb) => pb.energy(2));
         }),

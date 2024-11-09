@@ -1,17 +1,13 @@
 import {expect} from 'chai';
 import {CryoSleep} from '../../../src/server/cards/colonies/CryoSleep';
 import {Ceres} from '../../../src/server/colonies/Ceres';
-import {Game} from '../../../src/server/Game';
-import {TestPlayer} from '../../TestPlayer';
+import {cast, testGame} from '../../TestingUtils';
 
 describe('CryoSleep', function() {
   it('Should play', function() {
     const card = new CryoSleep();
-    const player = TestPlayer.BLUE.newPlayer();
-    const player2 = TestPlayer.RED.newPlayer();
-    Game.newInstance('gameid', [player, player2], player);
-    const action = card.play(player);
-    expect(action).is.undefined;
+    const [/* game */, player/* , player2 */] = testGame(2);
+    cast(card.play(player), undefined);
     const ceres = new Ceres();
     ceres.trade(player);
     expect(player.steel).to.eq(2);

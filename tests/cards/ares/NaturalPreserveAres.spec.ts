@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TileType} from '../../../src/common/TileType';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 import {NaturalPreserveAres} from '../../../src/server/cards/ares/NaturalPreserveAres';
@@ -11,7 +11,7 @@ import {testGame} from '../../TestGame';
 describe('NaturalPreserveAres', function() {
   let card: NaturalPreserveAres;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new NaturalPreserveAres();
@@ -23,9 +23,9 @@ describe('NaturalPreserveAres', function() {
     card.play(player);
     runAllActions(game);
     const action = cast(player.popWaitingFor(), SelectSpace);
-    const space = action.availableSpaces[0];
+    const space = action.spaces[0];
     action.cb(space);
-    expect(space.tile && space.tile.tileType).to.eq(TileType.NATURAL_PRESERVE);
+    expect(space.tile?.tileType).to.eq(TileType.NATURAL_PRESERVE);
     expect(space.adjacency).to.deep.eq({bonus: [SpaceBonus.MEGACREDITS]});
   });
 });

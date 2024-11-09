@@ -3,13 +3,10 @@ import {Tag} from '../../../common/cards/Tag';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {PartyName} from '../../../common/turmoil/PartyName';
 import {Resource} from '../../../common/Resource';
-import {SimpleDeferredAction} from '../../deferredActions/DeferredAction';
 import {CardRenderer} from '../render/CardRenderer';
-import {CardRequirements} from '../requirements/CardRequirements';
-import {played} from '../Options';
 
 export class GMOContract extends Card implements IProjectCard {
   constructor() {
@@ -19,13 +16,13 @@ export class GMOContract extends Card implements IProjectCard {
       tags: [Tag.MICROBE, Tag.SCIENCE],
       cost: 3,
 
-      requirements: CardRequirements.builder((b) => b.party(PartyName.GREENS)),
+      requirements: {party: PartyName.GREENS},
       metadata: {
         description: 'Requires that Greens are ruling or that you have 2 delegates there.',
         cardNumber: 'T06',
         renderData: CardRenderer.builder((b) => {
           b.effect('Each time you play a plant, animal or microbe tag, including this, gain 2 M€.', (be) => {
-            be.animals(1, {played}).slash().plants(1, {played}).slash().microbes(1, {played});
+            be.tag(Tag.ANIMAL).slash().tag(Tag.PLANT).slash().tag(Tag.MICROBE);
             be.startEffect.megacredits(2);
           });
         }),
@@ -33,15 +30,10 @@ export class GMOContract extends Card implements IProjectCard {
     });
   }
 
-  public onCardPlayed(player: Player, card: IProjectCard): void {
+  public onCardPlayed(player: IPlayer, card: IProjectCard): void {
     const amount = player.tags.cardTagCount(card, [Tag.ANIMAL, Tag.PLANT, Tag.MICROBE]);
     if (amount > 0) {
-      player.game.defer(
-        new SimpleDeferredAction(player, () => {
-          player.addResource(Resource.MEGACREDITS, amount * 2, {log: true});
-          return undefined;
-        }),
-      );
+      player.defer(() => player.stock.add(Resource.MEGACREDITS, amount * 2, {log: true}));
     }
   }
 }

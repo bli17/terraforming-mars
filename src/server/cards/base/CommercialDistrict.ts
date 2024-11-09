@@ -2,7 +2,7 @@ import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {TileType} from '../../../common/TileType';
 import {CardName} from '../../../common/cards/CardName';
 import {Board} from '../../boards/Board';
@@ -24,7 +24,7 @@ export class CommercialDistrict extends Card implements IProjectCard {
         }).nbsp.nbsp.tile(TileType.COMMERCIAL_DISTRICT, true).br;
         b.vpText('1 VP per adjacent city tile.');
       }),
-      victoryPoints: CardRenderDynamicVictoryPoints.cities(1, 1, true),
+      victoryPoints: CardRenderDynamicVictoryPoints.cities(1, 1, true, true),
     },
   ) {
     super({
@@ -48,7 +48,7 @@ export class CommercialDistrict extends Card implements IProjectCard {
     });
   }
 
-  public override getVictoryPoints(player: Player) {
+  public override getVictoryPoints(player: IPlayer) {
     const usedSpace = player.game.board.getSpaceByTileCard(this.name);
     if (usedSpace !== undefined) {
       return player.game.board.getAdjacentSpaces(usedSpace).filter(

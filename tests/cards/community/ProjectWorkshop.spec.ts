@@ -5,13 +5,13 @@ import {CardType} from '../../../src/common/cards/CardType';
 import {ProjectWorkshop} from '../../../src/server/cards/community/ProjectWorkshop';
 import {ICard} from '../../../src/server/cards/ICard';
 import {Extremophiles} from '../../../src/server/cards/venusNext/Extremophiles';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {OrOptions} from '../../../src/server/inputs/OrOptions';
 import {SelectCard} from '../../../src/server/inputs/SelectCard';
 import {SelectOption} from '../../../src/server/inputs/SelectOption';
 import {TestPlayer} from '../../TestPlayer';
 import {AncientShipyards} from '../../../src/server/cards/moon/AncientShipyards';
-import {cast, churn, churnAction, runAllActions} from '../../TestingUtils';
+import {cast, churn, runAllActions} from '../../TestingUtils';
 import {Phase} from '../../../src/common/Phase';
 import {Reds} from '../../../src/server/turmoil/parties/Reds';
 import {PoliticalAgendas} from '../../../src/server/turmoil/PoliticalAgendas';
@@ -24,7 +24,7 @@ import {Payment} from '../../../src/common/inputs/Payment';
 describe('ProjectWorkshop', function() {
   let card: ProjectWorkshop;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
   let advancedAlloys : AdvancedAlloys;
 
   beforeEach(function() {
@@ -33,14 +33,14 @@ describe('ProjectWorkshop', function() {
     [game, player] = testGame(1);
 
     card.play(player);
-    player.setCorporationForTest(card);
+    player.corporations.push(card);
   });
 
   it('Starts with correct resources', function() {
     expect(player.steel).to.eq(1);
     expect(player.titanium).to.eq(1);
 
-    player.runInitialAction(card);
+    player.deferInitialAction(card);
     runAllActions(game);
     expect(player.cardsInHand).has.lengthOf(1);
     expect(player.cardsInHand[0].type).to.eq(CardType.ACTIVE);
@@ -55,8 +55,8 @@ describe('ProjectWorkshop', function() {
     player.megaCredits = 3;
 
     expect(card.canAct(player)).is.true;
-    const selectOption = cast(churnAction(card, player), SelectOption);
-    expect(churn(() => selectOption.cb(), player)).is.undefined;
+    const selectOption = cast(churn(card.action(player), player), SelectOption);
+    expect(churn(() => selectOption.cb(undefined), player)).is.undefined;
     expect(player.cardsInHand).has.lengthOf(1);
     expect(player.cardsInHand[0].type).to.eq(CardType.ACTIVE);
   });
@@ -69,7 +69,7 @@ describe('ProjectWorkshop', function() {
     expect(player.getSteelValue()).to.eq(3);
     expect(player.getTitaniumValue()).to.eq(4);
 
-    card.action(player).cb();
+    card.action(player).cb(undefined);
     expect(player.playedCards).has.lengthOf(0);
     expect(game.projectDeck.discardPile.includes(advancedAlloys)).is.true;
     expect(player.cardsInHand).has.lengthOf(2);
@@ -88,7 +88,7 @@ describe('ProjectWorkshop', function() {
     player.playedCards.push(smallAnimals, extremophiles);
 
     const selectOption = cast(card.action(player), SelectOption);
-    const selectCard = cast(selectOption.cb(), SelectCard<ICard>);
+    const selectCard = cast(selectOption.cb(undefined), SelectCard<ICard>);
 
     selectCard.cb([smallAnimals]);
     expect(player.getTerraformRating()).to.eq(originalTR + 2);
@@ -115,7 +115,7 @@ describe('ProjectWorkshop', function() {
 
     const selectOption = cast(card.action(player), SelectOption);
 
-    expect(selectOption.cb()).is.undefined;
+    expect(selectOption.cb(undefined)).is.undefined;
     expect(player.playedCards).is.empty;
 
     expect(player.getTerraformRating()).to.eq(originalTR - 5);
@@ -126,7 +126,7 @@ describe('ProjectWorkshop', function() {
   it('Project Workshop and Reds taxes', () => {
     [game, player] = testGame(1, {turmoilExtension: true});
     card.play(player);
-    player.setCorporationForTest(card);
+    player.corporations.push(card);
     player.game.phase = Phase.ACTION;
 
     const turmoil = game.turmoil!;
@@ -187,8 +187,8 @@ describe('ProjectWorkshop', function() {
     // Setting a larger amount of heat just to make the test results more interesting
     player.heat = 5;
 
-    const selectOption = cast(churnAction(card, player), SelectOption);
-    const selectPayment = cast(churn(() => selectOption.cb(), player), SelectPayment);
+    const selectOption = cast(churn(card.action(player), player), SelectOption);
+    const selectPayment = cast(churn(() => selectOption.cb(undefined), player), SelectPayment);
     selectPayment.cb({...Payment.EMPTY, megaCredits: 1, heat: 2});
     expect(player.megaCredits).to.eq(1);
     expect(player.heat).to.eq(3);

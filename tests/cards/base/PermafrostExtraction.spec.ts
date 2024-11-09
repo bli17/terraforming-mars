@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {PermafrostExtraction} from '../../../src/server/cards/base/PermafrostExtraction';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 import {runAllActions, cast, setTemperature} from '../../TestingUtils';
@@ -9,7 +9,7 @@ import {testGame} from '../../TestGame';
 describe('PermafrostExtraction', function() {
   let card: PermafrostExtraction;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new PermafrostExtraction();
@@ -17,18 +17,17 @@ describe('PermafrostExtraction', function() {
   });
 
   it('Cannot play', function() {
-    expect(player.simpleCanPlay(card)).is.not.true;
+    expect(card.canPlay(player)).is.not.true;
   });
 
   it('Should play', function() {
     setTemperature(game, -8);
-    expect(player.simpleCanPlay(card)).is.true;
+    expect(card.canPlay(player)).is.true;
 
-    const action = card.play(player);
-    expect(action).is.undefined;
+    cast(card.play(player), undefined);
     runAllActions(game);
     const selectSpace = cast(player.getWaitingFor(), SelectSpace);
-    selectSpace.cb(selectSpace.availableSpaces[0]);
-    expect(game.board.getOceanCount()).to.eq(1);
+    selectSpace.cb(selectSpace.spaces[0]);
+    expect(game.board.getOceanSpaces()).has.length(1);
   });
 });

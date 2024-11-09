@@ -4,7 +4,7 @@ import {SellPatentsStandardProject} from '../../../src/server/cards/base/standar
 import {StandardTechnology} from '../../../src/server/cards/base/StandardTechnology';
 import {TestPlayer} from '../../TestPlayer';
 import {testGame} from '../../TestGame';
-import {cast, churnAction, churnPlay} from '../../TestingUtils';
+import {cast, churn} from '../../TestingUtils';
 import {GreeneryStandardProject} from '../../../src/server/cards/base/standardProjects/GreeneryStandardProject';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 
@@ -13,12 +13,12 @@ describe('StandardTechnology', function() {
   let player: TestPlayer;
 
   beforeEach(() => {
-    [, player] = testGame(1);
+    [/* game */, player] = testGame(1);
     card = new StandardTechnology();
   });
 
   it('play', function() {
-    expect(churnPlay(card, player)).is.undefined;
+    expect(churn(card.play(player), player)).is.undefined;
   });
 
   it('Rebate for Asteroid Standard Project', function() {
@@ -41,8 +41,8 @@ describe('StandardTechnology', function() {
 
     const greeneryStandardProject = new GreeneryStandardProject();
 
-    const selectSpace = cast(churnAction(greeneryStandardProject, player), SelectSpace);
-    const availableSpace = selectSpace.availableSpaces[0];
+    const selectSpace = cast(churn(greeneryStandardProject.action(player), player), SelectSpace);
+    const availableSpace = selectSpace.spaces[0];
 
     selectSpace?.cb(availableSpace);
 

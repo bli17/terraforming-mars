@@ -3,7 +3,7 @@ import {testGame} from '../../TestGame';
 import {CoordinatedRaid} from '../../../src/server/cards/pathfinders/CoordinatedRaid';
 import {SelectColony} from '../../../src/server/inputs/SelectColony';
 import {ColonyName} from '../../../src/common/colonies/ColonyName';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
 import {Colony} from '../../../src/server/colonies/Colony';
 import {ColonyBenefit} from '../../../src/common/colonies/ColonyBenefit';
@@ -15,6 +15,7 @@ export class TestColony extends Colony {
   constructor() {
     super({
       name: 'TestColony' as ColonyName,
+      description: ['', '', ''],
       buildType: ColonyBenefit.GAIN_RESOURCES,
       buildQuantity: [3, 3, 3],
       buildResource: Resource.TITANIUM,
@@ -33,7 +34,7 @@ describe('CoordinatedRaid', function() {
   let card: CoordinatedRaid;
   let player: TestPlayer;
   let player2: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new CoordinatedRaid();
@@ -58,14 +59,14 @@ describe('CoordinatedRaid', function() {
     const action = card.play(player);
     const selectColony = cast(action, SelectColony);
 
-    expect(player.purse()).deep.eq(Units.EMPTY);
-    expect(player2.purse()).deep.eq(Units.of({titanium: 6}));
+    expect(player.stock.asUnits()).deep.eq(Units.EMPTY);
+    expect(player2.stock.asUnits()).deep.eq(Units.of({titanium: 6}));
 
     selectColony.cb(colony);
     runAllActions(game);
 
-    expect(player.purse()).deep.eq(Units.of({titanium: 0, steel: 14, megacredits: 6}));
-    expect(player2.purse()).deep.eq(Units.of({titanium: 6}));
+    expect(player.stock.asUnits()).deep.eq(Units.of({titanium: 0, steel: 14, megacredits: 6}));
+    expect(player2.stock.asUnits()).deep.eq(Units.of({titanium: 6}));
   });
 
   it('Coordinated Raid ignores Trade Envoys', function() {
@@ -74,11 +75,11 @@ describe('CoordinatedRaid', function() {
     colony.addColony(player2);
     const selectColony = cast(card.play(player), SelectColony);
 
-    expect(player.purse()).deep.eq(Units.EMPTY);
+    expect(player.stock.asUnits()).deep.eq(Units.EMPTY);
 
     selectColony.cb(colony);
     runAllActions(game);
 
-    expect(player.purse()).deep.eq(Units.of({titanium: 0, steel: 7, megacredits: 5}));
+    expect(player.stock.asUnits()).deep.eq(Units.of({titanium: 0, steel: 7, megacredits: 5}));
   });
 });

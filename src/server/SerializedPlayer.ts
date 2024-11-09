@@ -3,18 +3,24 @@ import {CardName} from '../common/cards/CardName';
 import {Color} from '../common/Color';
 import {SerializedCard} from './SerializedCard';
 import {SerializedTimer} from '../common/SerializedTimer';
+import {UnderworldPlayerData} from './underworld/UnderworldData';
+import {AlliedParty} from './turmoil/AlliedParty';
 
 interface DeprecatedFields {
-    tradesThisTurn?: number; // TODO(kberg): Remove tradesThisTurn after 2023-06-01
 }
 
 export interface SerializedPlayer extends DeprecatedFields{
     actionsTakenThisGame: number;
     actionsTakenThisRound: number;
     actionsThisGeneration: Array<CardName>;
+    alliedParty: AlliedParty | undefined;
+    // TODO(kberg): remove ? by 2024-10-01
+    autoPass?: boolean;
     beginner: boolean;
+    canUseCorruptionAsMegacredits: boolean;
     canUseHeatAsMegaCredits: boolean;
     canUseTitaniumAsMegacredits: boolean;
+    canUsePlantsAsMegaCredits: boolean;
     cardCost: number;
     cardDiscount: number;
     cardsInHand: Array<CardName>;
@@ -28,6 +34,7 @@ export interface SerializedPlayer extends DeprecatedFields{
     dealtPreludeCards: Array<CardName>;
     dealtProjectCards: Array<CardName>;
     draftedCards: Array<CardName>;
+    draftHand: Array<CardName>,
     energy: number;
     energyProduction: number;
     fleetSize: number;
@@ -52,6 +59,7 @@ export interface SerializedPlayer extends DeprecatedFields{
     playedCards: Array<SerializedCard>;
     politicalAgendasActionUsedCount: number;
     preludeCardsInHand: Array<CardName>;
+    preservationProgram: boolean;
     removedFromPlayCards: Array<CardName>;
     removingPlayers: Array<PlayerId>;
     scienceTagCount: number;
@@ -59,14 +67,13 @@ export interface SerializedPlayer extends DeprecatedFields{
     steelProduction: number;
     steelValue: number;
     terraformRating: number;
-    terraformRatingAtGenerationStart: number;
     timer: SerializedTimer;
     titanium: number;
     titaniumProduction: number;
     titaniumValue: number;
     totalDelegatesPlaced: number;
-    // TODO(kberg): Remove ? by 2023-06-01
-    tradesThisGeneration?: number;
+    tradesThisGeneration: number;
     turmoilPolicyActionUsed: boolean;
+    underworldData: UnderworldPlayerData;
     victoryPointsByGeneration: Array<number>;
 }

@@ -182,21 +182,40 @@
         }
         .player-tags-main {
             display: flex;
-            align-items: center;
+            align-items: initial;
             margin-left: 0;
+            margin-top: 8px;
         }
         .player-tags-secondary {
             display: flex;
             flex-flow: row;
-            align-items: center;
+            align-items: initial;
             position: relative;
             margin-left: 5px;
+            margin-top: 8px;
         }
         .tag-separator {
             width: 2px;
             height: 70px;
             margin-right: 6px;
             background:rgba(170, 170, 170, 0.2);
+        }
+    }
+    .player-allied-party {
+        display: flex;
+        flex-flow: row;
+        .allied-policy-block {
+            position: relative;
+            text-align: center;
+            display: inline-block;
+            vertical-align: top;
+            padding: 5px;
+            min-width: 233px;
+            min-height: 104px;
+
+            .party-name {
+                margin-left: 38px;
+            }
         }
     }
     .player-status-and-res {
@@ -233,28 +252,21 @@
                         width: 100%;
                         .player-timer {
                             display: flex;
-                            flex-flow: row;
                             width: 100%;
                             justify-content: center;
-                            >div{
-                                display: inline-block;
-                            }
-                            .time-part {
-                                width: 23px;
-                                text-align: left;
-                            }
                             .timer-delimiter {
                                 margin-left: 1px;
                                 margin-right: 1px;
+                            }
+                            .player-timer-seconds {
+                                width: 23px;
+                                text-align: left;
                             }
                             .player-timer-minutes {
                                 text-align: center;
                             }
                             .player-timer-hours {
-                                width: 27px;
                                 text-align: right;
-                                align-self: flex-end;
-                                padding-right: 1px;
                             }
                         }
                     }

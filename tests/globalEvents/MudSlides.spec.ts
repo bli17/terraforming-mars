@@ -1,16 +1,16 @@
 import {expect} from 'chai';
-import {Game} from '../../src/server/Game';
+import {IGame} from '../../src/server/IGame';
 import {MudSlides} from '../../src/server/turmoil/globalEvents/MudSlides';
 import {Turmoil} from '../../src/server/turmoil/Turmoil';
 import {TestPlayer} from '../TestPlayer';
 import {testGame} from '../TestGame';
-import {ISpace} from '../../src/server/boards/ISpace';
+import {Space} from '../../src/server/boards/Space';
 import {TileType} from '../../src/common/TileType';
 
 describe('MudSlides', function() {
   let card: MudSlides;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
   let turmoil: Turmoil;
 
   beforeEach(() => {
@@ -34,7 +34,7 @@ describe('MudSlides', function() {
     [game, player] = testGame(2, {aresExtension: true, turmoilExtension: true});
 
     // Find two adjacent ocean spaces
-    function adjacentOceans(): {first: ISpace, second: ISpace} {
+    function adjacentOceans(): {first: Space, second: Space} {
       const oceanSpaces = game.board.getAvailableSpacesForOcean(player);
       for (const space of oceanSpaces) {
         const adjacentSpaces = game.board.getAdjacentSpaces(space);
