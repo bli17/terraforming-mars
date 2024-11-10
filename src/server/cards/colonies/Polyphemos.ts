@@ -29,8 +29,8 @@ export class Polyphemos extends CorporationCard {
               eb.cards(1).asterix().startEffect.megacredits(5);
             });
 			ce.vSpace();
-            ce.effect('When you buy a card to hand, pay 5M€ instead of 3, including the starting hand. (Buff:) WHEN PLAYING A CARD WITH A BASIC COST OF 20M€ OR MORE, draw a card.', (eb) => {
-			  eb.minus().megacredits(20).startEffect.cards(1);
+            ce.effect('When you buy a card to hand, pay 5 M€ instead of 3, including the starting hand. (Buff:) WHEN PLAYING A CARD WITH A BASIC COST OF 12 M€ OR MORE, draw a card.', (eb) => {
+			  eb.minus().megacredits(12).startEffect.cards(1);
             });
           });
         }),
@@ -39,7 +39,7 @@ export class Polyphemos extends CorporationCard {
   }
   
   public onCardPlayed(player: Player, card: IProjectCard) {
-    if (card.cost >= 20 && player.isCorporation(CardName.POLYPHEMOS)) {
+    if (card.cost >= 12 && player.isCorporation(CardName.POLYPHEMOS)) {
       player.drawCard();
     }
   }
