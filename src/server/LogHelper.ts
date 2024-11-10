@@ -109,7 +109,7 @@ export class LogHelper {
     }, options);
   }
 
-  static logCustomCorps(player: Player, cards: Array<ICard> | Array<CardName>, privateMessage: boolean = false) {
+  static logCustomCorps(player: IPlayer, cards: Array<ICard> | Array<CardName>, privateMessage: boolean = false) {
     // Copies the logDrawnCards code
     // If |this.count| equals 3, for instance, this generates "${0} custom Corporations list: ${1}, ${2} and ${3}"
     let message = '${0} custom Corporations list: ';

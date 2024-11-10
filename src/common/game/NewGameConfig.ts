@@ -10,6 +10,7 @@ import {GameId} from '../Types';
 export type BoardNameType = BoardName | RandomBoardOption;
 
 export interface NewPlayerModel {
+  index: number;
   name: string;
   color: Color;
   beginner: boolean;

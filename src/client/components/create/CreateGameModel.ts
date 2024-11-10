@@ -28,7 +28,6 @@ export type CreateGameModel = {
   p5Corporations: Array<CardName>;
   p6Corporations: Array<CardName>;
   customPreludes: Array<CardName>;
-  customPreludes: Array<CardName>;
   draftVariant: boolean;
   escapeVelocityBonusSeconds: number;
   escapeVelocityMode: boolean;
@@ -64,6 +63,7 @@ export type CreateGameModel = {
   showCorporationList: boolean;
   showIncludedCards: boolean;
   showOtherPlayersVP: boolean;
+  showPlayerCorporationList: boolean;
   showPreludesList: boolean;
   showTimers: boolean;
   shuffleMapOption: boolean;

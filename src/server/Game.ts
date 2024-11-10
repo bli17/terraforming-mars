@@ -1,7 +1,7 @@
 import * as constants from '../common/constants';
 import {BeginnerCorporation} from './cards/corporation/BeginnerCorporation';
 import {Board} from './boards/Board';
-import {cardsFromJSON} from './createCard';
+import {cardsFromJSON, newCorporationCard} from './createCard';
 import {CardName} from '../common/cards/CardName';
 import {CardType} from '../common/cards/CardType';
 import {ClaimedMilestone, serializeClaimedMilestones, deserializeClaimedMilestones} from './milestones/ClaimedMilestone';
@@ -372,7 +372,8 @@ export class Game implements IGame, Logger {
         gameOptions.ceoExtension) {
         if (gameOptions.playerCustomCorpList.length === 0) {
           for (let i = 0; i < gameOptions.startingCorporations; i++) {
-            player.dealtCorporationCards.push(corporationDeck.draw(game));
+            //player.dealtCorporationCards.push(...corporationDeck.drawN(game, gameOptions.startingCorporations));
+            player.dealtCorporationCards.push(...corporationDeck.drawN(game, 1));
           }
         }
         if (gameOptions.playerCustomCorpList.length > 0) {
@@ -380,13 +381,13 @@ export class Game implements IGame, Logger {
             // draw the corporation
             // the check for running out of cards is probably not ideal here, but hopefully it should work
             // maybe fix it later
-            const cardFinder = new CardFinder();
+            //const cardFinder = new CardFinder();
             const corp_index = Math.floor(Math.random() * gameOptions.playerCustomCorpList[player_number].length);
             const drawn_corp = gameOptions.playerCustomCorpList[player_number][corp_index];
-            const drawn_corp_card = cardFinder.getCorporationCardByName(drawn_corp);
+            const drawn_corp_card = newCorporationCard(drawn_corp);
             if (drawn_corp_card !== undefined) {
               corporationDeck.moveToTop([drawn_corp_card.name]);
-              player.dealtCorporationCards.push(corporationDeck.draw(game, 'bottom')); // moveToTop method seems to move to bottom
+              player.dealtCorporationCards.push(...corporationDeck.drawN(game, 1, 'bottom')); // moveToTop method seems to move to bottom
             } else {
               player.dealtCorporationCards.push(new BeginnerCorporation()); // fill excess corp deals w/ beginner corps
               // This is taking on faith that the code below properly removes dealt corps from every player's custom corp list
@@ -399,7 +400,6 @@ export class Game implements IGame, Logger {
             }
           }
         }
-        //player.dealtCorporationCards.push(...corporationDeck.drawN(game, gameOptions.startingCorporations));
         if (gameOptions.initialDraftVariant === false) {
           player.dealtProjectCards.push(...projectDeck.drawN(game, 10));
         }
