@@ -5,10 +5,9 @@ import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {CardResource} from '../../../common/CardResource';
 import {Tag} from '../../../common/cards/Tag';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Resource} from '../../../common/Resource';
 import {LogHelper} from '../../LogHelper';
-import {PlayerInput} from '../../PlayerInput';
 import {SelectCard} from '../../inputs/SelectCard';
 import {OrOptions} from '../../inputs/OrOptions';
 import {SelectOption} from '../../inputs/SelectOption';
@@ -29,71 +28,72 @@ export class AsteroidRights extends Card implements IActionCard, IProjectCard {
       },
 
       metadata: {
-        cardNumber: 'X31',
+        cardNumber: 'X34',
         description: 'Add 2 asteroids to this card.',
         renderData: CardRenderer.builder((b) => {
           b.action('Spend 1 M€ to add 1 asteroid to ANY card.', (eb) => {
-            eb.megacredits(1).startAction.asteroids(1).asterix().nbsp.or();
+            eb.megacredits(1).startAction.resource(CardResource.ASTEROID).asterix().nbsp.or();
           }).br;
           b.action('Spend 1 asteroid here to increase M€ production 1 step OR gain 2 titanium.', (eb) => {
-            eb.asteroids(1)
+            eb.resource(CardResource.ASTEROID)
               .startAction.production((pb) => pb.megacredits(1))
               .or()
               .titanium(2);
           }).br;
-          b.asteroids(2);
+          b.resource(CardResource.ASTEROID, 2);
         }),
       },
     });
   }
 
-  public canAct(player: Player): boolean {
+  public canAct(player: IPlayer): boolean {
     return player.canAfford(1) || this.resourceCount > 0;
   }
 
-  public action(player: Player) {
+  public action(player: IPlayer) {
     const canAddAsteroid = player.canAfford(1);
     const hasAsteroids = this.resourceCount > 0;
     const asteroidCards = player.getResourceCards(CardResource.ASTEROID);
 
-    const gainTitaniumOption = new SelectOption('Remove 1 asteroid on this card to gain 2 titanium', 'Remove asteroid', () => {
+    const gainTitaniumOption = new SelectOption('Remove 1 asteroid on this card to gain 2 titanium', 'Remove asteroid').andThen(() => {
       this.resourceCount--;
       player.titanium += 2;
       LogHelper.logRemoveResource(player, this, 1, 'gain 2 titanium');
       return undefined;
     });
 
-    const increaseMcProdOption = new SelectOption('Remove 1 asteroid on this card to increase M€ production 1 step', 'Remove asteroid', () => {
+    const increaseMcProdOption = new SelectOption('Remove 1 asteroid on this card to increase M€ production 1 step', 'Remove asteroid').andThen(() => {
       this.resourceCount--;
       player.production.add(Resource.MEGACREDITS, 1);
       LogHelper.logRemoveResource(player, this, 1, 'increase M€ production 1 step');
       return undefined;
     });
 
-    const addAsteroidToSelf = new SelectOption('Add 1 asteroid to this card', 'Add asteroid', () => {
+    const addAsteroidToSelf = new SelectOption('Add 1 asteroid to this card', 'Add asteroid').andThen(() => {
       player.game.defer(new SelectPaymentDeferred(player, 1, {title: 'Select how to pay for asteroid'}));
       player.addResourceTo(this, {log: true});
 
       return undefined;
     });
 
-    const addAsteroidOption = new SelectCard('Select card to add 1 asteroid', 'Add asteroid', asteroidCards, ([card]) => {
-      player.game.defer(new SelectPaymentDeferred(player, 1, {title: 'Select how to pay for asteroid'}));
-      player.addResourceTo(card, {log: true});
+    const addAsteroidOption = new SelectCard('Select card to add 1 asteroid', 'Add asteroid', asteroidCards)
+      .andThen(([card]) => {
+        player.game.defer(new SelectPaymentDeferred(player, 1, {title: 'Select how to pay for asteroid'}));
+        player.addResourceTo(card, {log: true});
 
-      return undefined;
-    });
+        return undefined;
+      });
 
     // Spend asteroid
     if (!canAddAsteroid) return new OrOptions(gainTitaniumOption, increaseMcProdOption);
 
     // Add asteroid to any card
     if (!hasAsteroids) {
-      if (asteroidCards.length === 1) return addAsteroidToSelf.cb();
+      if (asteroidCards.length === 1) return addAsteroidToSelf.cb(undefined);
       return addAsteroidOption;
     }
 
-    const opts: Array<PlayerInput> = [];
+    const opts = [];
     opts.push(gainTitaniumOption);
     opts.push(increaseMcProdOption);
     asteroidCards.length === 1 ? opts.push(addAsteroidToSelf) : opts.push(addAsteroidOption);

@@ -1,6 +1,6 @@
 import {GameIdLedger, IDatabase} from './IDatabase';
-import {Game, Score} from '../Game';
-import {GameOptions} from '../GameOptions';
+import {IGame, Score} from '../IGame';
+import {GameOptions} from '../game/GameOptions';
 import {GameId, isGameId, ParticipantId} from '../../common/Types';
 import {SerializedGame} from '../SerializedGame';
 import {Dirent, existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync} from 'fs';
@@ -12,6 +12,7 @@ export class LocalFilesystem implements IDatabase {
   protected readonly dbFolder: string;
   private readonly historyFolder: string;
   private readonly completedFolder: string;
+  public static quiet: boolean = false;
 
   constructor(dbFolder: string = defaultDbFolder) {
     this.dbFolder = dbFolder;
@@ -46,7 +47,7 @@ export class LocalFilesystem implements IDatabase {
     return path.resolve(this.completedFolder, `${gameId}.json`);
   }
 
-  saveGame(game: Game): Promise<void> {
+  saveGame(game: IGame): Promise<void> {
     console.log(`saving ${game.id} at position ${game.lastSaveId}`);
     this.saveSerializedGame(game.serialize());
     game.lastSaveId++;
@@ -98,7 +99,7 @@ export class LocalFilesystem implements IDatabase {
 
   getGameVersion(gameId: GameId, saveId: number): Promise<SerializedGame> {
     try {
-      console.log(`Loading ${gameId} at ${saveId}`);
+      if (!LocalFilesystem.quiet) console.log(`Loading ${gameId} at ${saveId}`);
       const text = readFileSync(this.historyFilename(gameId, saveId));
       const serializedGame = JSON.parse(text.toString());
       return Promise.resolve(serializedGame);
@@ -119,10 +120,6 @@ export class LocalFilesystem implements IDatabase {
     return serializedGame.players.length;
   }
 
-  loadCloneableGame(gameId: GameId): Promise<SerializedGame> {
-    return this.getGameVersion(gameId, 0);
-  }
-
   getGameIds(): Promise<Array<GameId>> {
     const gameIds: Array<GameId> = [];
 
@@ -133,10 +130,6 @@ export class LocalFilesystem implements IDatabase {
       }
     });
     return Promise.resolve(gameIds);
-  }
-
-  restoreReferenceGame(_gameId: GameId): Promise<Game> {
-    throw new Error('Does not work');
   }
 
   saveGameResults(gameId: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>): void {
@@ -203,11 +196,15 @@ export class LocalFilesystem implements IDatabase {
     readdirSync(this.dbFolder, {withFileTypes: true}).forEach((dirent: Dirent) => {
       const gameId = this.asGameId(dirent);
       if (gameId !== undefined) {
-        const text = readFileSync(this.filename(gameId));
-        const game: SerializedGame = JSON.parse(text.toString());
-        const participantIds: Array<ParticipantId> = game.players.map((p) => p.id);
-        if (game.spectatorId) participantIds.push(game.spectatorId);
-        gameIds.push({gameId, participantIds});
+        try {
+          const text = readFileSync(this.filename(gameId));
+          const game: SerializedGame = JSON.parse(text.toString());
+          const participantIds: Array<ParticipantId> = game.players.map((p) => p.id);
+          if (game.spectatorId) participantIds.push(game.spectatorId);
+          gameIds.push({gameId, participantIds});
+        } catch (e) {
+          console.error(`While reading ${gameId} `, e);
+        }
       }
     });
     return Promise.resolve(gameIds);

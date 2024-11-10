@@ -6,16 +6,21 @@ import {MedicalLab} from '../../../src/server/cards/base/MedicalLab';
 import {Research} from '../../../src/server/cards/base/Research';
 import {ValleyTrust} from '../../../src/server/cards/prelude/ValleyTrust';
 import {TestPlayer} from '../../TestPlayer';
-import {CardType} from '../../../src/common/cards/CardType';
 import {testGame} from '../../TestGame';
+import {IPreludeCard, isPreludeCard} from '../../../src/server/cards/prelude/IPreludeCard';
+import {IGame} from '../../../src/server/IGame';
+import {Loan} from '../../../src/server/cards/prelude/Loan';
+import {HugeAsteroid} from '../../../src/server/cards/prelude/HugeAsteroid';
+import {MetalRichAsteroid} from '../../../src/server/cards/prelude/MetalRichAsteroid';
 
 describe('ValleyTrust', function() {
   let card: ValleyTrust;
   let player: TestPlayer;
+  let game: IGame;
 
   beforeEach(function() {
     card = new ValleyTrust();
-    [, player] = testGame(1, {preludeExtension: true});
+    [game, player] = testGame(1, {preludeExtension: true});
   });
 
   it('Does not get card discount for other tags', function() {
@@ -28,20 +33,28 @@ describe('ValleyTrust', function() {
   });
 
   it('Should play', function() {
-    const action = card.play(player);
-    expect(action).is.undefined;
+    cast(card.play(player), undefined);
   });
 
   it('initial action', () => {
-    const selectCard = cast(card.initialAction(player), SelectCard);
-    expect(selectCard.cards).has.length(3);
-    expect(selectCard.cards.filter((c) => c.type === CardType.PRELUDE)).has.length(3);
+    const loan = new Loan();
+    const hugeAsteroid = new HugeAsteroid();
+    const metalRichAsteroid = new MetalRichAsteroid();
+
+    game.preludeDeck.drawPile.push(loan, hugeAsteroid, metalRichAsteroid);
+    const selectCard = cast(card.initialAction(player), SelectCard<IPreludeCard>);
+    expect(selectCard.cards).to.have.members([loan, hugeAsteroid, metalRichAsteroid]);
+
+    selectCard.cb([loan]);
+    expect(player.playedCards).includes(loan);
+    expect(game.preludeDeck.discardPile).to.have.members([hugeAsteroid, metalRichAsteroid]);
   });
 
   it('Card works even without prelude expansion enabled', () => {
-    [, player] = testGame(1, {preludeExtension: false});
-    const selectCard = cast(card.initialAction(player), SelectCard);
+    [/* game */, player] = testGame(1, {preludeExtension: false});
+    const selectCard = cast(card.initialAction(player), SelectCard<IPreludeCard>);
+
     expect(selectCard.cards).has.length(3);
-    expect(selectCard.cards.filter((c) => c.type === CardType.PRELUDE)).has.length(3);
+    expect(selectCard.cards.every((c) => isPreludeCard(c))).is.true;
   });
 });

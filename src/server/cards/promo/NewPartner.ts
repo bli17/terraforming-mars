@@ -1,11 +1,10 @@
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {PreludeCard} from '../prelude/PreludeCard';
-import {IPreludeCard} from '../prelude/IPreludeCard';
 import {CardName} from '../../../common/cards/CardName';
 import {Size} from '../../../common/cards/render/Size';
 import {CardRenderer} from '../render/CardRenderer';
-import {SelectCard} from '../../inputs/SelectCard';
 import {Tag} from '../../../common/cards/Tag';
+import {PreludesExpansion} from '../../preludes/PreludesExpansion';
 
 export class NewPartner extends PreludeCard {
   constructor() {
@@ -15,7 +14,7 @@ export class NewPartner extends PreludeCard {
       startingMegacredits: -8,
       
       metadata: {
-        cardNumber: 'P43',
+        cardNumber: 'X42',
 		description: '(Buff:) After being played, when you perform an action, the wild tag counts as any tag of your choice. (Nerf:) Pay 8 M€, no longer increases M€ production by 1.',
         renderData: CardRenderer.builder((b) => {
           b.megacredits(-8).nbsp.prelude().asterix();
@@ -26,29 +25,17 @@ export class NewPartner extends PreludeCard {
     });
   }
 
-  public override bespokePlay(player: Player) {
-    const cardsDrawn: Array<IPreludeCard> = [
-      player.game.preludeDeck.draw(player.game),
-      player.game.preludeDeck.draw(player.game),
-	  player.game.preludeDeck.draw(player.game),
-    ];
-    player.game.log(
-      'You drew ${0}, ${1}, and ${2}',
-      (b) => b.card(cardsDrawn[0]).card(cardsDrawn[1]).card(cardsDrawn[2]),
-      {reservedFor: player});
-
-    const playableCards = cardsDrawn.filter((card) => card.canPlay(player) === true);
-    if (playableCards.length === 0) {
-      player.game.log('${0}, ${1}, and ${2} were discarded as ${3} could not pay for both cards.', (b) => b.card(cardsDrawn[0]).card(cardsDrawn[1]).card(cardsDrawn[2]).player(player));
-      return undefined;
+  public override bespokeCanPlay(player: IPlayer) {
+    const game = player.game;
+    if (!game.preludeDeck.canDraw(3)) {
+      this.warnings.add('deckTooSmall');
     }
+    return true;
+  }
 
-    return new SelectCard('Choose prelude card to play', 'Play', playableCards, ([card]) => {
-      if (card.canPlay === undefined || card.canPlay(player)) {
-        return player.playCard(card);
-      } else {
-        throw new Error('You cannot pay for this card');
-      }
-    });
+  public override bespokePlay(player: IPlayer) {
+    const game = player.game;
+    const cards = game.preludeDeck.drawN(game, 3);
+    return PreludesExpansion.selectPreludeToPlay(player, cards);
   }
 }

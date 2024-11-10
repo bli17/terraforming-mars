@@ -1,6 +1,5 @@
 import {MarketingExperts} from '../../../src/server/cards/ares/MarketingExperts';
-import {Game} from '../../../src/server/Game';
-import {Player} from '../../../src/server/Player';
+import {IGame} from '../../../src/server/IGame';
 import {expect} from 'chai';
 import {TileType} from '../../../src/common/TileType';
 import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
@@ -11,8 +10,8 @@ import {testGame} from '../../TestGame';
 describe('MarketingExperts', function() {
   let card: MarketingExperts;
   let player: TestPlayer;
-  let otherPlayer: Player;
-  let game: Game;
+  let otherPlayer: TestPlayer;
+  let game: IGame;
 
   beforeEach(function() {
     card = new MarketingExperts();

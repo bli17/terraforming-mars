@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {cast, churnAction} from '../../TestingUtils';
+import {cast, churn} from '../../TestingUtils';
 import {Ants} from '../../../src/server/cards/base/Ants';
 import {Fish} from '../../../src/server/cards/base/Fish';
 import {ICard} from '../../../src/server/cards/ICard';
@@ -15,7 +15,7 @@ describe('MoholeLake', function() {
 
   beforeEach(function() {
     card = new MoholeLake();
-    [/* skipped */, player] = testGame(2);
+    [/* game */, player] = testGame(2);
   });
 
   it('Can play', function() {
@@ -23,17 +23,17 @@ describe('MoholeLake', function() {
 
     expect(player.game.deferredActions).has.lengthOf(1);
     const selectSpace = cast(player.game.deferredActions.peek()!.execute(), SelectSpace);
-    selectSpace.cb(selectSpace.availableSpaces[0]);
+    selectSpace.cb(selectSpace.spaces[0]);
 
     expect(player.game.getTemperature()).to.eq(-28);
-    expect(player.game.board.getOceanCount()).to.eq(1);
+    expect(player.game.board.getOceanSpaces()).has.length(1);
     expect(player.getTerraformRating()).to.eq(22);
     expect(player.plants).to.eq(3);
   });
 
   it('Can act - no target', function() {
     expect(card.canAct()).is.true;
-    expect(churnAction(card, player)).is.undefined;
+    expect(churn(card.action(player), player)).is.undefined;
   });
 
   it('Can act - single target', function() {

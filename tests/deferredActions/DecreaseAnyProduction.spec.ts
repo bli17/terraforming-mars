@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {DecreaseAnyProduction} from '../../src/server/deferredActions/DecreaseAnyProduction';
-import {Game} from '../../src/server/Game';
+import {IGame} from '../../src/server/IGame';
 import {TestPlayer} from '../TestPlayer';
 import {cast, runAllActions} from '../TestingUtils';
 import {testGame} from '../TestGame';
@@ -8,7 +8,7 @@ import {SelectPlayer} from '../../src/server/inputs/SelectPlayer';
 import {Resource} from '../../src/common/Resource';
 
 describe('DecreaseAnyProduction', function() {
-  let game: Game;
+  let game: IGame;
   let player: TestPlayer;
   let player2: TestPlayer;
   let player3: TestPlayer;
@@ -22,7 +22,7 @@ describe('DecreaseAnyProduction', function() {
   it('Does nothing with zero targets', () => {
     expect(decreaseAnyProduction.execute()).is.undefined;
     runAllActions(game);
-    expect(player.popWaitingFor()).is.undefined;
+    cast(player.popWaitingFor(), undefined);
   });
 
   it('automatically if single target', () => {
@@ -31,7 +31,7 @@ describe('DecreaseAnyProduction', function() {
     expect(decreaseAnyProduction.execute()).is.undefined;
     runAllActions(game);
 
-    expect(player.popWaitingFor()).is.undefined;
+    cast(player.popWaitingFor(), undefined);
     expect(player.production.titanium).to.eq(0);
     expect(player2.production.titanium).to.eq(3);
     expect(player3.production.titanium).to.eq(0);
@@ -46,7 +46,7 @@ describe('DecreaseAnyProduction', function() {
     selectPlayer.cb(selectPlayer.players[0]);
 
     expect(player.production.titanium).to.eq(1);
-    expect(player.popWaitingFor()).is.undefined;
+    cast(player.popWaitingFor(), undefined);
   });
 
   it('omits players with some production, but not enough', () => {
@@ -73,6 +73,6 @@ describe('DecreaseAnyProduction', function() {
     selectPlayer.cb(player3);
 
     expect(player3.production.titanium).to.eq(0);
-    expect(player.popWaitingFor()).is.undefined;
+    cast(player.popWaitingFor(), undefined);
   });
 });

@@ -1,18 +1,15 @@
-import {ICorporationCard} from '../corporation/ICorporationCard';
-import {Card} from '../Card';
+import {CorporationCard} from '../corporation/CorporationCard';
 import {CardName} from '../../../common/cards/CardName';
-import {CardType} from '../../../common/cards/CardType';
 import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../../../common/cards/render/Size';
 import {Player} from '../../Player';
 import {IProjectCard} from '../IProjectCard';
 
-export class Polyphemos extends Card implements ICorporationCard {
+export class Polyphemos extends CorporationCard {
   constructor() {
     super({
       name: CardName.POLYPHEMOS,
       startingMegaCredits: 60,
-      type: CardType.CORPORATION,
       cardCost: 5,
 
       behavior: {

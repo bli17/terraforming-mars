@@ -1,7 +1,7 @@
 import {expect} from 'chai';
-import {churnAction, cast} from '../../TestingUtils';
+import {churn, cast} from '../../TestingUtils';
 import {InventorsGuild} from '../../../src/server/cards/base/InventorsGuild';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {SelectCard} from '../../../src/server/inputs/SelectCard';
 import {TestPlayer} from '../../TestPlayer';
 import {testGame} from '../../TestGame';
@@ -9,7 +9,7 @@ import {testGame} from '../../TestGame';
 describe('InventorsGuild', function() {
   let card: InventorsGuild;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new InventorsGuild();
@@ -17,13 +17,12 @@ describe('InventorsGuild', function() {
   });
 
   it('Should play', function() {
-    const action = card.play(player);
-    expect(action).is.undefined;
+    cast(card.play(player), undefined);
   });
 
   it('Should act', function() {
     player.megaCredits = 3;
-    const selectCard = cast(churnAction(card, player), SelectCard);
+    const selectCard = cast(churn(card.action(player), player), SelectCard);
     selectCard.cb([]);
 
     expect(game.projectDeck.discardPile).has.lengthOf(1);
@@ -38,7 +37,7 @@ describe('InventorsGuild', function() {
 
   it('Cannot buy card if cannot pay', function() {
     player.megaCredits = 2;
-    const selectCard = cast(churnAction(card, player), SelectCard);
+    const selectCard = cast(churn(card.action(player), player), SelectCard);
     expect(selectCard.config.max).to.eq(0);
     selectCard.cb([]);
     expect(game.deferredActions).has.lengthOf(0);

@@ -1,10 +1,9 @@
 import {CardName} from '../../../common/cards/CardName';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {CardRenderer} from '../render/CardRenderer';
 import {CeoCard} from './CeoCard';
-
 import {Board} from '../../boards/Board';
-import {ISpace} from '../../boards/ISpace';
+import {Space} from '../../boards/Space';
 import {GainResources} from '../../deferredActions/GainResources';
 import {Resource} from '../../../common/Resource';
 import {SpaceType} from '../../../common/boards/SpaceType';
@@ -18,10 +17,12 @@ export class Gordon extends CeoCard {
       metadata: {
         cardNumber: 'L07',
         renderData: CardRenderer.builder((b) => {
-          b.greenery().city().colon().megacredits(2).asterix();
-          b.br.br;
+          b.effect('Ignore placement restrictions for greenery and city tiles on Mars.',
+            (eb) => eb.greenery().city().startEffect.asterix());
+          b.br;
+          b.effect('Gain 2 M€ when you place a greenery or city tile on Mars.',
+            (eb) => eb.greenery().city().startEffect.megacredits(2));
         }),
-        description: 'Ignore placement restrictions for greenery and city tiles on Mars. Gain 2 M€ when you place a greenery or city tile on Mars.',
       },
     });
   }
@@ -30,10 +31,19 @@ export class Gordon extends CeoCard {
     return false;
   }
 
-  public onTilePlaced(cardOwner: Player, activePlayer: Player, space: ISpace, boardType: BoardType) {
-    if (cardOwner.id !== activePlayer.id) return;
-    if (boardType !== BoardType.MARS || space.spaceType !== SpaceType.LAND) return;
-    if (cardOwner.game.phase === Phase.SOLAR) return;
+  public onTilePlaced(cardOwner: IPlayer, activePlayer: IPlayer, space: Space, boardType: BoardType) {
+    if (cardOwner.id !== activePlayer.id) {
+      return;
+    }
+    if (boardType !== BoardType.MARS) {
+      return;
+    }
+    if (space.spaceType === SpaceType.COLONY) {
+      return;
+    }
+    if (cardOwner.game.phase === Phase.SOLAR) {
+      return;
+    }
 
     if (Board.isCitySpace(space) || Board.isGreenerySpace(space)) {
       cardOwner.game.defer(new GainResources(cardOwner, Resource.MEGACREDITS, {count: 2, log: true}));

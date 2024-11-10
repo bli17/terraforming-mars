@@ -1,13 +1,12 @@
 import {IProjectCard} from '../IProjectCard';
 import {IActionCard} from '../ICard';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {CardResource} from '../../../common/CardResource';
 import {Tag} from '../../../common/cards/Tag';
-import {CardRequirements} from '../requirements/CardRequirements';
 import {SelectCard} from '../../inputs/SelectCard';
 
 export class FloaterUrbanism extends Card implements IProjectCard, IActionCard {
@@ -18,13 +17,14 @@ export class FloaterUrbanism extends Card implements IProjectCard, IActionCard {
       cost: 7,
       tags: [Tag.VENUS],
       resourceType: CardResource.VENUSIAN_HABITAT,
-      requirements: CardRequirements.builder((b) => b.tag(Tag.VENUS, 4)),
+      requirements: {tag: Tag.VENUS, count: 4},
       victoryPoints: {resourcesHere: {}},
 
       metadata: {
+        cardNumber: 'Pf59',
         renderData: CardRenderer.builder((b) => {
           b.action('Spend 1 floater from any card to add 1 Venusian habitat on this card.', (ab) => {
-            ab.minus().floaters(1).startAction.venusianHabitat(1);
+            ab.minus().resource(CardResource.FLOATER).startAction.resource(CardResource.VENUSIAN_HABITAT);
           }).br;
           b.vpText('1 VP for every Venusian habitat on this card.');
         }),
@@ -34,18 +34,18 @@ export class FloaterUrbanism extends Card implements IProjectCard, IActionCard {
   }
 
 
-  public canAct(player: Player) {
+  public canAct(player: IPlayer) {
     return player.getResourceCount(CardResource.FLOATER) > 0;
   }
 
-  public action(player: Player) {
+  public action(player: IPlayer) {
     const cards = player.getCardsWithResources(CardResource.FLOATER);
     const input = new SelectCard(
       'Choose a card to move a floater to a Venusian habitat.',
       'Choose',
-      cards,
-      (selected) => {
-        player.removeResourceFrom(selected[0], 1);
+      cards)
+      .andThen(([card]) => {
+        player.removeResourceFrom(card, 1);
         player.addResourceTo(this, {log: true});
         return undefined;
       });

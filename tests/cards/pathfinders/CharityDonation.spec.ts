@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {CharityDonation} from '../../../src/server/cards/pathfinders/CharityDonation';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
 import {AcquiredCompany} from '../../../src/server/cards/base/AcquiredCompany';
 import {BeamFromAThoriumAsteroid} from '../../../src/server/cards/base/BeamFromAThoriumAsteroid';
@@ -15,12 +15,25 @@ describe('CharityDonation', function() {
   let player1: TestPlayer;
   let player2: TestPlayer;
   let player3: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new CharityDonation();
     [game, player1, player2, player3] = testGame(3);
   });
+
+  const canPlayRuns = [
+    {deck: 2, expected: false},
+    {deck: 3, expected: false},
+    {deck: 4, expected: true},
+  ] as const;
+  for (const run of canPlayRuns) {
+    it('canPlay: ' + JSON.stringify(run), () => {
+      game.projectDeck.drawPile.length = run.deck;
+
+      expect(card.canPlay(player1)).eq(run.expected);
+    });
+  }
 
   it('play', function() {
     const acquiredCompany = new AcquiredCompany();
@@ -37,8 +50,8 @@ describe('CharityDonation', function() {
     card.play(player2);
     runAllActions(game);
 
-    expect(player1.getWaitingFor()).is.undefined;
-    expect(player3.getWaitingFor()).is.undefined;
+    cast(player1.getWaitingFor(), undefined);
+    cast(player3.getWaitingFor(), undefined);
     const selectCard2 = cast(player2.getWaitingFor(), SelectCard);
 
     expect(selectCard2.cards).deep.eq([acquiredCompany, beamFromAThoriumAsteroid, ceosFavoriteProject, decomposers]);
@@ -47,8 +60,8 @@ describe('CharityDonation', function() {
 
     runAllActions(game);
 
-    expect(player1.getWaitingFor()).is.undefined;
-    expect(player2.getWaitingFor()).is.undefined;
+    cast(player1.getWaitingFor(), undefined);
+    cast(player2.getWaitingFor(), undefined);
     const selectCard3 = cast(player3.getWaitingFor(), SelectCard);
 
     expect(selectCard3.cards).deep.eq([acquiredCompany, ceosFavoriteProject, decomposers]);
@@ -57,8 +70,8 @@ describe('CharityDonation', function() {
 
     runAllActions(game);
 
-    expect(player2.getWaitingFor()).is.undefined;
-    expect(player3.getWaitingFor()).is.undefined;
+    cast(player2.getWaitingFor(), undefined);
+    cast(player3.getWaitingFor(), undefined);
     const selectCard1 = cast(player1.getWaitingFor(), SelectCard);
 
     expect(selectCard1.cards).deep.eq([acquiredCompany, ceosFavoriteProject]);
@@ -67,9 +80,9 @@ describe('CharityDonation', function() {
 
     runAllActions(game);
 
-    expect(player1.getWaitingFor()).is.undefined;
-    expect(player2.getWaitingFor()).is.undefined;
-    expect(player3.getWaitingFor()).is.undefined;
+    cast(player1.getWaitingFor(), undefined);
+    cast(player2.getWaitingFor(), undefined);
+    cast(player3.getWaitingFor(), undefined);
 
     expect(player1.cardsInHand).deep.eq([acquiredCompany]);
     expect(player2.cardsInHand).deep.eq([beamFromAThoriumAsteroid]);

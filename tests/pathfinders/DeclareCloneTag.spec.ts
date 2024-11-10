@@ -7,13 +7,13 @@ import {SelectOption} from '../../src/server/inputs/SelectOption';
 import {TestPlayer} from '../TestPlayer';
 import {testGame} from '../TestGame';
 import {cast, runAllActions} from '../TestingUtils';
-import {Game} from '../../src/server/Game';
+import {IGame} from '../../src/server/IGame';
 import {CrewTraining} from '../../src/server/cards/pathfinders/CrewTraining';
 import {MartianZoo} from '../../src/server/cards/colonies/MartianZoo';
 
 describe('DeclareCloneTag', function() {
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
   let card: LobbyHalls;
   let tag: Tag;
 
@@ -23,7 +23,7 @@ describe('DeclareCloneTag', function() {
   });
 
   it('sanity', function() {
-    const action = new DeclareCloneTag(player, card, (t) => tag = t);
+    const action = new DeclareCloneTag(player, card).andThen((t) => tag = t);
 
     const options = cast(action.execute(), OrOptions);
     const orOptions = cast(options.options, Array<SelectOption>);
@@ -31,46 +31,46 @@ describe('DeclareCloneTag', function() {
     expect(orOptions).has.length(3);
     expect(card.cloneTag).eq(Tag.CLONE);
 
-    orOptions[0].cb();
+    orOptions[0].cb(undefined);
     expect(card.cloneTag).eq(Tag.EARTH);
     expect(tag).eq(Tag.EARTH);
 
-    orOptions[1].cb();
+    orOptions[1].cb(undefined);
     expect(card.cloneTag).eq(Tag.MARS);
     expect(tag).eq(Tag.MARS);
 
-    orOptions[2].cb();
+    orOptions[2].cb(undefined);
     expect(card.cloneTag).eq(Tag.JOVIAN);
     expect(tag).eq(Tag.JOVIAN);
   });
 
   it('clone tag with expansions', function() {
-    const [, player] = testGame(1, {venusNextExtension: true, moonExpansion: true, pathfindersExpansion: true});
+    const [/* game */, player] = testGame(1, {venusNextExtension: true, moonExpansion: true, pathfindersExpansion: true});
 
-    const action = new DeclareCloneTag(player, card, (t) => tag = t);
+    const action = new DeclareCloneTag(player, card).andThen((t) => tag = t);
 
     const options = action.execute();
     const orOptions = cast(options.options, Array<SelectOption>);
 
     expect(orOptions).has.length(5);
 
-    orOptions[0].cb();
+    orOptions[0].cb(undefined);
     expect(card.cloneTag).eq(Tag.VENUS);
     expect(tag).eq(Tag.VENUS);
 
-    orOptions[1].cb();
+    orOptions[1].cb(undefined);
     expect(card.cloneTag).eq(Tag.EARTH);
     expect(tag).eq(Tag.EARTH);
 
-    orOptions[2].cb();
+    orOptions[2].cb(undefined);
     expect(card.cloneTag).eq(Tag.MARS);
     expect(tag).eq(Tag.MARS);
 
-    orOptions[3].cb();
+    orOptions[3].cb(undefined);
     expect(card.cloneTag).eq(Tag.JOVIAN);
     expect(tag).eq(Tag.JOVIAN);
 
-    orOptions[4].cb();
+    orOptions[4].cb(undefined);
     expect(card.cloneTag).eq(Tag.MOON);
     expect(tag).eq(Tag.MOON);
   });

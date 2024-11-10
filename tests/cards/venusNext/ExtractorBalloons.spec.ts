@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import {cast, runAllActions} from '../../TestingUtils';
 import {ExtractorBalloons} from '../../../src/server/cards/venusNext/ExtractorBalloons';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {OrOptions} from '../../../src/server/inputs/OrOptions';
 import {TestPlayer} from '../../TestPlayer';
 import {testGame} from '../../TestGame';
@@ -9,7 +9,7 @@ import {testGame} from '../../TestGame';
 describe('ExtractorBalloons', function() {
   let card: ExtractorBalloons;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new ExtractorBalloons();
@@ -17,8 +17,7 @@ describe('ExtractorBalloons', function() {
   });
 
   it('Should play', function() {
-    const action = card.play(player);
-    expect(action).is.undefined;
+    cast(card.play(player), undefined);
     runAllActions(game);
     expect(card.resourceCount).to.eq(3);
   });

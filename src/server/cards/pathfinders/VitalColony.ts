@@ -1,4 +1,4 @@
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {PreludeCard} from '../prelude/PreludeCard';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
@@ -12,7 +12,7 @@ export class VitalColony extends PreludeCard {
       tags: [Tag.MARS, Tag.SPACE],
 
       metadata: {
-        cardNumber: 'P08',
+        cardNumber: 'PfP11',
         renderData: CardRenderer.builder((b) => {
           b.colonies().text('2x bonus');
         }),
@@ -20,7 +20,7 @@ export class VitalColony extends PreludeCard {
       },
     });
   }
-  public override bespokePlay(player: Player) {
+  public override bespokePlay(player: IPlayer) {
     player.game.defer(
       new BuildColony(player, {giveBonusTwice: true}));
     return undefined;

@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {VeneraBase} from '../../../src/server/cards/pathfinders/VeneraBase';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
 import {TileType} from '../../../src/common/TileType';
 import {testGame} from '../../TestGame';
@@ -15,12 +15,12 @@ import {FloatingHabs} from '../../../src/server/cards/venusNext/FloatingHabs';
 import {Stratopolis} from '../../../src/server/cards/venusNext/Stratopolis';
 import {MartianCulture} from '../../../src/server/cards/pathfinders/MartianCulture';
 import {SelectCard} from '../../../src/server/inputs/SelectCard';
-import {cast, churnAction} from '../../TestingUtils';
+import {cast, churn} from '../../TestingUtils';
 
 describe('VeneraBase', function() {
   let card: VeneraBase;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
   let nonVenusFloater: IProjectCard;
   let venusFloater: IProjectCard;
   let venusFloater2: IProjectCard;
@@ -47,7 +47,7 @@ describe('VeneraBase', function() {
 
   it('play', function() {
     expect(player.production.asUnits()).deep.eq(Units.EMPTY);
-    const space = game.board.getSpace(SpaceName.VENERA_BASE);
+    const space = game.board.getSpaceOrThrow(SpaceName.VENERA_BASE);
     expect(space.tile).is.undefined;
     expect(space.player).is.undefined;
 
@@ -71,7 +71,7 @@ describe('VeneraBase', function() {
   it('action', function() {
     player.playedCards = [venusFloater, venusFloater2, data, nonVenusFloater];
 
-    const selectCard = cast(churnAction(card, player), SelectCard);
+    const selectCard = cast(churn(card.action(player), player), SelectCard);
     expect(selectCard.cards).to.have.members([venusFloater, venusFloater2]);
 
     selectCard.cb([venusFloater]);

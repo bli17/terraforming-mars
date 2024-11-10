@@ -3,17 +3,11 @@ import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {Tag} from '../../../common/cards/Tag';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {SelectCard} from '../../inputs/SelectCard';
 import {OrOptions} from '../../inputs/OrOptions';
 import {CardRenderer} from '../render/CardRenderer';
-import {CardRequirements} from '../requirements/CardRequirements';
 import {Size} from '../../../common/cards/render/Size';
-
-export interface RobotCard {
-    card: IProjectCard;
-    resourceCount: number;
-}
 
 export class SelfReplicatingRobots extends Card implements IProjectCard {
   constructor() {
@@ -22,7 +16,7 @@ export class SelfReplicatingRobots extends Card implements IProjectCard {
       name: CardName.SELF_REPLICATING_ROBOTS,
       cost: 7,
 
-      requirements: CardRequirements.builder((b) => b.tag(Tag.SCIENCE, 2)),
+      requirements: {tag: Tag.SCIENCE, count: 2},
       metadata: {
         cardNumber: '210',
         renderData: CardRenderer.builder((b) => {
@@ -37,65 +31,47 @@ export class SelfReplicatingRobots extends Card implements IProjectCard {
     });
   }
 
-  public targetCards: Array<RobotCard> = [];
+  public targetCards: Array<IProjectCard> = [];
 
-  public override getCardDiscount(_player: Player, card: IProjectCard): number {
-    for (const targetCard of this.targetCards) {
-      if (targetCard.card.name === card.name) {
-        return targetCard.resourceCount;
-      }
-    }
-    return 0;
+  public override getCardDiscount(_player: IPlayer, card: IProjectCard): number {
+    return this.targetCards.find((c) => c.name === card.name)?.resourceCount ?? 0;
   }
 
-  public canAct(player: Player): boolean {
+  public canAct(player: IPlayer): boolean {
     return this.targetCards.length > 0 ||
              player.cardsInHand.some((card) => card.tags.some((tag) => tag === Tag.SPACE || tag === Tag.BUILDING));
   }
 
-  public action(player: Player) {
+  public action(player: IPlayer) {
     const orOptions = new OrOptions();
     const selectableCards = player.cardsInHand.filter((card) => card.tags.some((tag) => tag === Tag.SPACE || tag === Tag.BUILDING));
 
     if (this.targetCards.length > 0) {
-      const robotCards = this.targetCards.map((targetCard) => targetCard.card);
       orOptions.options.push(new SelectCard(
-        'Select card to double robots resource', 'Double resource', robotCards,
-        ([card]) => {
-          let resourceCount = 0;
-          for (const targetCard of this.targetCards) {
-            if (targetCard.card.name === card.name) {
-              resourceCount = targetCard.resourceCount;
-              targetCard.resourceCount *= 2;
-            }
-          }
+        'Select card to double robots resource', 'Double resource', this.targetCards, {played: CardName.SELF_REPLICATING_ROBOTS})
+        .andThen(([card]) => {
+          const resourceCount = card.resourceCount;
+          card.resourceCount *= 2;
           player.game.log('${0} doubled resources on ${1} from ${2} to ${3}', (b) => {
-            b.player(player).card(card).number(resourceCount).number(resourceCount * 2);
+            b.player(player).card(card).number(resourceCount).number(card.resourceCount);
           });
           return undefined;
-        },
-        {played: CardName.SELF_REPLICATING_ROBOTS},
-      ));
+        }));
     }
 
     if (selectableCards.length > 0) {
       orOptions.options.push(new SelectCard(
-        'Select card to link with Self-Replicating Robots',
+        'Select card to link with Self-replicating Robots',
         'Link card', selectableCards,
+        {played: CardName.SELF_REPLICATING_ROBOTS}).andThen(
         ([card]) => {
           const projectCardIndex = player.cardsInHand.findIndex((c) => c.name === card.name);
           player.cardsInHand.splice(projectCardIndex, 1);
-          this.targetCards.push(
-            {
-              card: card,
-              resourceCount: 2,
-            },
-          );
+          this.targetCards.push(card);
+          card.resourceCount = 2;
           player.game.log('${0} linked ${1} with ${2}', (b) => b.player(player).card(card).card(this));
           return undefined;
-        },
-        {played: CardName.SELF_REPLICATING_ROBOTS},
-      ));
+        }));
     }
 
     return orOptions;

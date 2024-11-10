@@ -5,13 +5,13 @@ import {Decomposers} from '../../../src/server/cards/base/Decomposers';
 import {ImportedNutrients} from '../../../src/server/cards/promo/ImportedNutrients';
 import {SelectCard} from '../../../src/server/inputs/SelectCard';
 import {testGame} from '../../TestGame';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
 
 describe('ImportedNutrients', function() {
   let card: ImportedNutrients;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new ImportedNutrients();
@@ -21,7 +21,7 @@ describe('ImportedNutrients', function() {
   it('Can play without microbe cards', function() {
     const action = card.play(player);
     expect(player.plants).to.eq(4);
-    expect(action).is.undefined;
+    cast(action, undefined);
   });
 
   it('Adds microbes automatically if only 1 target', function() {

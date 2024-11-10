@@ -2,7 +2,7 @@ import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {OrOptions} from '../../inputs/OrOptions';
 import {PlayerInput} from '../../PlayerInput';
 import {CardName} from '../../../common/cards/CardName';
@@ -24,20 +24,21 @@ export class Virus extends Card implements IProjectCard {
       metadata: {
         cardNumber: '050',
         renderData: CardRenderer.builder((b) => {
-          b.minus().animals(2, {all, digit}).nbsp;
+          b.minus().resource(CardResource.ANIMAL, {amount: 2, all, digit}).nbsp;
           b.or().nbsp.minus().plants(5, {all, digit});
         }),
         description: 'Remove up to 2 animals or 5 plants from any player.',
       },
     });
   }
-  public override bespokePlay(player: Player): PlayerInput | undefined {
+  public override bespokePlay(player: IPlayer): PlayerInput | undefined {
     if (player.game.isSoloMode()) {
+      // TODO(kberg): Special case for Mons Insurance owner.
       player.game.someoneHasRemovedOtherPlayersPlants = true;
       return undefined;
     }
 
-    const orOptionsAnimals = new RemoveResourcesFromCard(player, CardResource.ANIMAL, 2, false, false).execute() as OrOptions;
+    const orOptionsAnimals = new RemoveResourcesFromCard(player, CardResource.ANIMAL, 2, {mandatory: false}).execute() as OrOptions;
     const removeAnimals = orOptionsAnimals !== undefined ?
       orOptionsAnimals.options[0] :
       undefined;
@@ -61,9 +62,7 @@ export class Virus extends Card implements IProjectCard {
     if (removePlants !== undefined) {
       orOptions.options.push(...removePlants);
     }
-    orOptions.options.push(new SelectOption('Skip removal', 'Confirm', () => {
-      return undefined;
-    }));
+    orOptions.options.push(new SelectOption('Skip removal'));
 
     return orOptions;
   }

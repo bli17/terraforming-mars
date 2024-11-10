@@ -1,12 +1,11 @@
 import {IProjectCard} from '../IProjectCard';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {Tag} from '../../../common/cards/Tag';
 import {Resource} from '../../../common/Resource';
-import {played} from '../Options';
 
 export class MicrobiologyPatents extends Card implements IProjectCard {
   constructor() {
@@ -20,13 +19,13 @@ export class MicrobiologyPatents extends Card implements IProjectCard {
         cardNumber: 'Pf63',
         renderData: CardRenderer.builder((b) => {
           b.effect('After you play a card with a microbe tag, increase your M€ production 1 step.',
-            (eb) => eb.microbes(1, {played}).startEffect.production((pb) => pb.megacredits(1)));
+            (eb) => eb.tag(Tag.MICROBE).startEffect.production((pb) => pb.megacredits(1)));
         }),
       },
     });
   }
 
-  public onCardPlayed(player: Player, card: IProjectCard) {
+  public onCardPlayed(player: IPlayer, card: IProjectCard) {
     if (card.tags.includes(Tag.MICROBE)) {
       player.production.add(Resource.MEGACREDITS, 1, {log: true});
     }

@@ -6,7 +6,7 @@ import {IProjectCard} from '../../../src/server/cards/IProjectCard';
 import {DeuteriumExport} from '../../../src/server/cards/venusNext/DeuteriumExport';
 import {Dirigibles} from '../../../src/server/cards/venusNext/Dirigibles';
 import {HydrogenToVenus} from '../../../src/server/cards/venusNext/HydrogenToVenus';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {SelectCard} from '../../../src/server/inputs/SelectCard';
 import {TestPlayer} from '../../TestPlayer';
 import {JovianLanterns} from '../../../src/server/cards/colonies/JovianLanterns';
@@ -15,7 +15,7 @@ import {testGame} from '../../TestGame';
 describe('HydrogenToVenus', function() {
   let card: HydrogenToVenus;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
   let venusCard1: IProjectCard;
   let venusCard2: IProjectCard;
   let jovianTagCard1: IProjectCard;
@@ -56,16 +56,15 @@ describe('HydrogenToVenus', function() {
 
     expect(card.play(player)).is.undefined;
     runAllActions(game);
-    expect(player.popWaitingFor()).is.undefined;
+    cast(player.popWaitingFor(), undefined);
     expect(venusCard1.resourceCount).to.eq(1);
     expect(game.getVenusScaleLevel()).to.eq(2);
   });
 
   it('Should play with no venus cards', function() {
-    const action = card.play(player);
-    expect(action).is.undefined;
+    cast(card.play(player), undefined);
     runAllActions(game);
-    expect(player.popWaitingFor()).is.undefined;
+    cast(player.popWaitingFor(), undefined);
     expect(game.getVenusScaleLevel()).to.eq(2);
   });
 });

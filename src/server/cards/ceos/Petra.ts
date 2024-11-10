@@ -1,16 +1,14 @@
 import {CardName} from '../../../common/cards/CardName';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {PlayerInput} from '../../PlayerInput';
 import {CardRenderer} from '../render/CardRenderer';
 import {CeoCard} from './CeoCard';
 import {DELEGATES_FOR_NEUTRAL_PLAYER} from '../../../common/constants';
-
 import {Turmoil} from '../../turmoil/Turmoil';
-import {SimpleDeferredAction} from '../../deferredActions/DeferredAction';
-import {SelectPartyToSendDelegate} from '../../inputs/SelectPartyToSendDelegate';
-import {PartyName} from '../../../common/turmoil/PartyName';
+import {SelectParty} from '../../inputs/SelectParty';
 import {Resource} from '../../../common/Resource';
 import {Size} from '../../../common/cards/render/Size';
+import {toName} from '../../../common/utils/utils';
 
 export class Petra extends CeoCard {
   constructor() {
@@ -30,7 +28,7 @@ export class Petra extends CeoCard {
     });
   }
 
-  public override canAct(player: Player): boolean {
+  public override canAct(player: IPlayer): boolean {
     if (!super.canAct(player)) {
       return false;
     }
@@ -39,11 +37,11 @@ export class Petra extends CeoCard {
     const turmoil = player.game.turmoil;
     if (turmoil === undefined || this.isDisabled === true) return false;
     const numNeutralDelegates = DELEGATES_FOR_NEUTRAL_PLAYER - turmoil.getAvailableDelegateCount('NEUTRAL');
-    const playerTotalDelegateCount = turmoil.getAvailableDelegateCount(player.id);
+    const playerTotalDelegateCount = turmoil.getAvailableDelegateCount(player);
     return playerTotalDelegateCount >= numNeutralDelegates;
   }
 
-  public action(player: Player): PlayerInput | undefined {
+  public action(player: IPlayer): PlayerInput | undefined {
     this.isDisabled = true;
 
     const turmoil = player.game.turmoil as Turmoil;
@@ -56,7 +54,7 @@ export class Petra extends CeoCard {
       for (let i = 0; i < neutralDelegates; i++) {
         // Add the delegate _before_ removing the Neutral, otherwise we get errors when it
         // attempts to find the new party leader if there are no remaining members in the party.
-        turmoil.sendDelegateToParty(player.id, party.name, player.game);
+        turmoil.sendDelegateToParty(player, party.name, player.game);
         turmoil.removeDelegateFromParty('NEUTRAL', party.name, player.game);
         // This would be nice to use:
         // turmoil.replaceDelegateFromParty('NEUTRAL', player.id, party.name, player.game);
@@ -70,27 +68,28 @@ export class Petra extends CeoCard {
 
     // Replace chairman if it is neutral
     if (turmoil.chairman === 'NEUTRAL') {
-      turmoil.setNewChairman(player.id, player.game, /* setAgenda */ false);
-      turmoil.delegateReserve.remove(player.id);
+      turmoil.setNewChairman(player, player.game, /* setAgenda */ false);
+      turmoil.delegateReserve.remove(player);
       count += 1;
     }
     // If we dont do this player will not get the bonus for POLITICAN Awards
     player.totalDelegatesPlaced += count;
-    player.addResource(Resource.MEGACREDITS, count * 3, {log: true});
+    player.stock.add(Resource.MEGACREDITS, count * 3, {log: true});
 
     // Place 3 Neutral delegates
-    const availableParties = turmoil.parties.map((party) => party.name);
+    const availableParties = turmoil.parties.map(toName);
     const title = 'Select where to send a Neutral delegate';
     const previousDominantParty = turmoil.dominantParty.name;
 
     for (let i = 0; i < 3; i++) {
-      player.game.defer(new SimpleDeferredAction(player, () => {
-        return new SelectPartyToSendDelegate(title, 'Send delegate', availableParties, (partyName: PartyName) => {
-          turmoil.sendDelegateToParty('NEUTRAL', partyName, player.game);
-          player.game.log('${0} sent ${1} Neutral delegate in ${2} area', (b) => b.player(player).number(1).party(turmoil.getPartyByName(partyName)));
-          return undefined;
-        });
-      }));
+      player.defer(() => {
+        return new SelectParty(title, 'Send delegate', availableParties)
+          .andThen((partyName) => {
+            turmoil.sendDelegateToParty('NEUTRAL', partyName, player.game);
+            player.game.log('${0} sent ${1} Neutral delegate in ${2} area', (b) => b.player(player).number(1).party(turmoil.getPartyByName(partyName)));
+            return undefined;
+          });
+      });
     }
 
     if (turmoil.dominantParty.name !== previousDominantParty) {

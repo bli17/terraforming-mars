@@ -4,7 +4,7 @@ import * as constants from '../../../src/common/constants';
 import {testGame} from '../../TestGame';
 import {SelectAmount} from '../../../src/server/inputs/SelectAmount';
 import {TestPlayer} from '../../TestPlayer';
-import {cast, churnAction} from '../../TestingUtils';
+import {cast, churn} from '../../TestingUtils';
 
 describe('StormCraftIncorporated', function() {
   let card: StormCraftIncorporated;
@@ -12,15 +12,15 @@ describe('StormCraftIncorporated', function() {
 
   beforeEach(function() {
     card = new StormCraftIncorporated();
-    [/* skipped */, player] = testGame(2);
-    player.setCorporationForTest(card);
+    [/* game */, player] = testGame(2);
+    player.corporations.push(card);
   });
 
   it('Should play', function() {
     const play = card.play(player);
     expect(play).is.undefined;
 
-    expect(churnAction(card, player)).is.undefined;
+    expect(churn(card.action(player), player)).is.undefined;
 
     expect(card.resourceCount).to.eq(1);
   });
@@ -45,7 +45,7 @@ describe('StormCraftIncorporated', function() {
     heatOption.cb(4);
     floaterOption.cb(0);
     expect(function() {
-      options.cb();
+      options.cb(undefined);
     }).to.throw(`Need to pay ${constants.HEAT_FOR_TEMPERATURE} heat`);
   });
 
@@ -57,7 +57,7 @@ describe('StormCraftIncorporated', function() {
     const floaterOption = cast(options.options[1], SelectAmount);
     heatOption.cb(2);
     floaterOption.cb(3);
-    options.cb();
+    options.cb(undefined);
     expect(player.heat).to.eq(8);
     expect(card.resourceCount).to.eq(7);
   });

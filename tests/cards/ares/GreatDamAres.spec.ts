@@ -4,7 +4,7 @@ import {TileType} from '../../../src/common/TileType';
 import {GreatDamAres} from '../../../src/server/cards/ares/GreatDamAres';
 import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
 import {TestPlayer} from '../../TestPlayer';
-import {cast, maxOutOceans, churnPlay} from '../../TestingUtils';
+import {cast, maxOutOceans, churn} from '../../TestingUtils';
 import {testGame} from '../../TestGame';
 
 describe('GreatDamAres', function() {
@@ -13,7 +13,7 @@ describe('GreatDamAres', function() {
 
   beforeEach(() => {
     card = new GreatDamAres();
-    [, player] = testGame(2, {aresExtension: true, aresHazards: false});
+    [/* game */, player] = testGame(2, {aresExtension: true, aresHazards: false});
   });
 
   it('Requirements + Benefits', function() {
@@ -29,8 +29,8 @@ describe('GreatDamAres', function() {
 
   it('Requirements', function() {
     maxOutOceans(player, 4);
-    const action = cast(churnPlay(card, player), SelectSpace);
-    const space = action.availableSpaces[0];
+    const action = cast(churn(card.play(player), player), SelectSpace);
+    const space = action.spaces[0];
     action.cb(space);
 
     expect(space.tile!.tileType).to.eq(TileType.GREAT_DAM);

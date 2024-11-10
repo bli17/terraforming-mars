@@ -6,19 +6,24 @@ import {DeferredAction} from './deferredActions/DeferredAction';
 import {SerializedColony} from './SerializedColony';
 import {SerializedPlayer} from './SerializedPlayer';
 import {SerializedTurmoil} from './turmoil/SerializedTurmoil';
-import {PlayerId, GameId, SpectatorId} from '../common/Types';
-import {GameOptions} from './GameOptions';
+import {PlayerId, GameId, SpectatorId, SpaceId} from '../common/Types';
+import {GameOptions} from './game/GameOptions';
 import {AresData} from '../common/ares/AresData';
 import {LogMessage} from '../common/logs/LogMessage';
 import {SerializedBoard} from './boards/SerializedBoard';
 import {SerializedMoonData} from './moon/SerializedMoonData';
 import {SerializedPathfindersData} from './pathfinders/SerializedPathfindersData';
 import {SerializedDeck} from './cards/SerializedDeck';
+import {UnderworldData} from './underworld/UnderworldData';
+import {AwardName} from '../common/ma/AwardName';
+import {GlobalParameter} from '../common/GlobalParameter';
+import {MilestoneName} from '../common/ma/MilestoneName';
 
 export type SerializedGame = {
     activePlayer: PlayerId;
     aresData?: AresData;
-    awards: Array<string>;
+    awards: Array<AwardName>;
+    beholdTheEmperor?: boolean;
     board: SerializedBoard;
     ceoDeck: SerializedDeck;
     currentSeed: number;
@@ -29,19 +34,21 @@ export type SerializedGame = {
     createdTimeMs: number;
     deferredActions: Array<DeferredAction>;
     donePlayers: Array<PlayerId>;
-    draftedPlayers: Array<PlayerId>;
     draftRound: number;
-    first: SerializedPlayer | PlayerId;
+    first: PlayerId;
     fundedAwards: Array<SerializedFundedAward>;
+    gagarinBase: Array<SpaceId>;
     gameAge: number;
     gameLog: Array<LogMessage>;
     gameOptions: GameOptions;
     generation: number;
+    globalsPerGeneration: Array<Partial<Record<GlobalParameter, number>>>;
     id: GameId;
     initialDraftIteration: number;
     lastSaveId: number;
-    milestones: Array<string>;
+    milestones: Array<MilestoneName>;
     moonData: SerializedMoonData | undefined;
+    nomadSpace: SpaceId | undefined;
     pathfindersData: SerializedPathfindersData | undefined;
     oxygenLevel: number;
     passedPlayers: Array<PlayerId>;
@@ -53,11 +60,15 @@ export type SerializedGame = {
     seed: number;
     someoneHasRemovedOtherPlayersPlants: boolean;
     spectatorId: SpectatorId | undefined;
+    stJosephCathedrals: Array<SpaceId>;
     syndicatePirateRaider: PlayerId | undefined;
     temperature: number;
+    tradeEmbargo?: boolean;
     turmoil?: SerializedTurmoil;
     undoCount: number;
-    unDraftedCards: Array<[PlayerId, Array<CardName>]>;
+    underworldData: UnderworldData;
+    // TODO(kberg): remove unDraftedCards after 2024-08-01
+    unDraftedCards?: Array<[PlayerId, Array<CardName>]>;
     venusScaleLevel: number;
 }
 

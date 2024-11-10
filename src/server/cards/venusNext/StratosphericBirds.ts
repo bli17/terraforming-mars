@@ -1,11 +1,10 @@
 import {IActionCard} from '../ICard';
 import {Tag} from '../../../common/cards/Tag';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {CardResource} from '../../../common/CardResource';
 import {CardName} from '../../../common/cards/CardName';
 import {RemoveResourcesFromCard} from '../../deferredActions/RemoveResourcesFromCard';
-import {CardRequirements} from '../requirements/CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
 import {ActionCard} from '../ActionCard';
 
@@ -18,7 +17,7 @@ export class StratosphericBirds extends ActionCard implements IActionCard {
       cost: 12,
       resourceType: CardResource.ANIMAL,
       victoryPoints: {resourcesHere: {}},
-      requirements: CardRequirements.builder((b) => b.venus(12)),
+      requirements: {venus: 12},
 
       action: {
         addResources: 1,
@@ -28,9 +27,9 @@ export class StratosphericBirds extends ActionCard implements IActionCard {
         cardNumber: '249',
         renderData: CardRenderer.builder((b) => {
           b.action('Add 1 animal to this card.', (eb) => {
-            eb.empty().startAction.animals(1);
+            eb.empty().startAction.resource(CardResource.ANIMAL);
           }).br;
-          b.minus().floaters(1).br;
+          b.minus().resource(CardResource.FLOATER).br;
           b.vpText('1 VP for each animal on this card.');
         }),
         description: {
@@ -40,7 +39,7 @@ export class StratosphericBirds extends ActionCard implements IActionCard {
       },
     });
   }
-  public override bespokeCanPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: IPlayer): boolean {
     const cardsWithFloater = player.getCardsWithResources(CardResource.FLOATER);
     if (cardsWithFloater.length === 0) return false;
 
@@ -54,8 +53,8 @@ export class StratosphericBirds extends ActionCard implements IActionCard {
       return canPayForFloater;
     }
   }
-  public override bespokePlay(player: Player) {
-    player.game.defer(new RemoveResourcesFromCard(player, CardResource.FLOATER, 1, true));
+  public override bespokePlay(player: IPlayer) {
+    player.game.defer(new RemoveResourcesFromCard(player, CardResource.FLOATER, 1, {source: 'self', blockable: false}));
     return undefined;
   }
 }

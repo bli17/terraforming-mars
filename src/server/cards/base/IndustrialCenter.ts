@@ -2,10 +2,10 @@ import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {ActionCard} from '../ActionCard';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {CanAffordOptions, IPlayer} from '../../IPlayer';
 import {TileType} from '../../../common/TileType';
-import {SelectSpace} from '../../inputs/SelectSpace';
-import {ISpace} from '../../boards/ISpace';
+import {PlaceTile} from '../../../server/deferredActions/PlaceTile';
+import {Space} from '../../boards/Space';
 import {CardName} from '../../../common/cards/CardName';
 import {Board} from '../../boards/Board';
 import {AdjacencyBonus} from '../../ares/AdjacencyBonus';
@@ -33,27 +33,28 @@ export class IndustrialCenter extends ActionCard implements IProjectCard {
       adjacencyBonus,
 
       action: {
-        spend: {
-          megacredits: 7,
-        },
+        spend: {megacredits: 7},
         production: {steel: 1},
       },
       metadata,
     });
   }
 
-  private getAvailableSpaces(player: Player): Array<ISpace> {
-    return player.game.board.getAvailableSpacesOnLand(player)
+  private getAvailableSpaces(player: IPlayer, canAffordOptions?: CanAffordOptions): Array<Space> {
+    return player.game.board.getAvailableSpacesOnLand(player, canAffordOptions)
       .filter((space) => player.game.board.getAdjacentSpaces(space).some((adjacentSpace) => Board.isCitySpace(adjacentSpace)));
   }
-  public override bespokeCanPlay(player: Player): boolean {
-    return this.getAvailableSpaces(player).length > 0;
+  public override bespokeCanPlay(player: IPlayer, canAffordOptions: CanAffordOptions): boolean {
+    return this.getAvailableSpaces(player, canAffordOptions).length > 0;
   }
-  public override bespokePlay(player: Player) {
-    return new SelectSpace('Select space adjacent to a city tile', this.getAvailableSpaces(player), (space: ISpace) => {
-      player.game.addTile(player, space, {tileType: TileType.INDUSTRIAL_CENTER});
-      space.adjacency = this.adjacencyBonus;
-      return undefined;
-    });
+  public override bespokePlay(player: IPlayer) {
+    player.game.defer(
+      new PlaceTile(player, {
+        tile: {tileType: TileType.INDUSTRIAL_CENTER, card: this.name},
+        on: () => this.getAvailableSpaces(player),
+        title: 'Select space adjacent to a city tile',
+        adjacencyBonus: this.adjacencyBonus,
+      }));
+    return undefined;
   }
 }

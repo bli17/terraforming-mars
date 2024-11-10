@@ -8,6 +8,7 @@ export class EcologyExperts extends PreludeCard {
     super({
       name: CardName.ECOLOGY_EXPERTS,
       tags: [Tag.SCIENCE],
+	  globalParameterRequirementBonus: {steps: 2},
 
       behavior: {
         production: {plants: 1, heat: 2},
@@ -22,8 +23,5 @@ export class EcologyExperts extends PreludeCard {
         description: '(rework:) Increase your plant production 1 step and your heat production 2 steps. Your global requirements are +2 or -2 steps, your choice in each case.',
       },
     });
-  }
-  public getRequirementBonus(): number {
-    return 2;
   }
 }

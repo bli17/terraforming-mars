@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 import {Resource} from '../../../src/common/Resource';
 import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
@@ -11,7 +11,7 @@ import {testGame} from '../../TestGame';
 describe('CommercialDistrictAres', function() {
   let card: CommercialDistrictAres;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new CommercialDistrictAres();
@@ -26,8 +26,8 @@ describe('CommercialDistrictAres', function() {
     card.play(player);
     runAllActions(game);
     const action = cast(player.popWaitingFor(), SelectSpace);
-    action.cb(action.availableSpaces[0]);
+    action.cb(action.spaces[0]);
 
-    expect(action.availableSpaces[0].adjacency).to.deep.eq({bonus: [SpaceBonus.MEGACREDITS, SpaceBonus.MEGACREDITS]});
+    expect(action.spaces[0].adjacency).to.deep.eq({bonus: [SpaceBonus.MEGACREDITS, SpaceBonus.MEGACREDITS]});
   });
 });

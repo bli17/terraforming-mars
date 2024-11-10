@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {DesperateMeasures} from '../../../src/server/cards/ares/DesperateMeasures';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TileType} from '../../../src/common/TileType';
 import {AresTestHelper} from '../../ares/AresTestHelper';
 import {TestPlayer} from '../../TestPlayer';
@@ -11,7 +11,7 @@ import {testGame} from '../../TestGame';
 describe('DesperateMeasures', function() {
   let card: DesperateMeasures;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new DesperateMeasures();
@@ -51,6 +51,7 @@ describe('DesperateMeasures', function() {
   it('hazard tile with player marker cannot be played on', function() {
     const tiles = AresTestHelper.byTileType(AresTestHelper.getHazards(player));
     const protectedDustStorm = tiles.get(TileType.DUST_STORM_MILD)![0];
+    player.megaCredits = 8;
     expect(game.board.getAvailableSpacesOnLand(player).map((s) => s.id)).contains(protectedDustStorm.id);
 
     cast(card.play(player), SelectSpace).cb(protectedDustStorm);

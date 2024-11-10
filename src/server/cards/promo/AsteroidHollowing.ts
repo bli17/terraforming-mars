@@ -9,6 +9,7 @@ import {Player} from '../../Player';
 import {Resource} from '../../../common/Resource';
 import {SelectCard} from '../../inputs/SelectCard';
 import {CardRenderer} from '../render/CardRenderer';
+import {Payment} from '../../../common/inputs/Payment';
 
 export class AsteroidHollowing extends Card implements IActionCard, IProjectCard {
   constructor() {
@@ -25,7 +26,7 @@ export class AsteroidHollowing extends Card implements IActionCard, IProjectCard
         cardNumber: 'X15',
         renderData: CardRenderer.builder((b) => {
           b.action('Spend 1 titanium to add 1 asteroid resource to ANY card (buff: from "here") and increase M€ production 1 step.', (eb) => {
-            eb.titanium(1).startAction.asteroids(1).asterix().production((pb) => pb.megacredits(1));
+            eb.titanium(1).startAction.resource(CardResource.ASTEROID).asterix().production((pb) => pb.megacredits(1));
           }).br;
           b.vpText('1VP for each 2 asteroids on this card.');
         }),
@@ -41,7 +42,7 @@ export class AsteroidHollowing extends Card implements IActionCard, IProjectCard
     const asteroidCards = player.getResourceCards(CardResource.ASTEROID);
 	
 	const addAsteroidToSelf = function() {
-	  player.deductResource(Resource.TITANIUM, 1);
+	  player.pay(Payment.of({titanium: 1}));
       player.production.add(Resource.MEGACREDITS, 1);
       player.addResourceTo(asteroidCards[0], {log: true});
 	  return undefined;
@@ -50,14 +51,13 @@ export class AsteroidHollowing extends Card implements IActionCard, IProjectCard
 	const addAsteroidToCard = new SelectCard(
       'Select card to add 1 asteroid',
       'Add asteroid',
-      asteroidCards,
-      ([card]) => {
-        player.deductResource(Resource.TITANIUM, 1);
+      asteroidCards)
+      .andThen(([card]) => {
+        player.pay(Payment.of({titanium: 1}));
 		player.production.add(Resource.MEGACREDITS, 1);
         player.addResourceTo(card, {log: true});
         return undefined;
-      },
-    );
+      });
 	
 	if (asteroidCards.length === 1) return addAsteroidToSelf();
     return addAsteroidToCard;

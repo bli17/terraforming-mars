@@ -1,12 +1,12 @@
 
-import {Player} from '../Player';
+import {IPlayer} from '../IPlayer';
 import {PlayerId} from '../../common/Types';
 import {IMilestone} from './IMilestone';
-import {MilestoneName} from '../../common/ma/MilestoneName';
+import {maybeRenamedMilestone, MilestoneName} from '../../common/ma/MilestoneName';
 
 export type ClaimedMilestone = {
   milestone: IMilestone;
-  player: Player;
+  player: IPlayer;
 }
 
 export type SerializedClaimedMilestone = {
@@ -25,11 +25,11 @@ export function serializeClaimedMilestones(claimedMilestones: Array<ClaimedMiles
 
 export function deserializeClaimedMilestones(
   claimedMilestones: Array<SerializedClaimedMilestone>,
-  players: Array<Player>,
+  players: Array<IPlayer>,
   milestones: Array<IMilestone>): Array<ClaimedMilestone> {
   // Remove duplicates
   const ms = new Set<MilestoneName>();
-  const filtered: Array<Required<SerializedClaimedMilestone>> = [];
+  const filtered = [];
   for (const claimedMilestone of claimedMilestones) {
     const name = claimedMilestone.name;
     if (name === undefined) {
@@ -50,7 +50,7 @@ export function deserializeClaimedMilestones(
   }
 
   return filtered.map((element) => {
-    const milestoneName = element.name;
+    const milestoneName = maybeRenamedMilestone(element.name);
     const milestone: IMilestone | undefined = milestones.find((milestone) => milestone.name === milestoneName);
     if (milestone === undefined) {
       throw new Error(`Milestone ${milestoneName} not found when rebuilding Claimed Milestone`);

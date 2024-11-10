@@ -1,10 +1,10 @@
 import {expect} from 'chai';
 import {BotanicalExperience} from '../../../src/server/cards/pathfinders/BotanicalExperience';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
 import {cast, runAllActions} from '../../TestingUtils';
 import {testGame} from '../../TestGame';
-import {ISpace} from '../../../src/server/boards/ISpace';
+import {Space} from '../../../src/server/boards/Space';
 import {TileType} from '../../../src/common/TileType';
 import {Resource} from '../../../src/common/Resource';
 import {StealResources} from '../../../src/server/deferredActions/StealResources';
@@ -15,8 +15,8 @@ describe('BotanicalExperience', function() {
   let card: BotanicalExperience;
   let player: TestPlayer;
   let otherPlayer: TestPlayer;
-  let game: Game;
-  let space: ISpace;
+  let game: IGame;
+  let space: Space;
 
   beforeEach(function() {
     card = new BotanicalExperience();
@@ -26,10 +26,10 @@ describe('BotanicalExperience', function() {
   });
 
   it('canPlay', () => {
-    expect(player.simpleCanPlay(card)).is.false;
+    expect(card.canPlay(player)).is.false;
 
     game.addGreenery(otherPlayer, space);
-    expect(player.simpleCanPlay(card)).is.true;
+    expect(card.canPlay(player)).is.true;
   });
 
   it('onTilePlaced', () => {

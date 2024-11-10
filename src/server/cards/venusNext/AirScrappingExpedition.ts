@@ -1,6 +1,6 @@
 import {Tag} from '../../../common/cards/Tag';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {CardResource} from '../../../common/CardResource';
 import {SelectCard} from '../../inputs/SelectCard';
 import {CardName} from '../../../common/cards/CardName';
@@ -24,13 +24,13 @@ export class AirScrappingExpedition extends Card implements IProjectCard {
         cardNumber: '215',
         description: 'Raise Venus 1 step. Add 3 floaters to ANY Venus CARD.',
         renderData: CardRenderer.builder((b) => {
-          b.venus(1).floaters(3, {secondaryTag: Tag.VENUS});
+          b.venus(1).resource(CardResource.FLOATER, {amount: 3, secondaryTag: Tag.VENUS});
         }),
       },
     });
   }
 
-  public override bespokePlay(player: Player) {
+  public override bespokePlay(player: IPlayer) {
     let floaterCards = player.getResourceCards(CardResource.FLOATER);
     floaterCards = floaterCards.filter((card) => card.tags.some((cardTag) => cardTag === Tag.VENUS));
     if (floaterCards.length === 0) {
@@ -42,9 +42,10 @@ export class AirScrappingExpedition extends Card implements IProjectCard {
       return;
     }
 
-    return new SelectCard('Select card to add 3 floaters', 'Add floaters', floaterCards, ([card]) => {
-      player.addResourceTo(card, {qty: 3, log: true});
-      return undefined;
-    });
+    return new SelectCard('Select card to add 3 floaters', 'Add floaters', floaterCards)
+      .andThen(([card]) => {
+        player.addResourceTo(card, {qty: 3, log: true});
+        return undefined;
+      });
   }
 }

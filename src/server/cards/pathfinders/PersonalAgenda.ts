@@ -1,4 +1,4 @@
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {PreludeCard} from '../prelude/PreludeCard';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
@@ -15,7 +15,7 @@ export class PersonalAgenda extends PreludeCard {
       },
 
       metadata: {
-        cardNumber: 'P08',
+        cardNumber: 'PfP10',
         renderData: CardRenderer.builder((b) => {
           b.production((pb) => pb.megacredits(3)).br;
           // TODO(kberg): allow more than one secondary tag.
@@ -25,7 +25,7 @@ export class PersonalAgenda extends PreludeCard {
       },
     });
   }
-  public override bespokePlay(player: Player) {
+  public override bespokePlay(player: IPlayer) {
     player.drawCard(3, {
       include: (card) => {
         return card.type === CardType.EVENT &&

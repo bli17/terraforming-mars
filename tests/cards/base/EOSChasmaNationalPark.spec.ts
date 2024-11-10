@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {Birds} from '../../../src/server/cards/base/Birds';
 import {EosChasmaNationalPark} from '../../../src/server/cards/base/EOSChasmaNationalPark';
 import {Fish} from '../../../src/server/cards/base/Fish';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {SelectCard} from '../../../src/server/inputs/SelectCard';
 import {TestPlayer} from '../../TestPlayer';
 import {cast, runAllActions, setTemperature} from '../../TestingUtils';
@@ -11,7 +11,7 @@ import {testGame} from '../../TestGame';
 describe('EosChasmaNationalPark', () => {
   let card: EosChasmaNationalPark;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(() => {
     card = new EosChasmaNationalPark();
@@ -59,7 +59,7 @@ describe('EosChasmaNationalPark', () => {
     expect(card.canPlay(player)).is.true;
     player.playCard(card);
     runAllActions(game);
-    expect(player.popWaitingFor()).is.undefined;
+    cast(player.popWaitingFor(), undefined);
 
     expect(birds.resourceCount).to.eq(1);
     expect(player.plants).to.eq(3);

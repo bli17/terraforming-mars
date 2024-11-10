@@ -1,7 +1,7 @@
 import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {CardName} from '../../../common/cards/CardName';
 import {CardResource} from '../../../common/CardResource';
 import {SelectOption} from '../../inputs/SelectOption';
@@ -25,11 +25,11 @@ export class TitanShuttles extends Card implements IProjectCard {
         cardNumber: 'C45',
         renderData: CardRenderer.builder((b) => {
           b.action('Add 2 floaters to ANY JOVIAN CARD.', (eb) => {
-            eb.empty().startAction.floaters(2, {secondaryTag: Tag.JOVIAN});
+            eb.empty().startAction.resource(CardResource.FLOATER, {amount: 2, secondaryTag: Tag.JOVIAN});
           }).br;
           b.or().br;
           b.action('Spend any number of floaters here to gain the same number of titanium.', (eb) => {
-            eb.text('x').floaters(1).startAction.text('x').titanium(1);
+            eb.text('x').resource(CardResource.FLOATER).startAction.text('x').titanium(1);
           }).br;
         }),
       },
@@ -41,30 +41,26 @@ export class TitanShuttles extends Card implements IProjectCard {
     return true;
   }
 
-  public action(player: Player) {
+  public action(player: IPlayer) {
     if (this.resourceCount === 0) {
       player.game.defer(new AddResourcesToCard(player, CardResource.FLOATER, {count: 2, restrictedTag: Tag.JOVIAN, title: 'Add 2 floaters to a Jovian card'}));
       return undefined;
     }
 
     return new OrOptions(
-      new SelectOption('Add 2 floaters to a Jovian card', 'Add floaters', () => {
+      new SelectOption('Add 2 floaters to a Jovian card', 'Add floaters').andThen(() => {
         player.game.defer(new AddResourcesToCard(player, CardResource.FLOATER, {count: 2, restrictedTag: Tag.JOVIAN}));
         return undefined;
       }),
       new SelectAmount(
-        'Remove X floaters on this card to gain X titanium',
-        'Remove floaters',
-        (amount: number) => {
-          player.removeResourceFrom(this, amount);
-          player.titanium += amount;
-          player.game.log('${0} removed ${1} floaters to gain ${2} titanium', (b) => b.player(player).number(amount).number(amount));
-          return undefined;
-        },
-        1,
-        this.resourceCount,
-        true,
-      ),
+        'Remove X floaters on this card to gain X titanium', 'Remove floaters',
+        1, this.resourceCount, true,
+      ).andThen((amount) => {
+        player.removeResourceFrom(this, amount);
+        player.titanium += amount;
+        player.game.log('${0} removed ${1} floaters to gain ${2} titanium', (b) => b.player(player).number(amount).number(amount));
+        return undefined;
+      }),
     );
   }
 }

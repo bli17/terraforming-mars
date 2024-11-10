@@ -1,16 +1,16 @@
 import {IAward} from './IAward';
-import {Player} from '../Player';
+import {IPlayer} from '../IPlayer';
 import {PlayerId} from '../../common/Types';
-import {AwardName} from '../../common/ma/AwardName';
+import {AwardName, maybeRenamedAward} from '../../common/ma/AwardName';
 
 export type FundedAward = {
   award: IAward;
-  player: Player;
+  player: IPlayer;
 }
 
 export type SerializedFundedAward = {
-  name?: AwardName;
-  playerId?: PlayerId;
+  name: AwardName;
+  playerId: PlayerId;
 }
 
 export function serializeFundedAwards(fundedAwards: Array<FundedAward>) : Array<SerializedFundedAward> {
@@ -24,11 +24,11 @@ export function serializeFundedAwards(fundedAwards: Array<FundedAward>) : Array<
 
 export function deserializeFundedAwards(
   fundedAwards: Array<SerializedFundedAward>,
-  players: Array<Player>,
+  players: Array<IPlayer>,
   awards: Array<IAward>): Array<FundedAward> {
   // Remove duplicates
   const aw = new Set<AwardName>();
-  const filtered: Array<Required<SerializedFundedAward>> = [];
+  const filtered = [];
   for (const fundedAward of fundedAwards) {
     const name = fundedAward.name;
     if (name === undefined) {
@@ -49,7 +49,7 @@ export function deserializeFundedAwards(
   }
 
   return filtered.map((element: SerializedFundedAward) => {
-    const awardName = element.name;
+    const awardName = maybeRenamedAward(element.name);
     const award: IAward | undefined = awards.find((award) => award.name === awardName);
     if (award === undefined) {
       throw new Error(`Award ${awardName} not found when rebuilding Funded Award`);

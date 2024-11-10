@@ -1,6 +1,6 @@
 import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {CardName} from '../../../common/cards/CardName';
 import {Resource} from '../../../common/Resource';
 import {CardResource} from '../../../common/CardResource';
@@ -22,20 +22,20 @@ export class AirRaid extends Card implements IProjectCard {
         cardNumber: 'C02',
         description: 'Requires that you lose 1 floater. Steal 5 M€ from any player.',
         renderData: CardRenderer.builder((b) => {
-          b.minus().floaters(1);
+          b.minus().resource(CardResource.FLOATER);
           b.text('steal', Size.MEDIUM, true).megacredits(5, {all});
         }),
       },
     });
   }
 
-  public override bespokeCanPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: IPlayer): boolean {
     return player.getResourceCount(CardResource.FLOATER) > 0;
   }
 
-  public override bespokePlay(player: Player) {
+  public override bespokePlay(player: IPlayer) {
     player.game.defer(new StealResources(player, Resource.MEGACREDITS, 5));
-    player.game.defer(new RemoveResourcesFromCard(player, CardResource.FLOATER, 1, true));
+    player.game.defer(new RemoveResourcesFromCard(player, CardResource.FLOATER, 1, {source: 'self', blockable: false}));
     return undefined;
   }
 }

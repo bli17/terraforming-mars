@@ -3,7 +3,7 @@ import {cast, runAllActions} from '../../TestingUtils';
 import {Thermophiles} from '../../../src/server/cards/venusNext/Thermophiles';
 import {VenusianInsects} from '../../../src/server/cards/venusNext/VenusianInsects';
 import {VenusSoils} from '../../../src/server/cards/venusNext/VenusSoils';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {SelectCard} from '../../../src/server/inputs/SelectCard';
 import {TestPlayer} from '../../TestPlayer';
 import {ICard} from '../../../src/server/cards/ICard';
@@ -12,7 +12,7 @@ import {testGame} from '../../TestGame';
 describe('VenusSoils', function() {
   let card: VenusSoils;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(function() {
     card = new VenusSoils();
@@ -24,7 +24,7 @@ describe('VenusSoils', function() {
     player.playedCards.push(card2);
     expect(card.play(player)).is.undefined;
     runAllActions(game);
-    expect(player.popWaitingFor()).is.undefined;
+    cast(player.popWaitingFor(), undefined);
 
     expect(card2.resourceCount).to.eq(2);
     expect(player.production.plants).to.eq(1);

@@ -1,4 +1,4 @@
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {CardName} from '../../../common/cards/CardName';
 import {PreludeCard} from './PreludeCard';
 import {PlayProjectCard} from '../../deferredActions/PlayProjectCard';
@@ -10,7 +10,9 @@ export class EccentricSponsor extends PreludeCard {
     super({
       name: CardName.ECCENTRIC_SPONSOR,
 
-      startingMegacredits: 21,
+      behavior: {
+        stock: {megacredits: 21},
+      },
 	  
 	  metadata: {
         cardNumber: 'P11',
@@ -22,8 +24,8 @@ export class EccentricSponsor extends PreludeCard {
     });
   }
 
-  public override bespokePlay(player: Player) {
-    player.megaCredits += 21;
+  public override bespokePlay(player: IPlayer) {
+    //player.megaCredits += 21;
 	player.game.defer(new PlayProjectCard(player));
     return undefined;
   }

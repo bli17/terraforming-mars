@@ -1,14 +1,14 @@
 import {expect} from 'chai';
-import {Game} from '../../../src/server/Game';
+import {IGame} from '../../../src/server/IGame';
 import {TestPlayer} from '../../TestPlayer';
-import {runAllActions, forceGenerationEnd, churnAction} from '../../TestingUtils';
+import {runAllActions, forceGenerationEnd, churn} from '../../TestingUtils';
 import {testGame} from '../../TestGame';
 import {Clarke} from '../../../src/server/cards/ceos/Clarke';
 
 describe('Clarke', function() {
   let card: Clarke;
   let player: TestPlayer;
-  let game: Game;
+  let game: IGame;
 
   beforeEach(() => {
     card = new Clarke();
@@ -27,7 +27,7 @@ describe('Clarke', function() {
   });
 
   it('Takes action', function() {
-    expect(churnAction(card, player)).is.undefined;
+    expect(churn(card.action(player), player)).is.undefined;
     expect(player.production.plants).eq(1);
     expect(player.production.heat).eq(1);
     expect(player.plants).eq(5);
