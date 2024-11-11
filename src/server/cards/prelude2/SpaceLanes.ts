@@ -16,18 +16,18 @@ export class SpaceLanes extends PreludeCard {
       ],
 
       behavior: {
-        stock: {titanium: 3},
+        stock: {titanium: 4},
       },
 
       metadata: {
         cardNumber: 'P62',
-        description: 'Gain 3 titanium.',
+        description: 'Gain 4 titanium (buff: +1).',
         renderData: CardRenderer.builder((b) => {
           b.effect('When you play a Jovian, Earth, or Venus tag, you pay 2 M€ less for it.', (eb) => {
             eb.tag(Tag.JOVIAN).tag(Tag.EARTH).tag(Tag.VENUS).startEffect.megacredits(-2);
           });
           b.br;
-          b.titanium(3);
+          b.titanium(4);
         }),
       },
     });

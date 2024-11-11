@@ -13,18 +13,18 @@ export class SuitableInfrastructure extends PreludeCard {
       tags: [Tag.BUILDING],
 
       behavior: {
-        stock: {steel: 5},
+        stock: {steel: 2},
       },
 
       metadata: {
         cardNumber: 'P63',
-        description: 'Gain 5 steel.',
+        description: 'Gain 2 steel (nerf: -3).',
         renderData: CardRenderer.builder((b) => {
           b.effect('Once per action you take, gain 2 M€ if you increase any productions.', (eb) => {
             eb.production((pb) => pb.wild(1)).asterix().startEffect.megacredits(2);
           });
           b.br;
-          b.steel(5);
+          b.steel(2);
         }),
       },
     });
@@ -40,7 +40,7 @@ export class SuitableInfrastructure extends PreludeCard {
     }
     const actionId = sum(player.game.getPlayers().map((p) => p.actionsTakenThisGame));
     if (this.lastActionId !== actionId) {
-      player.stock.add(Resource.MEGACREDITS, 2);
+      player.stock.add(Resource.MEGACREDITS, 2, {log: true});
       this.lastActionId = actionId;
     }
   }
