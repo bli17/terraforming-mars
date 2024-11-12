@@ -24,13 +24,12 @@ export class KuiperCooperative extends CorporationCard implements IActionCard {
         description: 'You start with 38 M€ (buff: +5). Increase titanium production 1 step.',
         renderData: CardRenderer.builder((b) => {
           b.megacredits(38).production((pb) => pb.titanium(1)).br;
-		  b.corpBox('action', (ce) => {
-            ce.action('Add 1 asteroid here for every space tag you have.', (ab) => {
-              ab.empty().startAction.resource(CardResource.ASTEROID).slash().tag(Tag.SPACE);
-            }).br;
-            ce.effect('When you use the AQUIFER or ASTEROID standard projects, you can spend asteroids on card as 1M€ each.', (eb) => {
-              eb.plate('Standard Project', {size: Size.SMALL}).asterix().startEffect.resource(CardResource.ASTEROID).equals().megacredits(1);
-            });
+		  //b.text('You start with 38 M€ (buff: +5). Increase titanium production 1 step.', Size.TINY, false, false);
+		  b.action('Add 1 asteroid here for every space tag you have.', (ab) => {
+            ab.empty().startAction.resource(CardResource.ASTEROID).slash().tag(Tag.SPACE);
+          }).br;
+          b.effect('When you use the AQUIFER or ASTEROID standard projects, you can spend asteroids on card as 1M€ each.', (eb) => {
+            eb.plate('Standard Project', {size: Size.SMALL}).asterix().startEffect.resource(CardResource.ASTEROID).equals().megacredits(1);
           });
         }),
       },

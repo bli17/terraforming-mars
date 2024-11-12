@@ -9,6 +9,7 @@ import {ICard} from '../ICard';
 import {GainResources} from '../../deferredActions/GainResources';
 import {Resource} from '../../../common/Resource';
 import {Tag} from '../../../common/cards/Tag';
+import {Size} from '../../../common/cards/render/Size';
 
 export class SagittaFrontierServices extends CorporationCard {
   constructor() {
@@ -22,14 +23,23 @@ export class SagittaFrontierServices extends CorporationCard {
 
       metadata: {
         cardNumber: 'PC03', // Renumber
-		description: 'You start with 31 M€. Increase M€ production 2 steps. (nerf: -1 energy production & card.)',
+		//description: ''You start with 31 M€. Increase M€ production 2 steps. (nerf: -1 energy production & card.)'',
         hasExternalHelp: true,
         renderData: CardRenderer.builder((b) => {
           // TODO(kberg): provide reasonable secondary tag. It's not rendered on CardRenderItemComponent.
           b.megacredits(31).production((pb) => pb.megacredits(2)).br;
-          b.corpBox('effect', (ce) => {
-            ce.effect('When you play a card with no tags, including this, gain 4 M€.', (eb) => eb.noTags().startEffect.megacredits(4)).br;
-            ce.effect('When you play a card with EXACTLY 1 TAG, you gain 1 M€.', (eb) => eb.emptyTag().asterix().startEffect.megacredits(1)).br;
+		  b.text('31 M€. Increase M€ production 2 steps. (nerf: -1 energy production & card.)', Size.TINY, false, false);
+          //b.effect('When you play a card with no tags, including this, gain 4 M€.', (eb) => eb.noTags().startEffect.megacredits(4)).br;
+          //b.effect('When you play a card with EXACTLY 1 TAG, you gain 1 M€.', (eb) => eb.emptyTag().asterix().startEffect.megacredits(1)).br;
+		  b.corpBox('effect', (ce) => {
+			ce.vSpace(Size.LARGE);
+		    ce.effect('When you play a card with no tags, including this, gain 4 M€.', (eb) => {
+              eb.noTags().startEffect.megacredits(4);
+            });
+			ce.vSpace();
+            ce.effect('When you play a card with EXACTLY 1 TAG, you gain 1 M€.', (eb) => {
+              eb.emptyTag().asterix().startEffect.megacredits(1);
+            });
 		  });
         }),
       },
