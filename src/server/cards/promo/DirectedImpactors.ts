@@ -14,6 +14,7 @@ import {LogHelper} from '../../LogHelper';
 import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {CardRenderer} from '../render/CardRenderer';
 import {TITLES} from '../../inputs/titles';
+import {Size} from '../../../common/cards/render/Size';
 
 export class DirectedImpactors extends Card implements IActionCard, IProjectCard {
   constructor() {
@@ -21,7 +22,7 @@ export class DirectedImpactors extends Card implements IActionCard, IProjectCard
       type: CardType.ACTIVE,
       name: CardName.DIRECTED_IMPACTORS,
       tags: [Tag.SPACE],
-      cost: 8,
+      cost: 3,
       resourceType: CardResource.ASTEROID,
 
       metadata: {
@@ -33,7 +34,8 @@ export class DirectedImpactors extends Card implements IActionCard, IProjectCard
           b.or().br;
           b.action('Remove 1 asteroid here to raise temperature 1 step.', (eb) => {
             eb.resource(CardResource.ASTEROID).startAction.temperature(1);
-          });
+          }).br;
+		  b.text('(buff: -5 cost)', Size.TINY, false, false);
         }),
       },
     });

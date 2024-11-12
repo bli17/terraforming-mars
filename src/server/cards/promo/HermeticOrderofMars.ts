@@ -15,20 +15,16 @@ export class HermeticOrderOfMars extends Card implements IProjectCard {
     super({
       type: CardType.AUTOMATED,
       name: CardName.HERMETIC_ORDER_OF_MARS,
-      cost: 10,
+      cost: 5,
 
       requirements: {oxygen: 4, max},
-
-      behavior: {
-        production: {megacredits: 2},
-      },
 
       metadata: {
         cardNumber: 'X56',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.megacredits(2)).nbsp.megacredits(1).slash().emptyTile().asterix();
+          b.production((pb) => pb.megacredits(1).slash().emptyTile().asterix());
         }),
-        description: 'Oxygen must be 4% or lower. Increase your M€ production 2 steps. Gain 1 M€ per empty area adjacent to your tiles.',
+        description: 'Oxygen must be 4% or lower. Gain 1 M€ per empty area adjacent to your tiles. (nerf: -5 cost -2 M€ production)',
       },
     });
   }

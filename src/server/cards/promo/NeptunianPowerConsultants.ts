@@ -22,7 +22,7 @@ export class NeptunianPowerConsultants extends Card implements IProjectCard {
       type: CardType.ACTIVE,
       name: CardName.NEPTUNIAN_POWER_CONSULTANTS,
       tags: [Tag.POWER],
-      cost: 14,
+      cost: 9,
       resourceType: CardResource.HYDROELECTRIC_RESOURCE,
       victoryPoints: {resourcesHere: {}},
 
@@ -38,7 +38,7 @@ export class NeptunianPowerConsultants extends Card implements IProjectCard {
           b.plainText('(Effect: When any ocean is placed, you MAY pay 5 M€ (steel may be used), to ' +
             'raise energy production 1 step and add 1 hydroelectric resource to this card.)');
         }),
-        description: '1 VP per hydroelectric resource on this card',
+        description: '1 VP per hydroelectric resource on this card. (buff: -5 cost)',
       },
     });
   }

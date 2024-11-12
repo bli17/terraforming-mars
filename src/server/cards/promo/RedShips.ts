@@ -13,7 +13,7 @@ export class RedShips extends Card implements IActionCard {
     super({
       type: CardType.ACTIVE,
       name: CardName.RED_SHIPS,
-      cost: 2,
+      cost: 7,
 
       requirements: {oxygen: 4},
 
@@ -23,7 +23,7 @@ export class RedShips extends Card implements IActionCard {
           b.action('Gain 1 M€ for each CITY AND SPECIAL TILE adjacent to an ocean.',
             (ab) => ab.empty().startAction.megacredits(1).cityorSpecialTile({all}).oceans(1));
         }),
-        description: 'Requires 4% oxygen.',
+        description: 'Requires 4% oxygen. (nerf: +5 cost)',
       },
     });
   }

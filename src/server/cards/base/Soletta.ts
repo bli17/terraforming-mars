@@ -11,7 +11,7 @@ export class Soletta extends Card implements IProjectCard {
       type: CardType.AUTOMATED,
       name: CardName.SOLETTA,
       tags: [Tag.SPACE],
-      cost: 35,
+      cost: 30,
 
       behavior: {
         production: {heat: 7},
@@ -22,7 +22,7 @@ export class Soletta extends Card implements IProjectCard {
         renderData: CardRenderer.builder((b) => {
           b.production((pb) => pb.heat(7));
         }),
-        description: 'Increase your heat production 7 steps.',
+        description: 'Increase your heat production 7 steps. (buff: -5 cost)',
       },
     });
   }

@@ -50,7 +50,7 @@ export const PRELUDE_CARDS_DEALT_PER_PLAYER = 4;
 export const CEO_CARDS_DEALT_PER_PLAYER = 3;
 
 // Promo
-export const GRAPHENE_VALUE = 4;
+export const GRAPHENE_VALUE = 3;
 
 // Map specific
 export const HELLAS_BONUS_OCEAN_COST = 6;

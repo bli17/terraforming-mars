@@ -11,6 +11,7 @@ import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred
 import {message} from '../../logs/MessageBuilder';
 import {CardResource} from '../../../common/CardResource';
 import {PlaceOceanTile} from '../../deferredActions/PlaceOceanTile';
+import {Size} from '../../../common/cards/render/Size';
 
 export class IcyImpactors extends Card implements IActionCard {
   constructor() {
@@ -18,7 +19,7 @@ export class IcyImpactors extends Card implements IActionCard {
       name: CardName.ICY_IMPACTORS,
       type: CardType.ACTIVE,
       tags: [Tag.SPACE],
-      cost: 15,
+      cost: 10,
       resourceType: CardResource.ASTEROID,
 
       metadata: {
@@ -30,6 +31,8 @@ export class IcyImpactors extends Card implements IActionCard {
           b.action('Spend 1 asteroid here to place an ocean tile. ' +
             'FIRST PLAYER CHOOSES WHERE YOU MUST PLACE IT.', (ab) =>
             ab.or().resource(CardResource.ASTEROID).startAction.oceans(1).asterix());
+		  b.br;
+		  b.text('(buff: -5 cost)', Size.TINY, false, false);
         }),
       },
     });
