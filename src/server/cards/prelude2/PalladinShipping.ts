@@ -16,7 +16,7 @@ export class PalladinShipping extends CorporationCard implements IActionCard {
     super({
       name: CardName.PALLADIN_SHIPPING,
       tags: [Tag.SPACE],
-      startingMegaCredits: 36,
+      startingMegaCredits: 41,
 
       behavior: {
         stock: {titanium: 5},
@@ -24,17 +24,18 @@ export class PalladinShipping extends CorporationCard implements IActionCard {
 
       metadata: {
         cardNumber: 'PC02', // Renumber
+        description: 'You start with 41 M€ (buff: +5). Gain 5 titanium.',
         renderData: CardRenderer.builder((b) => {
-          b.megacredits(36).titanium(5, {digit}).br;
-          b.effect('When you play a space event, gain 1 titanium.', (eb) => {
-            eb.tag(Tag.SPACE).tag(Tag.EVENT).startEffect.titanium(1);
-          });
-          b.br;
-          b.action('Spend 2 titanium to raise the temperature 1 step.', (ab) => {
-            ab.titanium(2).startAction.temperature(1);
+          b.megacredits(41).titanium(5, {digit}).br;
+          b.corpBox('action', (ce) => {
+		    ce.effect('When you play a space event, gain 1 titanium.', (eb) => {
+              eb.tag(Tag.SPACE).tag(Tag.EVENT).startEffect.titanium(1);
+            });
+            ce.action('Spend 2 titanium to raise the temperature 1 step.', (ab) => {
+              ab.titanium(2).startAction.temperature(1);
+            });
           });
         }),
-        description: 'You start with 36 M€. Gain 5 titanium.',
       },
     });
   }
