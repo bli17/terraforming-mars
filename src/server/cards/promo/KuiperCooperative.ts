@@ -21,15 +21,19 @@ export class KuiperCooperative extends CorporationCard implements IActionCard {
 
       metadata: {
         cardNumber: 'XC01', // Rename
-        description: 'You start with 38 M€ (buff: +5). Increase titanium production 1 step.',
+        //description: 'You start with 38 M€ (buff: +5). Increase titanium production 1 step.',
         renderData: CardRenderer.builder((b) => {
-          b.megacredits(38).production((pb) => pb.titanium(1)).br;
-		  //b.text('You start with 38 M€ (buff: +5). Increase titanium production 1 step.', Size.TINY, false, false);
-		  b.action('Add 1 asteroid here for every space tag you have.', (ab) => {
-            ab.empty().startAction.resource(CardResource.ASTEROID).slash().tag(Tag.SPACE);
-          }).br;
-          b.effect('When you use the AQUIFER or ASTEROID standard projects, you can spend asteroids on card as 1M€ each.', (eb) => {
-            eb.plate('Standard Project', {size: Size.SMALL}).asterix().startEffect.resource(CardResource.ASTEROID).equals().megacredits(1);
+          b.megacredits(38).production((pb) => pb.titanium(1));
+		  b.text('38 M€ (buff: +5). Increase titanium production 1 step.', Size.TINY, false, false);
+		  b.corpBox('action', (ce) => {
+			ce.vSpace(Size.LARGE);
+		    ce.action('Add 1 asteroid here for every space tag you have.', (ab) => {
+              ab.empty().startAction.resource(CardResource.ASTEROID).slash().tag(Tag.SPACE);
+            });
+			ce.vSpace();
+            ce.effect('When you use the AQUIFER or ASTEROID standard projects, you can spend asteroids here as 1M€ each.', (eb) => {
+              eb.plate('Standard Project', {size: Size.SMALL}).asterix().startEffect.resource(CardResource.ASTEROID).equals().megacredits(1);
+			});
           });
         }),
       },
