@@ -24,7 +24,7 @@ export class KuiperCooperative extends CorporationCard implements IActionCard {
         //description: 'You start with 38 M€ (buff: +5). Increase titanium production 1 step.',
         renderData: CardRenderer.builder((b) => {
           b.megacredits(38).production((pb) => pb.titanium(1));
-		  b.text('38 M€ (buff: +5). Increase titanium production 1 step.', Size.TINY, false, false);
+		  b.text('(38 M€ (buff: +5). Increase titanium production 1 step.)', Size.TINY, false, false);
 		  b.corpBox('action', (ce) => {
 			ce.vSpace(Size.LARGE);
 		    ce.action('Add 1 asteroid here for every space tag you have.', (ab) => {

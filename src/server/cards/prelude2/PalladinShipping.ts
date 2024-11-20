@@ -28,7 +28,7 @@ export class PalladinShipping extends CorporationCard implements IActionCard {
         //description: 'You start with 41 M€ (buff: +5). Gain 5 titanium.',
         renderData: CardRenderer.builder((b) => {
           b.megacredits(41).titanium(5, {digit}).br;
-		  b.text('You start with 41 M€ (buff: +5). Gain 5 titanium.', Size.TINY, false, false);
+		  b.text('(You start with 41 M€ (buff: +5). Gain 5 titanium.)', Size.TINY, false, false);
           b.corpBox('action', (ce) => {
 			ce.vSpace(Size.LARGE);
 		    ce.effect('When you play a space event, gain 1 titanium.', (eb) => {
