@@ -23,13 +23,15 @@ export class Ecotec extends CorporationCard {
 
       metadata: {
         cardNumber: 'PC04', // Renumber
+        description: 'You start with 42 M€. Increase your plant production 1 step.',
         renderData: CardRenderer.builder((b) => {
           b.br.br.br;
-          b.megacredits(42).production((pb) => pb.plants(1)).br;
-          b.effect('When you play a bio tag, gain 1 plant or add a microbe to ANY card.',
-            (eb) => eb.tag(Tag.MICROBE).tag(Tag.PLANT).tag(Tag.ANIMAL).startEffect.plants(1).slash().resource(CardResource.MICROBE).asterix());
+          b.megacredits(42).production((pb) => pb.plants(1));
+          b.corpBox('effect', (ce) => {
+            ce.effect('When you play a bio tag, gain 1 plant or add a microbe to ANY card.',
+              (eb) => eb.tag(Tag.MICROBE).tag(Tag.PLANT).tag(Tag.ANIMAL).startEffect.plants(1).slash().resource(CardResource.MICROBE).asterix());
+          });
         }),
-        description: 'You start with 42 M€. Increase your plant production 1 step.',
       },
     });
   }
