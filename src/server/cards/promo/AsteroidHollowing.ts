@@ -6,10 +6,11 @@ import {CardType} from '../../../common/cards/CardType';
 import {CardResource} from '../../../common/CardResource';
 import {Tag} from '../../../common/cards/Tag';
 import {Player} from '../../Player';
-import {Resource} from '../../../common/Resource';
+//import {Resource} from '../../../common/Resource';
 import {SelectCard} from '../../inputs/SelectCard';
 import {CardRenderer} from '../render/CardRenderer';
-import {Payment} from '../../../common/inputs/Payment';
+//import {Payment} from '../../../common/inputs/Payment';
+import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 
 export class AsteroidHollowing extends Card implements IActionCard, IProjectCard {
   constructor() {
@@ -17,34 +18,35 @@ export class AsteroidHollowing extends Card implements IActionCard, IProjectCard
       type: CardType.ACTIVE,
       name: CardName.ASTEROID_HOLLOWING,
       tags: [Tag.SPACE],
-      cost: 16,
+      cost: 6,
       resourceType: CardResource.ASTEROID,
 
-      victoryPoints: {resourcesHere: {}, per: 2},
+      victoryPoints: {resourcesHere: {}, per: 3},
 
       metadata: {
         cardNumber: 'X15',
         renderData: CardRenderer.builder((b) => {
-          b.action('Spend 1 titanium to add 1 asteroid resource to ANY card (buff: from "here") and increase M€ production 1 step.', (eb) => {
-            eb.titanium(1).startAction.resource(CardResource.ASTEROID).asterix().production((pb) => pb.megacredits(1));
+          b.action('Spend 1 M€ (buff: from 1 titanium) to add 1 asteroid resource to ANY card (buff: to any; nerf: -1 M€ production). (Buff: -10 cost).', (eb) => {
+            eb.megacredits(1).startAction.resource(CardResource.ASTEROID).asterix();
           }).br;
-          b.vpText('1VP for each 2 asteroids on this card.');
+          b.vpText('1VP for each 3 asteroids (nerf: +1) on this card.');
         }),
       },
     });
   }
 
   public canAct(player: Player): boolean {
-    return player.titanium > 0;
+    return player.canAfford(1);
   }
 
   public action(player: Player) {
     const asteroidCards = player.getResourceCards(CardResource.ASTEROID);
 	
 	const addAsteroidToSelf = function() {
-	  player.pay(Payment.of({titanium: 1}));
-      player.production.add(Resource.MEGACREDITS, 1);
-      player.addResourceTo(asteroidCards[0], {log: true});
+	  //player.pay(Payment.of({titanium: 1}));
+      //player.production.add(Resource.MEGACREDITS, 1);
+      player.game.defer(new SelectPaymentDeferred(player, 1, {title: 'Select how to pay for asteroid'}));
+	  player.addResourceTo(asteroidCards[0], {log: true});
 	  return undefined;
     };
 	
@@ -53,9 +55,10 @@ export class AsteroidHollowing extends Card implements IActionCard, IProjectCard
       'Add asteroid',
       asteroidCards)
       .andThen(([card]) => {
-        player.pay(Payment.of({titanium: 1}));
-		player.production.add(Resource.MEGACREDITS, 1);
-        player.addResourceTo(card, {log: true});
+        //player.pay(Payment.of({titanium: 1}));
+		//player.production.add(Resource.MEGACREDITS, 1);
+        player.game.defer(new SelectPaymentDeferred(player, 1, {title: 'Select how to pay for asteroid'}));
+		player.addResourceTo(card, {log: true});
         return undefined;
       });
 	

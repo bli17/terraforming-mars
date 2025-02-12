@@ -11,20 +11,13 @@ export class TerraformingDeal extends PreludeCard {
     super({
       name: CardName.TERRAFORMING_DEAL,
       tags: [Tag.EARTH],
-	  
-	  behavior: {
-        stock: {megacredits: 11},
-      },
 
       metadata: {
         cardNumber: 'P64',
-		description: '(buff:) Gain 11 MC.',
         renderData: CardRenderer.builder((b) => {
-          b.effect('Each step your TR is raised, you gain 1 M€ (nerf: -1).', (eb) => {
-            eb.tr(1).startEffect.megacredits(1);
+          b.effect('Each step your TR is raised, you gain 2 M€.', (eb) => {
+            eb.tr(1).startEffect.megacredits(2);
           });
-		  b.br;
-          b.megacredits(11);
         }),
       },
     });
@@ -35,7 +28,7 @@ export class TerraformingDeal extends PreludeCard {
     if (cardOwner === player) {
       const phase = player.game.phase;
       if (phase === Phase.ACTION || phase === Phase.PRELUDES) {
-        cardOwner.stock.add(Resource.MEGACREDITS, 1 * steps, {log: true});
+        cardOwner.stock.add(Resource.MEGACREDITS, 2 * steps, {log: true});
       }
     }
   }

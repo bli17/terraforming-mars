@@ -15,7 +15,7 @@ import {IActionCard} from '../ICard';
 export class FloydContinuum extends Card implements IProjectCard, IActionCard {
   constructor() {
     super({
-      cost: 4,
+      cost: 9,
       name: CardName.FLOYD_CONTINUUM,
       tags: [Tag.SCIENCE],
       type: CardType.ACTIVE,
@@ -24,7 +24,7 @@ export class FloydContinuum extends Card implements IProjectCard, IActionCard {
         cardNumber: 'X-1',
         hasExternalHelp: true,
         renderData: CardRenderer.builder((b) => {
-          b.action('Gain 3 M€ per completed terraforming parameter.', (eb) => {
+          b.action('Gain 3 M€ per completed terraforming parameter. (Nerf: +5 cost.)', (eb) => {
             eb.empty().startAction.megacredits(3).slash().oceans(1).oxygen(1).temperature(1).asterix();
           });
         }),

@@ -11,17 +11,17 @@ export class PolarIndustries extends PreludeCard implements IProjectCard {
       tags: [Tag.BUILDING],
 
       behavior: {
-        production: {heat: 2},
+        production: {heat: 3},
         ocean: {},
       },
 
       metadata: {
         cardNumber: 'P26',
         renderData: CardRenderer.builder((b) => {
-          b.production((pb) => pb.heat(2)).br;
+          b.production((pb) => pb.heat(3)).br;
           b.oceans(1);
         }),
-        description: 'Increase your heat production 2 steps. Place an ocean tile.',
+        description: 'Increase your heat production 3 steps (buff: +1). Place an ocean tile.',
       },
     });
   }
